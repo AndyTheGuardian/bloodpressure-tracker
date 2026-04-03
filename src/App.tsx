@@ -48,6 +48,8 @@ function App() {
     return true;
   });
 
+  const reversedReadings = filteredReadings.reverse();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newReading = {
@@ -159,7 +161,7 @@ function App() {
           Readings
         </h2>
         <ul className="mt-2 space-y-2">
-          {filteredReadings.map((r) => {
+          {reversedReadings.map((r) => {
             const level = getBPLevel(r.systolic, r.diastolic);
             const style = getBPStyle(level);
 

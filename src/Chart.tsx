@@ -55,7 +55,6 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         borderColor: "rgb(4,94,249)",
         borderWidth: 2,
         pointRadius: 2,
-        // fill: 1,
         tension: 0,
         backgroundColor: "rgba(4,94,249,0.5)",
       },
@@ -65,7 +64,6 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         borderColor: "rgb(180,4,249)",
         borderWidth: 2,
         pointRadius: 2,
-        //fill: "origin",
         tension: 0,
         backgroundColor: "rgba(180,4,249,0.5)",
       },
@@ -75,12 +73,13 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         borderColor: "rgb(160,160,1)",
         borderWidth: 2,
         pointRadius: 2,
-        //fill: "origin",
         tension: 0,
         backgroundColor: "rgba(160,160,1,0.5)",
       },
     ],
   };
+
+  //const colNm = 'rgba(34, 197, 94,0.2)';
 
   const options: ChartOptions<"line"> = {
     responsive: true,
@@ -90,43 +89,44 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
       },
       annotation: {
         annotations: {
-          high3BP: {
-            drawTime: "beforeDatasetsDraw",
-            type: "line",
-            yMin: 180,
-            yMax: 180,
-            borderColor: "rgba(255,64,64,.8)",
-            borderWidth: 1,
-          },
-          //   high2BP: {
-          //     drawTime: "beforeDatasetsDraw",
-          //     type: "line" ,
-          //     yMin: 160,
-          //     yMax: 160,
-          //     borderColor: "rgba(255,128,128,.5)",
-          //     borderWidth: 1,
-          //   },
-          //   high1BP: {
-          //     drawTime: "beforeDatasetsDraw",
-          //     type: "line",
-          //     yMin: 140,
-          //     yMax: 140,
-          //     borderColor: "rgba(255,200,200,.5)",
-          //     borderWidth: 1,
-          //   },
-          //   medBP: {
-          //     drawTime: "beforeDatasetsDraw",
-          //     type: "line",
-          //     yMin: 130,
-          //     yMax: 130,
-          //     borderColor: "rgba(255,255,128,.5)",
-          //     borderWidth: 1,
-          //   },
+          // crisBP: {
+          //   drawTime: "beforeDatasetsDraw",
+          //   type: "line",
+          //   yMin: 180,
+          //   yMax: 180,
+          //   borderColor: "rgba(185, 28, 28,1)",
+          //   borderWidth: 1,
+          // },
+          // high2BP: {
+          //   drawTime: "beforeDatasetsDraw",
+          //   type: "line",
+          //   yMin: 160,
+          //   yMax: 160,
+          //   borderColor: "rgba(239, 68, 68,.5)",
+          //   borderWidth: 1,
+          // },
+          // high1BP: {
+          //   drawTime: "beforeDatasetsDraw",
+          //   type: "line",
+          //   yMin: 140,
+          //   yMax: 140,
+          //   borderColor: "rgba(251, 146, 60,.5)",
+          //   borderWidth: 1,
+          // },
+          // elevBP: {
+          //   drawTime: "beforeDatasetsDraw",
+          //   type: "line",
+          //   yMin: 130,
+          //   yMax: 130,
+          //   borderColor: "rgba(253, 224, 71,.5)",
+          //   borderWidth: 1,
+          // },
           normalZone: {
             type: "box",
-            yMin: 0,
+            yMin: 100,
             yMax: 130,
             backgroundColor: "rgba(34, 197, 94,0.2)", // green
+            borderWidth: 0,
             drawTime: "beforeDatasetsDraw",
           },
           elevatedZone: {
@@ -134,6 +134,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
             yMin: 130,
             yMax: 140,
             backgroundColor: "rgba(253, 224, 71,0.2)", // yellow
+            borderWidth: 0,
             drawTime: "beforeDatasetsDraw",
           },
           high1Zone: {
@@ -141,6 +142,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
             yMin: 140,
             yMax: 160,
             backgroundColor: "rgba(251, 146, 60,0.2)", // orange
+            borderWidth: 0,
             drawTime: "beforeDatasetsDraw",
           },
           high2Zone: {
@@ -148,6 +150,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
             yMin: 160,
             yMax: 180,
             backgroundColor: "rgba(239, 68, 68,0.2)", // red
+            borderWidth: 0,
             drawTime: "beforeDatasetsDraw",
           },
           crisisZone: {
@@ -155,6 +158,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
             yMin: 180,
             yMax: 200,
             backgroundColor: "rgba(185, 28, 28,0.2)", // red
+            borderWidth: 0,
             drawTime: "beforeDatasetsDraw",
           },
         },
@@ -165,20 +169,20 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         grid: {
           color: (ctx: any) =>
             ctx.tick.value === 0
-              ? "rgba(128,128,128,0.5"
+              ? "rgba(128,128,128,0.5)"
               : "rgba(128,128,128,0.2)",
           lineWidth: 1,
         },
       },
       y: {
         ticks: {
-          color: "rgba(128,128,128,1",
+          color: "rgba(128,128,128,1)",
           font: {
-            size: 10,
+            size: 12,
           },
         },
         grid: {
-          color: "rgba(128,128,128,0.5",
+          color: "rgba(128,128,128,0.5)",
           lineWidth: 1,
         },
       },
