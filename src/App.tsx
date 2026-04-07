@@ -126,6 +126,42 @@ function App() {
 
   const { trend, diff } = trendData;
 
+  function calculateTrend(readings: typeof filteredReadings) {
+    if (readings.length < 2) {
+      return { slope: 0, trend: "stable" as const };
+    }
+
+    // sort by date
+    const sorted = [...readings].sort(
+      (a, b) =>
+        new Date(a.recorded_at || "").getTime() -
+        new Date(b.recorded_at || "").getTime(),
+    );
+
+    // x = index, y = systolic
+    const x = sorted.map((_, i) => i);
+    const y = sorted.map((r) => (r.systolic + r.diastolic) / 2);
+
+    const n = x.length;
+
+    const sumX = x.reduce((a, b) => a + b, 0);
+    const sumY = y.reduce((a, b) => a + b, 0);
+    const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+    const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+    // slope formula
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+
+    let trend: "up" | "down" | "stable" = "stable";
+
+    if (slope > 0.5) trend = "up";
+    else if (slope < -0.5) trend = "down";
+
+    return { slope, trend };
+  }
+
+  const trendDataReg = calculateTrend(filteredReadings);
+
   useEffect(() => {
     localStorage.setItem("readings", JSON.stringify(readings));
   }, [readings]);
@@ -242,7 +278,7 @@ function App() {
               <div>
                 <p className="text-sm text-gray-500">Trend</p>
                 <div className="flex">
-                  {trend == "up" && (
+                  {trend === "up" && (
                     <p className={`text-xl text-${colHi2} font-bold flex-1`}>
                       ↑ Increasing
                     </p>
@@ -259,6 +295,29 @@ function App() {
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
                     {diff.toFixed(1)}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Trend (Regression)</p>
+                <div className="flex">
+                  {trendDataReg.trend === "up" && (
+                    <p className={`text-xl text-${colHi2} font-bold flex-1`}>
+                      ↑ Increasing
+                    </p>
+                  )}
+                  {trendDataReg.trend == "down" && (
+                    <p className={`text-xl text-${colNrm} font-bold flex-1`}>
+                      ↓ Improving
+                    </p>
+                  )}
+                  {trendDataReg.trend == "stable" && (
+                    <p className="text-xl text-gray-900 dark:text-gray-100 font-bold flex">
+                      → Stable
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
+                    {trendDataReg.slope.toFixed(2)}
                   </p>
                 </div>
               </div>
