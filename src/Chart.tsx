@@ -35,6 +35,30 @@ type Reading = {
 export default function BPChart({ readings }: { readings: Reading[] }) {
   const sorted = [...readings].reverse(); // oldest -> newest
 
+  const x = sorted.map((_, i) => i);
+  const y = sorted.map((r) => r.systolic);
+
+  const n = x.length;
+
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = y.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+  const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+
+  const intercept = (sumY - slope * sumX) / n;
+
+  // predicted values (regression line)
+  const trendLine = x.map((xi) => slope * xi + intercept);
+
+  const trendColor =
+    slope > 0.5
+      ? "rgba(185, 28, 28,0.5)" // red
+      : slope < -0.5
+        ? "rgba(34, 197, 94,0.5)" // green
+        : "rgba(255, 255, 255,0.5)";
+
   const data = {
     labels: sorted.map((r) =>
       r.recorded_at
@@ -75,6 +99,14 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         pointRadius: 2,
         tension: 0,
         backgroundColor: "rgba(160,160,1,0.5)",
+      },
+      {
+        label: "Trend",
+        data: trendLine,
+        borderColor: trendColor,
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 0,
       },
     ],
   };
