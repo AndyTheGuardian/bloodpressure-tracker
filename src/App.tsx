@@ -69,6 +69,63 @@ function App() {
     });
   };
 
+  const averages = (() => {
+    if (filteredReadings.length === 0) {
+      return { systolic: 0, diastolic: 0, pulse: 0 };
+    }
+
+    const sum = filteredReadings.reduce(
+      (acc, r) => {
+        acc.systolic += r.systolic;
+        acc.diastolic += r.diastolic;
+        acc.pulse += r.pulse;
+        return acc;
+      },
+      { systolic: 0, diastolic: 0, pulse: 0 },
+    );
+
+    const count = filteredReadings.length;
+
+    return {
+      systolic: Math.round(sum.systolic / count),
+      diastolic: Math.round(sum.diastolic / count),
+      pulse: Math.round(sum.pulse / count),
+    };
+  })();
+
+  const trendData = (() => {
+    if (filteredReadings.length < 2) return { trend: "stable", diff: 0 };
+
+    const sorted = [...filteredReadings].sort(
+      (a, b) =>
+        new Date(a.recorded_at || "").getTime() -
+        new Date(b.recorded_at || "").getTime(),
+    );
+
+    const mid = Math.floor(sorted.length / 2);
+
+    const firstHalf = sorted.slice(0, mid);
+    const secondHalf = sorted.slice(mid);
+
+    const avg = (arr: typeof sorted) =>
+      arr.reduce((sum, r) => sum + (r.systolic + r.diastolic) / 2, 0) /
+      arr.length;
+
+    const firstAvg = avg(firstHalf);
+    const secondAvg = avg(secondHalf);
+
+    const diff = secondAvg - firstAvg;
+
+    let trend: "up" | "down" | "stable" = "stable";
+
+    if (diff > 3) trend = "up";
+    else if (diff < -3) trend = "down";
+
+    return { trend, diff };
+  })();
+
+  const { trend, diff } = trendData;
+
   useEffect(() => {
     localStorage.setItem("readings", JSON.stringify(readings));
   }, [readings]);
@@ -81,56 +138,133 @@ function App() {
     return "normal";
   }
 
+  const colCrs = "red-700";
+  const colHi2 = "red-500";
+  const colHi1 = "orange-400";
+  const colEle = "yellow-300";
+  const colNrm = "green-500";
+
   function getBPStyle(level: string) {
     switch (level) {
       case "crisis":
-        return "bg-red-700 border-red-800 text-gray-50 font-bold";
+        return `bg-${colCrs} border-red-800 text-gray-50 font-bold`;
       case "high2":
-        return "bg-red-500 border-red-600 text-gray-50";
+        return `bg-${colHi2} border-red-600 text-gray-50`;
       case "high1":
-        return "bg-orange-400 border-orange-500";
+        return `bg-${colHi1} border-orange-500 text-gray-950`;
       case "elevated":
-        return "bg-yellow-300 border-yellow-400";
+        return `bg-${colEle} border-yellow-400 text-gray-950`;
       default:
-        return "bg-green-500 border-green-600";
+        return `bg-${colNrm} border-green-600 text-gray-950`;
     }
   }
 
+  function getBPTextStyle(level: string) {
+    switch (level) {
+      case "crisis":
+        return `text-${colCrs}`;
+      case "high2":
+        return `text-${colHi2}`;
+      case "high1":
+        return `text-${colHi1}`;
+      case "elevated":
+        return `text-${colEle}`;
+      default:
+        return `text-${colNrm}`;
+    }
+  }
+
+  const avgLevel = getBPLevel(averages.systolic, averages.diastolic);
+  const avgStyle = getBPTextStyle(avgLevel);
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md my-4 max-w-4xl">
+      <div className="max-w-6xl bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md my-4">
         <h1 className="text-2xl font-bold mb-4 text-center dark:text-gray-100">
           Blood Pressure Tracker
         </h1>
 
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
-            className="h-10 w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Systolic"
             value={form.systolic}
             onChange={(e) => setForm({ ...form, systolic: e.target.value })}
           />
           <input
-            className="h-10 w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Diastolic"
             value={form.diastolic}
             onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
           />
           <input
-            className="h-10 w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Pulse"
             value={form.pulse}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
           />
-
           <button
-            className="h-10 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
+            className="flex-1 h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
             disabled={!form.systolic || !form.diastolic || !form.pulse}
           >
             Add
           </button>
         </form>
 
+        <div className="max-w-4xl bg-gray-50 dark:bg-gray-800 p-4 rounded shadow my-4">
+          <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
+            Average (Selected Range: {filteredReadings.length} readings)
+          </h2>
+          {filteredReadings.length === 0 ? (
+            <p className="text-gray-500">No data</p>
+          ) : (
+            <div className="flex justify-around text-center">
+              <div>
+                <p className="text-sm text-gray-500">Systolic</p>
+                <div className={`text-xl font-bold rounded ${avgStyle}`}>
+                  <p className="text-xl font-bold">{averages.systolic}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Diastolic</p>
+                <div className={`text-xl font-bold rounded ${avgStyle}`}>
+                  <p className="text-xl font-bold">{averages.diastolic}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Pulse</p>
+                <div>
+                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                    {averages.pulse}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Trend</p>
+                <div className="flex">
+                  {trend == "up" && (
+                    <p className={`text-xl text-${colHi2} font-bold flex-1`}>
+                      ↑ Increasing
+                    </p>
+                  )}
+                  {trend == "down" && (
+                    <p className={`text-xl text-${colNrm} font-bold flex-1`}>
+                      ↓ Improving
+                    </p>
+                  )}
+                  {trend == "stable" && (
+                    <p className="text-xl text-gray-900 dark:text-gray-100 font-bold flex">
+                      → Stable
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
+                    {diff.toFixed(1)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="max-w-4xl bg-gray-50 dark:bg-gray-800 p-4 rounded shadow my-4">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Trend
@@ -144,13 +278,13 @@ function App() {
 
         <div className="flex gap-2">
           <input
-            className="h-10 w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
           <input
-            className="h-10 w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
