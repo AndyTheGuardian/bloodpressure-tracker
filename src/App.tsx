@@ -178,33 +178,33 @@ function App() {
   const avgStyle = getBPTextStyle(avgLevel);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
-      <div className="max-w-6xl bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md my-4">
+    <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
+      <div className="w-screen max-w-4xl bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md my-4">
         <h1 className="text-2xl font-bold mb-4 text-center dark:text-gray-100">
           Blood Pressure Tracker
         </h1>
 
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
-            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="flex-auto w-20 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Systolic"
             value={form.systolic}
             onChange={(e) => setForm({ ...form, systolic: e.target.value })}
           />
           <input
-            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="flex-auto w-20  h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Diastolic"
             value={form.diastolic}
             onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
           />
           <input
-            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="flex-auto w-20 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Pulse"
             value={form.pulse}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
           />
           <button
-            className="flex-1 h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
+            className="flex-auto w-20 h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
             disabled={!form.systolic || !form.diastolic || !form.pulse}
           >
             Add
