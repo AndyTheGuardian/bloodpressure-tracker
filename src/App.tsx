@@ -216,7 +216,6 @@ function App() {
         <h1 className="text-2xl font-bold mb-4 text-center dark:text-gray-100">
           Blood Pressure Tracker
         </h1>
-
         <form
           onSubmit={handleSubmit}
           className="flex flex-col sm:flex-row gap-2"
@@ -342,7 +341,6 @@ function App() {
         <h2 className="text-md font-semibold mt-4 mb-2 dark:text-gray-50 dark:text-opacity-60">
           Filter
         </h2>
-
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
@@ -361,34 +359,38 @@ function App() {
         <h2 className="text-md font-semibold mt-4 dark:text-gray-50 dark:text-opacity-60">
           Readings
         </h2>
-        <ul className="mt-2 space-y-2">
-          {reversedReadings.map((r) => {
-            const level = getBPLevel(r.systolic, r.diastolic);
-            const style = getBPStyle(level);
+        {filteredReadings.length === 0 ? (
+          <p className="text-gray-500 mt-2">No data</p>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {reversedReadings.map((r) => {
+              const level = getBPLevel(r.systolic, r.diastolic);
+              const style = getBPStyle(level);
 
-            return (
-              <li
-                key={r.id}
-                className={`flex p-2 border-2 rounded shadow-sm ${style}`}
-              >
-                <div className="flex flex-grow flex-col sm:flex-row ">
-                  <span className="text-left">
-                    {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
-                  </span>
-                  <span className="flex-1 sm:text-right">
-                    {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
-                  </span>
-                </div>
-                <button
-                  className="-m-2 ml-3 px-2 bg-red-500 bg-opacity-10 hover:bg-opacity-100"
-                  onClick={() => deleteReading(r.id)}
+              return (
+                <li
+                  key={r.id}
+                  className={`flex p-2 border-2 rounded shadow-sm ${style}`}
                 >
-                  ❌
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                  <div className="flex flex-grow flex-col sm:flex-row ">
+                    <span className="text-left">
+                      {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
+                    </span>
+                    <span className="flex-1 sm:text-right">
+                      {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
+                    </span>
+                  </div>
+                  <button
+                    className="-m-2 ml-3 px-2 bg-red-500 bg-opacity-10 hover:bg-opacity-100"
+                    onClick={() => deleteReading(r.id)}
+                  >
+                    ❌
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );
