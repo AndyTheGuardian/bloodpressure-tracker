@@ -213,27 +213,30 @@ function App() {
           Blood Pressure Tracker
         </h1>
 
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col sm:flex-row gap-2"
+        >
           <input
-            className="flex-auto w-20 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Systolic"
             value={form.systolic}
             onChange={(e) => setForm({ ...form, systolic: e.target.value })}
           />
           <input
-            className="flex-auto w-20  h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Diastolic"
             value={form.diastolic}
             onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
           />
           <input
-            className="flex-auto w-20 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
             placeholder="Pulse"
             value={form.pulse}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
           />
           <button
-            className="flex-auto w-20 h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
+            className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
             disabled={!form.systolic || !form.diastolic || !form.pulse}
           >
             Add
@@ -247,7 +250,7 @@ function App() {
           {filteredReadings.length === 0 ? (
             <p className="text-gray-500">No data</p>
           ) : (
-            <div className="flex justify-around text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
               <div>
                 <p className="text-sm text-gray-500">Systolic</p>
                 <div className={avgTextStyle[avgLevel]}>
@@ -325,7 +328,7 @@ function App() {
             </div>
           )}
         </div>
-        <div className="max-w-4xl bg-gray-50 dark:bg-gray-800 p-4 rounded shadow my-4">
+        <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 p-4 rounded shadow my-4">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Trend
           </h2>
@@ -336,7 +339,7 @@ function App() {
           Filter
         </h2>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
             type="date"
@@ -362,12 +365,12 @@ function App() {
             return (
               <li
                 key={r.id}
-                className={`flex min-w-max p-2 border-2 rounded shadow-sm ${style}`}
+                className={`flex flex-col sm:flex-row p-2 border-2 rounded shadow-sm ${style}`}
               >
-                <span className="flex-1 text-left">
+                <span className="text-left">
                   {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
                 </span>
-                <span className="flex-1 text-right">
+                <span className="flex-1 sm:text-right">
                   {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
                 </span>
               </li>
