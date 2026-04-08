@@ -200,9 +200,10 @@ function App() {
   };
 
   const trendTextStyle = {
-    up: "text-xl text-red-700 font-bold flex-1",
-    down: "text-xl text-green-500 font-bold flex-1",
-    stable: "text-xl text-gray-900 dark:text-gray-100 font-bold flex",
+    up: "text-xl text-red-700 font-bold flex justify-center",
+    down: "text-xl text-green-500 font-bold flex justify-center",
+    stable:
+      "text-xl text-gray-900 dark:text-gray-100 font-bold flex justify-center",
   };
 
   return (
@@ -269,15 +270,24 @@ function App() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Trend</p>
-                <div className="flex">
+                <div className="flex place-content-center">
                   {trend === "up" && (
-                    <p className={trendTextStyle.up}>↑ Increasing</p>
+                    <div className={trendTextStyle.up}>
+                      <p>↑</p>
+                      <p className="hidden md:block"> Increasing</p>
+                    </div>
                   )}
                   {trend == "down" && (
-                    <p className={trendTextStyle.down}>↓ Improving</p>
+                    <div className={trendTextStyle.down}>
+                      <p>↓</p>
+                      <p className="hidden md:block"> Improving</p>
+                    </div>
                   )}
                   {trend == "stable" && (
-                    <p className={trendTextStyle.stable}>→ Stable</p>
+                    <div className={trendTextStyle.stable}>
+                      <p>→</p>
+                      <p className="hidden md:block"> Stable</p>
+                    </div>
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
                     {diff.toFixed(1)}
@@ -285,18 +295,29 @@ function App() {
                 </div>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Trend (Regression)</p>
-                <div className="flex">
+                <p className="text-sm text-gray-500 text-wrap">
+                  Trend (Regression)
+                </p>
+                <div className="flex place-content-center">
                   {trendDataReg.trend === "up" && (
-                    <p className={trendTextStyle.up}>↑ Increasing</p>
+                    <div className={trendTextStyle.up}>
+                      <p>↑</p>
+                      <p className="hidden md:block"> Increasing</p>
+                    </div>
                   )}
                   {trendDataReg.trend == "down" && (
-                    <p className={trendTextStyle.down}>↓ Improving</p>
+                    <div className={trendTextStyle.down}>
+                      <p>↓</p>
+                      <p className="hidden sm:block"> Improving</p>
+                    </div>
                   )}
                   {trendDataReg.trend == "stable" && (
-                    <p className={trendTextStyle.stable}>→ Stable</p>
+                    <div className={trendTextStyle.stable}>
+                      <p>→</p>
+                      <p className="hidden md:block"> Stable</p>
+                    </div>
                   )}
-                  <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
+                  <p className="text-sm text-gray-500 mt-[6px] ml-2">
                     {trendDataReg.slope.toFixed(2)}
                   </p>
                 </div>
