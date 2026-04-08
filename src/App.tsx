@@ -69,6 +69,10 @@ function App() {
     });
   };
 
+  const deleteReading = (id: number) => {
+    setReadings(readings.filter((r) => id != r.id));
+  };
+
   const averages = (() => {
     if (filteredReadings.length === 0) {
       return { systolic: 0, diastolic: 0, pulse: 0 };
@@ -243,7 +247,7 @@ function App() {
           </button>
         </form>
 
-        <div className="max-w-4xl bg-gray-50 dark:bg-gray-800 p-4 rounded shadow my-4">
+        <div className="max-w-4xl bg-gray-50 dark:bg-gray-800 p-4 rounded rounded-t-xl shadow my-4">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Average (Selected Range: {filteredReadings.length} readings)
           </h2>
@@ -328,7 +332,7 @@ function App() {
             </div>
           )}
         </div>
-        <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 p-4 rounded shadow my-4">
+        <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow my-4">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Trend
           </h2>
@@ -341,13 +345,13 @@ function App() {
 
         <div className="flex flex-col sm:flex-row gap-2">
           <input
-            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
           <input
-            className="flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
@@ -365,14 +369,22 @@ function App() {
             return (
               <li
                 key={r.id}
-                className={`flex flex-col sm:flex-row p-2 border-2 rounded shadow-sm ${style}`}
+                className={`flex p-2 border-2 rounded shadow-sm ${style}`}
               >
-                <span className="text-left">
-                  {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
-                </span>
-                <span className="flex-1 sm:text-right">
-                  {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
-                </span>
+                <div className="flex flex-grow flex-col sm:flex-row ">
+                  <span className="text-left">
+                    {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
+                  </span>
+                  <span className="flex-1 sm:text-right">
+                    {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
+                  </span>
+                </div>
+                <button
+                  className="-m-2 ml-3 px-2 bg-red-500 bg-opacity-10 hover:bg-opacity-100"
+                  onClick={() => deleteReading(r.id)}
+                >
+                  ❌
+                </button>
               </li>
             );
           })}
