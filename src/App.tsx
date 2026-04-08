@@ -48,7 +48,7 @@ function App() {
     return true;
   });
 
-  const reversedReadings = filteredReadings.reverse();
+  const reversedReadings = [...filteredReadings].reverse();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,44 +174,36 @@ function App() {
     return "normal";
   }
 
-  const colCrs = "red-700";
-  const colHi2 = "red-500";
-  const colHi1 = "orange-400";
-  const colEle = "yellow-300";
-  const colNrm = "green-500";
-
   function getBPStyle(level: string) {
     switch (level) {
       case "crisis":
-        return `bg-${colCrs} border-red-800 text-gray-50 font-bold`;
+        return `bg-red-700 border-red-800 text-gray-50 font-bold`;
       case "high2":
-        return `bg-${colHi2} border-red-600 text-gray-50`;
+        return `bg-red-500 border-red-600 text-gray-50`;
       case "high1":
-        return `bg-${colHi1} border-orange-500 text-gray-950`;
+        return `bg-orange-400 border-orange-500 text-gray-950`;
       case "elevated":
-        return `bg-${colEle} border-yellow-400 text-gray-950`;
+        return `bg-yellow-300 border-yellow-400 text-gray-950`;
       default:
-        return `bg-${colNrm} border-green-600 text-gray-950`;
-    }
-  }
-
-  function getBPTextStyle(level: string) {
-    switch (level) {
-      case "crisis":
-        return `text-${colCrs}`;
-      case "high2":
-        return `text-${colHi2}`;
-      case "high1":
-        return `text-${colHi1}`;
-      case "elevated":
-        return `text-${colEle}`;
-      default:
-        return `text-${colNrm}`;
+        return `bg-green-500 border-green-600 text-gray-950`;
     }
   }
 
   const avgLevel = getBPLevel(averages.systolic, averages.diastolic);
-  const avgStyle = getBPTextStyle(avgLevel);
+
+  const avgTextStyle = {
+    crisis: `text-xl font-bold rounded text-red-700`,
+    high2: `text-xl font-bold rounded text-red-500`,
+    high1: `text-xl font-bold rounded text-orange-400`,
+    elevated: `text-xl font-bold rounded text-yellow-300`,
+    normal: `text-xl font-bold rounded text-green-500`,
+  };
+
+  const trendTextStyle = {
+    up: "text-xl text-red-700 font-bold flex-1",
+    down: "text-xl text-green-500 font-bold flex-1",
+    stable: "text-xl text-gray-900 dark:text-gray-100 font-bold flex",
+  };
 
   return (
     <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
@@ -257,13 +249,13 @@ function App() {
             <div className="flex justify-around text-center">
               <div>
                 <p className="text-sm text-gray-500">Systolic</p>
-                <div className={`text-xl font-bold rounded ${avgStyle}`}>
+                <div className={avgTextStyle[avgLevel]}>
                   <p className="text-xl font-bold">{averages.systolic}</p>
                 </div>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Diastolic</p>
-                <div className={`text-xl font-bold rounded ${avgStyle}`}>
+                <div className={avgTextStyle[avgLevel]}>
                   <p className="text-xl font-bold">{averages.diastolic}</p>
                 </div>
               </div>
@@ -279,19 +271,13 @@ function App() {
                 <p className="text-sm text-gray-500">Trend</p>
                 <div className="flex">
                   {trend === "up" && (
-                    <p className={`text-xl text-${colHi2} font-bold flex-1`}>
-                      ↑ Increasing
-                    </p>
+                    <p className={trendTextStyle.up}>↑ Increasing</p>
                   )}
                   {trend == "down" && (
-                    <p className={`text-xl text-${colNrm} font-bold flex-1`}>
-                      ↓ Improving
-                    </p>
+                    <p className={trendTextStyle.down}>↓ Improving</p>
                   )}
                   {trend == "stable" && (
-                    <p className="text-xl text-gray-900 dark:text-gray-100 font-bold flex">
-                      → Stable
-                    </p>
+                    <p className={trendTextStyle.stable}>→ Stable</p>
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
                     {diff.toFixed(1)}
@@ -302,19 +288,13 @@ function App() {
                 <p className="text-sm text-gray-500">Trend (Regression)</p>
                 <div className="flex">
                   {trendDataReg.trend === "up" && (
-                    <p className={`text-xl text-${colHi2} font-bold flex-1`}>
-                      ↑ Increasing
-                    </p>
+                    <p className={trendTextStyle.up}>↑ Increasing</p>
                   )}
                   {trendDataReg.trend == "down" && (
-                    <p className={`text-xl text-${colNrm} font-bold flex-1`}>
-                      ↓ Improving
-                    </p>
+                    <p className={trendTextStyle.down}>↓ Improving</p>
                   )}
                   {trendDataReg.trend == "stable" && (
-                    <p className="text-xl text-gray-900 dark:text-gray-100 font-bold flex">
-                      → Stable
-                    </p>
+                    <p className={trendTextStyle.stable}>→ Stable</p>
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
                     {trendDataReg.slope.toFixed(2)}
