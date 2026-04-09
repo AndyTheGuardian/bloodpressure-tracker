@@ -33,10 +33,10 @@ type Reading = {
 };
 
 export default function BPChart({ readings }: { readings: Reading[] }) {
-  //const sorted = [...readings].reverse(); // oldest -> newest
+  const sorted = [...readings].reverse(); // oldest -> newest
 
-  const x = readings.map((_, i) => i);
-  const y = readings.map((r) => r.systolic);
+  const x = sorted.map((_, i) => i);
+  const y = sorted.map((r) => r.systolic);
 
   const n = x.length;
 
@@ -60,7 +60,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         : "rgba(255, 255, 255,1)";
 
   const data = {
-    labels: readings.map((r) =>
+    labels: sorted.map((r) =>
       r.recorded_at
         ? new Date(r.recorded_at).toLocaleString("DE", {
             day: "2-digit",
@@ -75,7 +75,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
     datasets: [
       {
         label: "Systolic",
-        data: readings.map((r) => r.systolic),
+        data: sorted.map((r) => r.systolic),
         borderColor: "rgb(4,94,249)",
         borderWidth: 2,
         pointRadius: 2,
@@ -84,7 +84,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
       },
       {
         label: "Diastolic",
-        data: readings.map((r) => r.diastolic),
+        data: sorted.map((r) => r.diastolic),
         borderColor: "rgb(180,4,249)",
         borderWidth: 2,
         pointRadius: 2,
@@ -93,7 +93,7 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
       },
       {
         label: "Pulse",
-        data: readings.map((r) => r.pulse),
+        data: sorted.map((r) => r.pulse),
         borderColor: "rgb(160,160,1)",
         borderWidth: 2,
         pointRadius: 2,

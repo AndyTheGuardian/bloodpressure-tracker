@@ -22,7 +22,15 @@ function App() {
     systolic: "",
     diastolic: "",
     pulse: "",
+    datetime: getNow(),
   });
+
+  function getNow() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+    return local.toISOString().slice(0, 16);
+  }
 
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -72,16 +80,23 @@ function App() {
     return true;
   });
 
-  const reversedReadings = [...filteredReadings].reverse();
+  const sortedReadings = [...filteredReadings].sort(
+    (a, b) => b.recorded_at - a.recorded_at,
+  );
+
+  const reversedReadings = [...sortedReadings].reverse();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     const newReading = {
-      id: Date.now(),
+      id: new Date(form.datetime).getTime(),
       systolic: Number(form.systolic),
       diastolic: Number(form.diastolic),
       pulse: Number(form.pulse),
-      recorded_at: Date.now(),
+      recorded_at: form.datetime
+        ? new Date(form.datetime).getTime()
+        : Date.now(),
     };
 
     setReadings([...readings, newReading]);
@@ -90,6 +105,7 @@ function App() {
       systolic: "",
       diastolic: "",
       pulse: "",
+      datetime: getNow(),
     });
   };
 
@@ -188,7 +204,7 @@ function App() {
     return { slope, trend };
   }
 
-  const trendDataReg = calculateTrend(filteredReadings);
+  const trendDataReg = calculateTrend(sortedReadings);
 
   useEffect(() => {
     localStorage.setItem("readings", JSON.stringify(readings));
@@ -237,7 +253,7 @@ function App() {
   function exportToCSV() {
     const headers = ["ID", "Date", "Time", "Systolic", "Diastolic", "Pulse"];
 
-    const rows = filteredReadings.map((r) => [
+    const rows = sortedReadings.map((r) => [
       r.id,
       new Date(r.recorded_at).toLocaleString(),
       r.systolic,
@@ -264,7 +280,7 @@ function App() {
   function exportToPDF() {
     const doc = new jsPDF();
 
-    const tableData = filteredReadings.map((r) => [
+    const tableData = sortedReadings.map((r) => [
       new Date(r.recorded_at).toLocaleString(),
       r.systolic,
       r.diastolic,
@@ -340,6 +356,14 @@ function App() {
             placeholder="Pulse"
             value={form.pulse}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
+          />
+          <input
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
+            //type="datetime-local"
+            type="datetime-local"
+            value={form.datetime}
+            placeholder="Now"
+            onChange={(e) => setForm({ ...form, datetime: e.target.value })}
           />
           <button
             className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
@@ -432,7 +456,7 @@ function App() {
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Trend
           </h2>
-          <BPChart readings={filteredReadings} />
+          <BPChart readings={sortedReadings} />
         </div>
 
         {/* <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow"> */}
@@ -481,7 +505,7 @@ function App() {
             <p className="text-gray-500 mt-2">No data</p>
           ) : (
             <ul className="mt-2 space-y-2">
-              {reversedReadings.map((r) => {
+              {sortedReadings.map((r) => {
                 const level = getBPLevel(r.systolic, r.diastolic);
                 const style = getBPStyle(level);
 
