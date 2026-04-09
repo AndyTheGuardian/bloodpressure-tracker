@@ -120,38 +120,38 @@ function App() {
     };
   })();
 
-  const trendData = (() => {
-    if (filteredReadings.length < 2) return { trend: "stable", diff: 0 };
+  // const trendData = (() => {
+  //   if (filteredReadings.length < 2) return { trend: "stable", diff: 0 };
 
-    const sorted = [...filteredReadings].sort(
-      (a, b) =>
-        new Date(a.recorded_at || "").getTime() -
-        new Date(b.recorded_at || "").getTime(),
-    );
+  //   const sorted = [...filteredReadings].sort(
+  //     (a, b) =>
+  //       new Date(a.recorded_at || "").getTime() -
+  //       new Date(b.recorded_at || "").getTime(),
+  //   );
 
-    const mid = Math.floor(sorted.length / 2);
+  //   const mid = Math.floor(sorted.length / 2);
 
-    const firstHalf = sorted.slice(0, mid);
-    const secondHalf = sorted.slice(mid);
+  //   const firstHalf = sorted.slice(0, mid);
+  //   const secondHalf = sorted.slice(mid);
 
-    const avg = (arr: typeof sorted) =>
-      arr.reduce((sum, r) => sum + (r.systolic + r.diastolic) / 2, 0) /
-      arr.length;
+  //   const avg = (arr: typeof sorted) =>
+  //     arr.reduce((sum, r) => sum + (r.systolic + r.diastolic) / 2, 0) /
+  //     arr.length;
 
-    const firstAvg = avg(firstHalf);
-    const secondAvg = avg(secondHalf);
+  //   const firstAvg = avg(firstHalf);
+  //   const secondAvg = avg(secondHalf);
 
-    const diff = secondAvg - firstAvg;
+  //   const diff = secondAvg - firstAvg;
 
-    let trend: "up" | "down" | "stable" = "stable";
+  //   let trend: "up" | "down" | "stable" = "stable";
 
-    if (diff > 3) trend = "up";
-    else if (diff < -3) trend = "down";
+  //   if (diff > 3) trend = "up";
+  //   else if (diff < -3) trend = "down";
 
-    return { trend, diff };
-  })();
+  //   return { trend, diff };
+  // })();
 
-  const { trend, diff } = trendData;
+  // const { trend, diff } = trendData;
 
   function calculateTrend(readings: typeof filteredReadings) {
     if (readings.length < 2) {
