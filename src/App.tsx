@@ -135,7 +135,7 @@ function App() {
     };
   })();
 
-  function calculateTrend(readings: typeof filteredReadings) {
+  function calculateTrend(readings: typeof sortedReadings) {
     if (readings.length < 2) {
       return { slope: 0, trend: "stable" as const };
     }
@@ -169,7 +169,7 @@ function App() {
     return { slope, trend };
   }
 
-  const trendDataReg = calculateTrend(sortedReadings);
+  const { slope, trend } = calculateTrend(sortedReadings);
 
   useEffect(() => {
     localStorage.setItem("readings", JSON.stringify(readings));
@@ -315,10 +315,8 @@ function App() {
           />
           <input
             className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
-            //type="datetime-local"
             type="datetime-local"
             value={form.datetime}
-            placeholder="Now"
             onChange={(e) => setForm({ ...form, datetime: e.target.value })}
           />
           <button
@@ -356,26 +354,26 @@ function App() {
                   Trend (Regression)
                 </p>
                 <div className="flex place-content-center">
-                  {trendDataReg.trend === "up" && (
+                  {trend === "up" && (
                     <div className={trendTextStyle.up}>
                       <p>↑</p>
                       <p className="hidden md:block">&nbsp;Increasing</p>
                     </div>
                   )}
-                  {trendDataReg.trend == "down" && (
+                  {trend == "down" && (
                     <div className={trendTextStyle.down}>
                       <p>↓</p>
                       <p className="hidden sm:block">&nbsp;Improving</p>
                     </div>
                   )}
-                  {trendDataReg.trend == "stable" && (
+                  {trend == "stable" && (
                     <div className={trendTextStyle.stable}>
                       <p>→</p>
                       <p className="hidden md:block"> Stable</p>
                     </div>
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2">
-                    {trendDataReg.slope.toFixed(2)}
+                    {slope.toFixed(2)}
                   </p>
                 </div>
               </div>
