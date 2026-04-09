@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import BPChart from "./Chart";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Reading = {
   id: number;
@@ -263,17 +264,45 @@ function App() {
   function exportToPDF() {
     const doc = new jsPDF();
 
+    const tableData = filteredReadings.map((r) => [
+      new Date(r.recorded_at).toLocaleString(),
+      r.systolic,
+      r.diastolic,
+      r.pulse,
+    ]);
+
     doc.setFontSize(16);
-    doc.text("Blood Pressure Report", 10, 10);
+    doc.text("Blood Pressure Report", 14, 15);
 
-    let y = 20;
+    doc.setFontSize(12);
+    doc.text(
+      `Average: ${averages.systolic}/${averages.diastolic} (Pulse: ${averages.pulse})   Trend: ${trendDataReg.trend === "up" ? "rising" : trendDataReg.trend === "down" ? "falling" : "stable"}`,
+      14,
+      25,
+    );
 
-    filteredReadings.forEach((r) => {
-      const line = `${new Date(r.recorded_at).toLocaleString()} | ${r.systolic}/${r.diastolic} | Pulse: ${r.pulse}`;
+    autoTable(doc, {
+      startY: 30,
+      head: [["Date", "Systolic", "Diastolic", "Pulse"]],
+      body: tableData,
 
-      doc.text(line, 10, y);
-      y += 10;
+      styles: {
+        fontSize: 10,
+      },
+
+      headStyles: {
+        fillColor: [59, 130, 246], // blue
+      },
     });
+
+    // let y = 20;
+
+    // filteredReadings.forEach((r) => {
+    //   const line = `${new Date(r.recorded_at).toLocaleString()} | ${r.systolic}/${r.diastolic} | Pulse: ${r.pulse}`;
+
+    //   doc.text(line, 10, y);
+    //   y += 10;
+    // });
 
     doc.save("blood-pressure.pdf");
   }
@@ -375,19 +404,19 @@ function App() {
                 <div className="flex place-content-center">
                   {trendDataReg.trend === "up" && (
                     <div className={trendTextStyle.up}>
-                      <p> 🡭</p>
+                      <p>↑</p>
                       <p className="hidden md:block">&nbsp;Increasing</p>
                     </div>
                   )}
                   {trendDataReg.trend == "down" && (
                     <div className={trendTextStyle.down}>
-                      <p>🡮</p>
+                      <p>↓</p>
                       <p className="hidden sm:block">&nbsp;Improving</p>
                     </div>
                   )}
                   {trendDataReg.trend == "stable" && (
                     <div className={trendTextStyle.stable}>
-                      <p>🡪</p>
+                      <p>→</p>
                       <p className="hidden md:block"> Stable</p>
                     </div>
                   )}
@@ -438,13 +467,13 @@ function App() {
                 onClick={exportToCSV}
                 className="bg-gray-500 text-white text-xs mx-1 px-3 py-1 rounded hover:bg-gray-600"
               >
-                🡪 CSV
+                → CSV
               </button>
               <button
                 onClick={exportToPDF}
                 className="bg-gray-500 text-white text-xs px-3 py-1 rounded hover:bg-gray-600"
               >
-                🡪 PDF
+                → PDF
               </button>
             </div>
           </div>
