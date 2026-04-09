@@ -54,10 +54,10 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
 
   const trendColor =
     slope > 0.5
-      ? "rgba(185, 28, 28,0.5)" // red
+      ? "rgba(185, 28, 28,1)" // red
       : slope < -0.5
-        ? "rgba(34, 197, 94,0.5)" // green
-        : "rgba(255, 255, 255,0.5)";
+        ? "rgba(34, 197, 94,1)" // green
+        : "rgba(255, 255, 255,1)";
 
   const data = {
     labels: readings.map((r) =>

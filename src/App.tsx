@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import BPChart from "./Chart";
+import jsPDF from "jspdf";
 
 type Reading = {
   id: number;
@@ -21,6 +22,28 @@ function App() {
     diastolic: "",
     pulse: "",
   });
+
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+
+    if (saved) return saved;
+
+    return window.matchMedia("(prefers-color-scheme: dark").matches
+      ? "dark"
+      : "light";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -196,44 +219,95 @@ function App() {
   const avgLevel = getBPLevel(averages.systolic, averages.diastolic);
 
   const avgTextStyle = {
-    crisis: `text-xl font-bold rounded text-red-700`,
-    high2: `text-xl font-bold rounded text-red-500`,
-    high1: `text-xl font-bold rounded text-orange-400`,
-    elevated: `text-xl font-bold rounded text-yellow-300`,
-    normal: `text-xl font-bold rounded text-green-500`,
+    crisis: `text-xl font-bold underline underline-offset-2 decoration-red-700`,
+    high2: `text-xl font-bold underline underline-offset-2 decoration-red-300 dark:decoration-red-500`,
+    high1: `text-xl font-bold underline underline-offset-2 decoration-orange-400`,
+    elevated: `text-xl font-bold underline underline-offset-2 decoration-yellow-500 dark:decoration-yellow-300`,
+    normal: `text-xl font-bold underline underline-offset-2 decoration-green-500`,
   };
 
   const trendTextStyle = {
-    up: "text-xl text-red-700 font-bold flex justify-center",
-    down: "text-xl text-green-500 font-bold flex justify-center",
+    up: "text-xl underline underline-offset-2 decoration-red-400 dark:decoration-red-700 font-bold flex justify-center",
+    down: "text-xl underline underline-offset-2 decoration-green-500 font-bold flex justify-center",
     stable:
       "text-xl text-gray-900 dark:text-gray-100 font-bold flex justify-center",
   };
 
+  function exportToCSV() {
+    const headers = ["ID", "Date", "Time", "Systolic", "Diastolic", "Pulse"];
+
+    const rows = filteredReadings.map((r) => [
+      r.id,
+      new Date(r.recorded_at).toLocaleString(),
+      r.systolic,
+      r.diastolic,
+      r.pulse,
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "blood-pressure.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  function exportToPDF() {
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Blood Pressure Report", 10, 10);
+
+    let y = 20;
+
+    filteredReadings.forEach((r) => {
+      const line = `${new Date(r.recorded_at).toLocaleString()} | ${r.systolic}/${r.diastolic} | Pulse: ${r.pulse}`;
+
+      doc.text(line, 10, y);
+      y += 10;
+    });
+
+    doc.save("blood-pressure.pdf");
+  }
+
   return (
-    <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
-      <div className="w-screen max-w-4xl bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md my-4">
+    <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center transition-colors duration-300">
+      <div className="w-screen max-w-4xl bg-gray-200 dark:bg-gray-900 p-6 rounded-xl shadow-md my-4 transition-colors duration-300">
         <h1 className="text-2xl font-bold mb-4 text-center dark:text-gray-100">
           Blood Pressure Tracker
         </h1>
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="absolute top-4 right-4 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700"
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
         <form
           onSubmit={handleSubmit}
           className="flex flex-col sm:flex-row gap-2"
         >
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
             placeholder="Systolic"
             value={form.systolic}
             onChange={(e) => setForm({ ...form, systolic: e.target.value })}
           />
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
             placeholder="Diastolic"
             value={form.diastolic}
             onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
           />
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50"
+            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
             placeholder="Pulse"
             value={form.pulse}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
@@ -246,60 +320,54 @@ function App() {
           </button>
         </form>
 
-        <div className="max-w-4xl bg-gray-50 dark:bg-gray-800 p-4 rounded rounded-t-xl shadow my-4">
+        <div className="max-w-4xl bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-t-xl shadow mt-4 mb-2 transition-colors duration-300">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Average (Selected Range: {filteredReadings.length} readings)
           </h2>
           {filteredReadings.length === 0 ? (
             <p className="text-gray-500">No data</p>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 sm:place-content-evenly gap-4 text-center">
               <div>
                 <p className="text-sm text-gray-500">Systolic</p>
-                <div className={avgTextStyle[avgLevel]}>
-                  <p className="text-xl font-bold">{averages.systolic}</p>
-                </div>
+                <p className={avgTextStyle[avgLevel]}>{averages.systolic}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Diastolic</p>
-                <div className={avgTextStyle[avgLevel]}>
-                  <p className="text-xl font-bold">{averages.diastolic}</p>
-                </div>
+                <p className={avgTextStyle[avgLevel]}>{averages.diastolic}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Pulse</p>
-                <div>
-                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    {averages.pulse}
-                  </p>
-                </div>
+                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {averages.pulse}
+                </p>
               </div>
-              <div>
+              {/* <div>
                 <p className="text-sm text-gray-500">Trend</p>
                 <div className="flex place-content-center">
                   {trend === "up" && (
                     <div className={trendTextStyle.up}>
                       <p>↑</p>
-                      <p className="hidden md:block"> Increasing</p>
+                      <p className="hidden md:block">&nbsp;Increasing</p>
                     </div>
                   )}
                   {trend == "down" && (
                     <div className={trendTextStyle.down}>
                       <p>↓</p>
-                      <p className="hidden md:block"> Improving</p>
+                      <p className="hidden md:block ml-4">&nbsp;Improving</p>
                     </div>
                   )}
                   {trend == "stable" && (
                     <div className={trendTextStyle.stable}>
                       <p>→</p>
-                      <p className="hidden md:block"> Stable</p>
+                      <p className="hidden md:block ml-4">Stable</p>
                     </div>
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
                     {diff.toFixed(1)}
                   </p>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <p className="text-sm text-gray-500 text-wrap">
                   Trend (Regression)
@@ -307,19 +375,19 @@ function App() {
                 <div className="flex place-content-center">
                   {trendDataReg.trend === "up" && (
                     <div className={trendTextStyle.up}>
-                      <p>↑</p>
-                      <p className="hidden md:block"> Increasing</p>
+                      <p> 🡭</p>
+                      <p className="hidden md:block">&nbsp;Increasing</p>
                     </div>
                   )}
                   {trendDataReg.trend == "down" && (
                     <div className={trendTextStyle.down}>
-                      <p>↓</p>
-                      <p className="hidden sm:block"> Improving</p>
+                      <p>🡮</p>
+                      <p className="hidden sm:block">&nbsp;Improving</p>
                     </div>
                   )}
                   {trendDataReg.trend == "stable" && (
                     <div className={trendTextStyle.stable}>
-                      <p>→</p>
+                      <p>🡪</p>
                       <p className="hidden md:block"> Stable</p>
                     </div>
                   )}
@@ -331,66 +399,88 @@ function App() {
             </div>
           )}
         </div>
-        <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow my-4">
+        <div className="w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow mb-4 transition-colors duration-300">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Trend
           </h2>
           <BPChart readings={filteredReadings} />
         </div>
 
-        <h2 className="text-md font-semibold mt-4 mb-2 dark:text-gray-50 dark:text-opacity-60">
+        {/* <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow"> */}
+        <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
           Filter
         </h2>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
-            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
+            //type="datetime-local"
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
           <input
-            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
+            //type="datetime-local"
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
           />
         </div>
+        {/*</div>*/}
 
-        <h2 className="text-md font-semibold mt-4 dark:text-gray-50 dark:text-opacity-60">
-          Readings
-        </h2>
-        {filteredReadings.length === 0 ? (
-          <p className="text-gray-500 mt-2">No data</p>
-        ) : (
-          <ul className="mt-2 space-y-2">
-            {reversedReadings.map((r) => {
-              const level = getBPLevel(r.systolic, r.diastolic);
-              const style = getBPStyle(level);
+        <div className="mt-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
+          <div className="flex place-content-between">
+            <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
+              Readings
+            </h2>
+            <div className="flex">
+              <button
+                onClick={exportToCSV}
+                className="bg-gray-500 text-white text-xs mx-1 px-3 py-1 rounded hover:bg-gray-600"
+              >
+                🡪 CSV
+              </button>
+              <button
+                onClick={exportToPDF}
+                className="bg-gray-500 text-white text-xs px-3 py-1 rounded hover:bg-gray-600"
+              >
+                🡪 PDF
+              </button>
+            </div>
+          </div>
+          {filteredReadings.length === 0 ? (
+            <p className="text-gray-500 mt-2">No data</p>
+          ) : (
+            <ul className="mt-2 space-y-2">
+              {reversedReadings.map((r) => {
+                const level = getBPLevel(r.systolic, r.diastolic);
+                const style = getBPStyle(level);
 
-              return (
-                <li
-                  key={r.id}
-                  className={`flex p-2 border-2 rounded shadow-sm ${style}`}
-                >
-                  <div className="flex flex-grow flex-col sm:flex-row ">
-                    <span className="text-left">
-                      {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
-                    </span>
-                    <span className="flex-1 sm:text-right">
-                      {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
-                    </span>
-                  </div>
-                  <button
-                    className="-m-2 ml-3 px-2 bg-red-500 bg-opacity-10 hover:bg-opacity-100"
-                    onClick={() => deleteReading(r.id)}
+                return (
+                  <li
+                    key={r.id}
+                    className={`flex p-2 border-2 rounded shadow-sm ${style}`}
                   >
-                    ❌
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+                    <div className="flex flex-grow flex-col sm:flex-row ">
+                      <span className="text-left">
+                        {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
+                      </span>
+                      <span className="flex-1 sm:text-right">
+                        {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
+                      </span>
+                    </div>
+                    <button
+                      className="-m-2 ml-3 px-2 text-gray-950 bg-red-500 bg-opacity-10 hover:bg-opacity-100"
+                      onClick={() => deleteReading(r.id)}
+                    >
+                      ❌
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
