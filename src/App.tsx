@@ -84,8 +84,6 @@ function App() {
     (a, b) => b.recorded_at - a.recorded_at,
   );
 
-  const reversedReadings = [...sortedReadings].reverse();
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -128,7 +126,7 @@ function App() {
       { systolic: 0, diastolic: 0, pulse: 0 },
     );
 
-    const count = filteredReadings.length;
+    const count = sortedReadings.length;
 
     return {
       systolic: Math.round(sum.systolic / count),
@@ -136,39 +134,6 @@ function App() {
       pulse: Math.round(sum.pulse / count),
     };
   })();
-
-  // const trendData = (() => {
-  //   if (filteredReadings.length < 2) return { trend: "stable", diff: 0 };
-
-  //   const sorted = [...filteredReadings].sort(
-  //     (a, b) =>
-  //       new Date(a.recorded_at || "").getTime() -
-  //       new Date(b.recorded_at || "").getTime(),
-  //   );
-
-  //   const mid = Math.floor(sorted.length / 2);
-
-  //   const firstHalf = sorted.slice(0, mid);
-  //   const secondHalf = sorted.slice(mid);
-
-  //   const avg = (arr: typeof sorted) =>
-  //     arr.reduce((sum, r) => sum + (r.systolic + r.diastolic) / 2, 0) /
-  //     arr.length;
-
-  //   const firstAvg = avg(firstHalf);
-  //   const secondAvg = avg(secondHalf);
-
-  //   const diff = secondAvg - firstAvg;
-
-  //   let trend: "up" | "down" | "stable" = "stable";
-
-  //   if (diff > 3) trend = "up";
-  //   else if (diff < -3) trend = "down";
-
-  //   return { trend, diff };
-  // })();
-
-  // const { trend, diff } = trendData;
 
   function calculateTrend(readings: typeof filteredReadings) {
     if (readings.length < 2) {
@@ -311,15 +276,6 @@ function App() {
       },
     });
 
-    // let y = 20;
-
-    // filteredReadings.forEach((r) => {
-    //   const line = `${new Date(r.recorded_at).toLocaleString()} | ${r.systolic}/${r.diastolic} | Pulse: ${r.pulse}`;
-
-    //   doc.text(line, 10, y);
-    //   y += 10;
-    // });
-
     doc.save("blood-pressure.pdf");
   }
 
@@ -395,32 +351,6 @@ function App() {
                   {averages.pulse}
                 </p>
               </div>
-              {/* <div>
-                <p className="text-sm text-gray-500">Trend</p>
-                <div className="flex place-content-center">
-                  {trend === "up" && (
-                    <div className={trendTextStyle.up}>
-                      <p>↑</p>
-                      <p className="hidden md:block">&nbsp;Increasing</p>
-                    </div>
-                  )}
-                  {trend == "down" && (
-                    <div className={trendTextStyle.down}>
-                      <p>↓</p>
-                      <p className="hidden md:block ml-4">&nbsp;Improving</p>
-                    </div>
-                  )}
-                  {trend == "stable" && (
-                    <div className={trendTextStyle.stable}>
-                      <p>→</p>
-                      <p className="hidden md:block ml-4">Stable</p>
-                    </div>
-                  )}
-                  <p className="text-sm text-gray-500 mt-[6px] ml-2 flex-nowrap">
-                    {diff.toFixed(1)}
-                  </p>
-                </div>
-              </div> */}
               <div>
                 <p className="text-sm text-gray-500 text-wrap">
                   Trend (Regression)
