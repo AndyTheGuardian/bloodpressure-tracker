@@ -257,7 +257,9 @@ function App() {
 
     doc.setFontSize(12);
     doc.text(
-      `Average: ${averages.systolic}/${averages.diastolic} (Pulse: ${averages.pulse})   Trend: ${trendDataReg.trend === "up" ? "rising" : trendDataReg.trend === "down" ? "falling" : "stable"}`,
+      `Average: ${averages.systolic}/${averages.diastolic} (Pulse: ${averages.pulse})   Trend: ${
+        trend === "up" ? "rising" : trend === "down" ? "falling" : "stable"
+      }`,
       14,
       25,
     );
