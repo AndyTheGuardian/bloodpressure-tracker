@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import BPChart from "./Chart";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useRef } from "react";
 
 type Reading = {
   id: number;
@@ -52,6 +53,7 @@ function App() {
     }
 
     localStorage.setItem("theme", theme);
+    refSys.current?.focus();
   }, [theme]);
 
   const [fromDate, setFromDate] = useState("");
@@ -84,6 +86,21 @@ function App() {
     (a, b) => b.recorded_at - a.recorded_at,
   );
 
+  const refSys = useRef<HTMLInputElement>(null);
+  const refDia = useRef<HTMLInputElement>(null);
+  const refPls = useRef<HTMLInputElement>(null);
+  const refDat = useRef<HTMLInputElement>(null);
+
+  function handleEnter(
+    e: React.KeyboardEvent,
+    nextRef: React.RefObject<HTMLInputElement | null>,
+  ) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      nextRef.current?.focus();
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -105,6 +122,8 @@ function App() {
       pulse: "",
       datetime: getNow(),
     });
+
+    refSys.current?.focus();
   };
 
   const deleteReading = (id: number) => {
@@ -216,7 +235,7 @@ function App() {
   };
 
   function exportToCSV() {
-    const headers = ["ID", "Date", "Time", "Systolic", "Diastolic", "Pulse"];
+    const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse"];
 
     const rows = sortedReadings.map((r) => [
       r.id,
@@ -227,7 +246,7 @@ function App() {
     ]);
 
     const csvContent = [headers, ...rows]
-      .map((row) => row.join(","))
+      .map((row) => row.join(";"))
       .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -301,24 +320,31 @@ function App() {
             className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
             placeholder="Systolic"
             value={form.systolic}
+            ref={refSys}
+            onKeyDown={(e) => handleEnter(e, refDia)}
             onChange={(e) => setForm({ ...form, systolic: e.target.value })}
           />
           <input
             className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
             placeholder="Diastolic"
             value={form.diastolic}
+            ref={refDia}
+            onKeyDown={(e) => handleEnter(e, refPls)}
             onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
           />
           <input
             className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
             placeholder="Pulse"
             value={form.pulse}
+            ref={refPls}
+            onKeyDown={(e) => handleEnter(e, refDat)}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
           />
           <input
             className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
             type="datetime-local"
             value={form.datetime}
+            ref={refDat}
             onChange={(e) => setForm({ ...form, datetime: e.target.value })}
           />
           <button
