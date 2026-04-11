@@ -234,6 +234,9 @@ function App() {
       "text-xl text-gray-900 dark:text-gray-100 font-bold flex justify-center",
   };
 
+  const grayButtonStyle =
+    "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-800 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600";
+
   function exportToCSV() {
     const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse"];
 
@@ -528,14 +531,11 @@ function App() {
             <div className="flex gap-2 mt-3">
               <button
                 onClick={confirmImport}
-                className="bg-green-500 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-600"
+                className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-500"
               >
                 Confirm Import
               </button>
-              <button
-                onClick={cancelImport}
-                className="bg-gray-500 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-gray-600"
-              >
+              <button onClick={cancelImport} className={grayButtonStyle}>
                 Cancel
               </button>
             </div>
@@ -546,16 +546,16 @@ function App() {
             <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
               Readings
             </h2>
-            <div className="grid grid-cols-2 gap-1 sm:flex">
+            <div className="grid grid-cols-2 gap-1 sm:flex -mt-1 mb-1">
               <button
                 onClick={exportToCSV}
-                className="col-span-1 bg-gray-500 text-white text-xs px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
+                className={`col-span-1 text-xs ${grayButtonStyle}`}
               >
                 → CSV
               </button>
               <button
                 onClick={exportToPDF}
-                className="col-span-1 bg-gray-500 text-white text-xs px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
+                className={`col-span-1 text-xs ${grayButtonStyle}`}
               >
                 → PDF
               </button>
@@ -565,14 +565,14 @@ function App() {
                 title="Import CSV"
                 onChange={handleImportCSV}
                 className="col-span-2
-                text-xs file:text-xs text-gray-900 dark:text-white file:text-white
+                  text-xs file:text-xs text-gray-900 dark:text-gray-100 file:text-gray-900 dark:file:text-gray-100
                   file:py-1 file:px-2 
-                  file:rounded-s-xs file:border-0 shadow-md file:shadow-md dark:border-[1px] dark:border-gray-600 rounded 
-                 file:bg-gray-500 bg-transparent
-                  hover:file:cursor-pointer hover:file:bg-gray-600"
-                transition-colors
-                duration-300
-                w-32
+                  file:rounded-s-xs file:border-none shadow-md file:shadow-md 
+                  border-[1px] border-gray-300 dark:border-gray-700 rounded 
+                  bg-transparent file:bg-gray-300 dark:file:bg-gray-700
+                  hover:file:cursor-pointer hover:file:bg-gray-400 
+                  dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
+                  transition-colors duration-300"
               />
             </div>
           </div>
