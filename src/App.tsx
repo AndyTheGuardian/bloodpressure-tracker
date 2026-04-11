@@ -261,11 +261,67 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
+  const [previewData, setPreviewData] = useState<Reading[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+
+  function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    file ? console.info("File exists") : console.warn("File doen't exist");
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+
+      const lines = text.split("\n").slice(1);
+
+      const parsed = lines
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const parts = line.split(";");
+
+          return {
+            id: Number(parts[0]) || Date.now(),
+            recorded_at: new Date(parts[1]).getTime(),
+            systolic: Number(parts[2]),
+            diastolic: Number(parts[3]),
+            pulse: Number(parts[4]),
+          };
+        })
+        .filter((r) => !isNaN(r.systolic));
+
+      setPreviewData(parsed);
+      setShowPreview(true);
+
+      // setReadings((prev) => {
+      //   const existingIds = new Set(prev.map((r) => r.id));
+      //   const newOnes = imported.filter((r) => !existingIds.has(r.id));
+      //   return [...prev, ...newOnes];
+      // });
+    };
+
+    reader.readAsText(file);
+  }
+
+  function confirmImport() {
+    setReadings((prev) => [...prev, ...previewData]);
+    setPreviewData([]);
+    setShowPreview(false);
+  }
+
+  function cancelImport() {
+    setPreviewData([]);
+    setShowPreview(false);
+  }
+
   function exportToPDF() {
     const doc = new jsPDF();
 
     const tableData = sortedReadings.map((r) => [
-      new Date(r.recorded_at).toLocaleString(),
+      // new Date(r.recorded_at).toLocaleString(),
+      dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm"),
       r.systolic,
       r.diastolic,
       r.pulse,
@@ -317,7 +373,7 @@ function App() {
           className="flex flex-col sm:flex-row gap-2"
         >
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
+            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             placeholder="Systolic"
             value={form.systolic}
             ref={refSys}
@@ -325,7 +381,7 @@ function App() {
             onChange={(e) => setForm({ ...form, systolic: e.target.value })}
           />
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
+            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             placeholder="Diastolic"
             value={form.diastolic}
             ref={refDia}
@@ -333,7 +389,7 @@ function App() {
             onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
           />
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:border-gray-950 dark:focus:border-gray-50 transition-colors duration-300"
+            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             placeholder="Pulse"
             value={form.pulse}
             ref={refPls}
@@ -341,14 +397,14 @@ function App() {
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
           />
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
+            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             type="datetime-local"
             value={form.datetime}
             ref={refDat}
             onChange={(e) => setForm({ ...form, datetime: e.target.value })}
           />
           <button
-            className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500"
+            className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500"
             disabled={!form.systolic || !form.diastolic || !form.pulse}
           >
             Add
@@ -421,14 +477,14 @@ function App() {
         </h2>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
-            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
+            className="w-full sd:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             //type="datetime-local"
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
           <input
-            className="w-full sd:flex-1 h-10 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors duration-300"
+            className="w-full sd:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             //type="datetime-local"
             type="date"
             value={toDate}
@@ -437,6 +493,50 @@ function App() {
         </div>
         {/*</div>*/}
 
+        {showPreview && (
+          <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
+            <h2 className="font-semibold mb-2">Preview Import</h2>
+            <div className="max-h-40 overflow-auto text-sm rounded-sm shadow bg-gray-200 dark:bg-gray-900 p-2">
+              <table className="w-full text-left">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Sys</th>
+                    <th>Dia</th>
+                    <th>Pulse</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {previewData.slice(0, 5).map((r) => (
+                    <tr key={r.id}>
+                      <td>{dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}</td>
+                      <td>{r.systolic}</td>
+                      <td>{r.diastolic}</td>
+                      <td>{r.pulse}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs mt-2 text-gray-500">
+              Showing first 5 of {previewData.length} entries
+            </p>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={confirmImport}
+                className="bg-green-500 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-600"
+              >
+                Confirm Import
+              </button>
+              <button
+                onClick={cancelImport}
+                className="bg-gray-400 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-gray-500"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         <div className="mt-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
           <div className="flex place-content-between">
             <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
@@ -445,16 +545,29 @@ function App() {
             <div className="flex">
               <button
                 onClick={exportToCSV}
-                className="bg-gray-500 text-white text-xs mx-1 px-3 py-1 rounded hover:bg-gray-600"
+                className="bg-gray-500 text-white text-xs mx-1 px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
               >
                 → CSV
               </button>
               <button
                 onClick={exportToPDF}
-                className="bg-gray-500 text-white text-xs px-3 py-1 rounded hover:bg-gray-600"
+                className="bg-gray-500 text-white text-xs px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
               >
                 → PDF
               </button>
+              <input
+                type="file"
+                accept=".csv"
+                title="Import CSV"
+                onChange={handleImportCSV}
+                className="text-xs file:text-xs text-gray-900 dark:text-white file:text-white
+                  ml-1 file:py-1 file:px-2 
+                  file:rounded-s-xs file:border-0 shadow-md file:shadow-md dark:border-[1px] dark:border-gray-600 rounded 
+                 file:bg-gray-500 bg-transparent
+                  hover:file:cursor-pointer hover:file:bg-gray-600"
+                transition-colors
+                duration-300
+              />
             </div>
           </div>
           {filteredReadings.length === 0 ? (
