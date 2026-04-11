@@ -306,7 +306,11 @@ function App() {
   }
 
   function confirmImport() {
-    setReadings((prev) => [...prev, ...previewData]);
+    setReadings((prev) => {
+      const existingIds = new Set(prev.map((r) => r.id));
+      const newOnes = previewData.filter((r) => !existingIds.has(r.id));
+      return [...prev, ...newOnes];
+    });
     setPreviewData([]);
     setShowPreview(false);
   }
@@ -530,7 +534,7 @@ function App() {
               </button>
               <button
                 onClick={cancelImport}
-                className="bg-gray-400 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-gray-500"
+                className="bg-gray-500 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-gray-600"
               >
                 Cancel
               </button>
@@ -542,16 +546,16 @@ function App() {
             <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
               Readings
             </h2>
-            <div className="flex">
+            <div className="grid grid-cols-2 gap-1 sm:flex">
               <button
                 onClick={exportToCSV}
-                className="bg-gray-500 text-white text-xs mx-1 px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
+                className="col-span-1 bg-gray-500 text-white text-xs px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
               >
                 → CSV
               </button>
               <button
                 onClick={exportToPDF}
-                className="bg-gray-500 text-white text-xs px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
+                className="col-span-1 bg-gray-500 text-white text-xs px-3 py-1 dark:border-[1px] dark:border-gray-600 rounded shadow-md hover:bg-gray-600"
               >
                 → PDF
               </button>
@@ -560,13 +564,15 @@ function App() {
                 accept=".csv"
                 title="Import CSV"
                 onChange={handleImportCSV}
-                className="text-xs file:text-xs text-gray-900 dark:text-white file:text-white
-                  ml-1 file:py-1 file:px-2 
+                className="col-span-2
+                text-xs file:text-xs text-gray-900 dark:text-white file:text-white
+                  file:py-1 file:px-2 
                   file:rounded-s-xs file:border-0 shadow-md file:shadow-md dark:border-[1px] dark:border-gray-600 rounded 
                  file:bg-gray-500 bg-transparent
                   hover:file:cursor-pointer hover:file:bg-gray-600"
                 transition-colors
                 duration-300
+                w-32
               />
             </div>
           </div>
