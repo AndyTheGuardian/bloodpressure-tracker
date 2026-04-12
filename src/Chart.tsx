@@ -54,10 +54,10 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
 
   const trendColor =
     slope > 0.5
-      ? "rgba(185, 28, 28,1)" // red
+      ? "rgba(185, 28, 28,0.75)" // red
       : slope < -0.5
-        ? "rgba(34, 197, 94,1)" // green
-        : "rgba(255, 255, 255,1)";
+        ? "rgba(34, 197, 94,0.75)" // green
+        : "rgba(255, 255, 255,0.75)";
 
   const data = {
     labels: sorted.map((r) =>
@@ -104,8 +104,8 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
         label: "Trend",
         data: trendLine,
         borderColor: trendColor,
-        borderWidth: 2,
-        borderDash: [5, 5],
+        borderWidth: 1,
+        borderDash: [5, 3],
         pointRadius: 0,
       },
     ],
