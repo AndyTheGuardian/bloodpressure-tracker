@@ -95,7 +95,7 @@ function App() {
     e: React.KeyboardEvent,
     nextRef: React.RefObject<HTMLInputElement | null>,
   ) {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" || e.key === "ArrowRight") {
       e.preventDefault();
       nextRef.current?.focus();
     }
