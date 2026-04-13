@@ -26,12 +26,18 @@ function App() {
     datetime: getNow(),
   });
 
-  function getNow() {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - offset * 60000);
-    return local.toISOString().slice(0, 16);
-  }
+  const [importSummary, setImportSummary] = useState({
+    total: 0,
+    valid: 0,
+    invalid: 0,
+  });
+
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
+  const [previewData, setPreviewData] = useState<Reading[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -56,8 +62,12 @@ function App() {
     refSys.current?.focus();
   }, [theme]);
 
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  function getNow() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+    return local.toISOString().slice(0, 16);
+  }
 
   const sysCr = 180;
   const sysH2 = 160;
@@ -264,11 +274,46 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
-  const [previewData, setPreviewData] = useState<Reading[]>([]);
-  const [showPreview, setShowPreview] = useState(false);
+  function parseCSV(text: string) {
+    const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0)
+      .slice(1);
+
+    let valid = 0;
+    let invalid = 0;
+
+    const parsed = lines
+      .map((line) => {
+        const parts = line.split(";");
+
+        const reading = {
+          id: Number(parts[0]) || Date.now() + Math.random(),
+          recorded_at: new Date(parts[1]).getTime(),
+          systolic: Number(parts[2]),
+          diastolic: Number(parts[3]),
+          pulse: Number(parts[4]),
+        };
+
+        const isValid =
+          !isNaN(reading.systolic) &&
+          !isNaN(reading.diastolic) &&
+          !isNaN(reading.pulse) &&
+          !isNaN(reading.recorded_at);
+        if (isValid) valid++;
+        else invalid++;
+
+        return isValid ? reading : null;
+      })
+      .filter(Boolean) as Reading[];
+
+    return { parsed, total: lines.length, valid, invalid };
+  }
 
   function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const input = e.target; // store reference
+    const file = input.files?.[0];
     file ? console.info("File exists") : console.warn("File doen't exist");
     if (!file) return;
 
@@ -277,35 +322,52 @@ function App() {
     reader.onload = (e) => {
       const text = e.target?.result as string;
 
-      const lines = text.split("\n").slice(1);
-
-      const parsed = lines
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const parts = line.split(";");
-
-          return {
-            id: Number(parts[0]) || Date.now(),
-            recorded_at: new Date(parts[1]).getTime(),
-            systolic: Number(parts[2]),
-            diastolic: Number(parts[3]),
-            pulse: Number(parts[4]),
-          };
-        })
-        .filter((r) => !isNaN(r.systolic));
+      const { parsed, total, valid, invalid } = parseCSV(text);
 
       setPreviewData(parsed);
+      setImportSummary({
+        total,
+        valid,
+        invalid,
+      });
       setShowPreview(true);
 
-      // setReadings((prev) => {
-      //   const existingIds = new Set(prev.map((r) => r.id));
-      //   const newOnes = imported.filter((r) => !existingIds.has(r.id));
-      //   return [...prev, ...newOnes];
-      // });
+      // reset input
+      input.value = "";
     };
 
     reader.readAsText(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+
+      const { parsed, total, valid, invalid } = parseCSV(text);
+
+      setPreviewData(parsed);
+      setImportSummary({ total, valid, invalid });
+      setShowPreview(true);
+    };
+
+    reader.readAsText(file);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave() {
+    setIsDragging(false);
   }
 
   function confirmImport() {
@@ -503,7 +565,10 @@ function App() {
         {showPreview && (
           <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
             <h2 className="font-semibold mb-2">Preview Import</h2>
-            <div className="max-h-40 overflow-auto text-sm rounded-sm shadow bg-gray-200 dark:bg-gray-900 p-2">
+            <p className="text-xs mb-1 text-gray-700 dark:text-gray-300">
+              Showing first 5 of {previewData.length} entries
+            </p>
+            <div className="max-h-40 overflow-auto text-sm rounded shadow bg-gray-200 dark:bg-gray-900 p-2">
               <table className="w-full text-left">
                 <thead>
                   <tr>
@@ -525,13 +590,27 @@ function App() {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs mt-2 text-gray-500">
-              Showing first 5 of {previewData.length} entries
+
+            <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
+              Total: {importSummary.total} |{" "}
+              <span className="text-green-500 font-semibold">
+                Valid: {importSummary.valid}
+              </span>{" "}
+              |{" "}
+              <span className="text-red-500 font-semibold">
+                Invalid: {importSummary.invalid}
+              </span>
             </p>
+            {importSummary.invalid > 0 && (
+              <p className="text-red-500 text-sm mt-1">
+                Some rows could not be imported.
+              </p>
+            )}
             <div className="flex gap-2 mt-3">
               <button
                 onClick={confirmImport}
-                className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-500"
+                disabled={importSummary.valid === 0}
+                className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-500 disabled:opacity-50"
               >
                 Confirm Import
               </button>
@@ -541,6 +620,24 @@ function App() {
             </div>
           </div>
         )}
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          className={`mt-4 p-6 border-2 border-dashed rounded-lg 
+        text-center transition hidden md:block ${
+          isDragging
+            ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
+            : "border-gray-300 dark:border-gray-600"
+        }`}
+        >
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Drag & drop CSV here
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+            or use file upload
+          </p>
+        </div>
         <div className="mt-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
           <div className="flex place-content-between">
             <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
