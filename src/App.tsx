@@ -49,6 +49,8 @@ function App() {
       : "light";
   });
 
+  const [deleteAll, setDeleteAll] = useState(false);
+
   useEffect(() => {
     const root = document.documentElement;
 
@@ -345,6 +347,10 @@ function App() {
 
     const file = e.dataTransfer.files[0];
     if (!file) return;
+    if (!file.name.endsWith(".csv")) {
+      alert("Please upload a CSV file");
+      return;
+    }
 
     const reader = new FileReader();
 
@@ -423,6 +429,15 @@ function App() {
     });
 
     doc.save("blood-pressure.pdf");
+  }
+
+  function deleteAllReadings() {
+    setDeleteAll(true);
+  }
+
+  function confirmDeleteAll() {
+    setReadings([]);
+    setDeleteAll(false);
   }
 
   return (
@@ -645,6 +660,12 @@ function App() {
             </h2>
             <div className="grid grid-cols-2 gap-1 sm:flex -mt-1 mb-1">
               <button
+                onClick={deleteAllReadings}
+                className={`col-span-1 text-xs ${grayButtonStyle}`}
+              >
+                Clear all
+              </button>
+              <button
                 onClick={exportToCSV}
                 className={`col-span-1 text-xs ${grayButtonStyle}`}
               >
@@ -673,6 +694,28 @@ function App() {
               />
             </div>
           </div>
+          {deleteAll && (
+            <div>
+              <p className=" mt-2 text-md text-gray-500">
+                Delete all readings?
+              </p>
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={confirmDeleteAll}
+                  disabled={readings.length === 0}
+                  className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-500 disabled:opacity-50"
+                >
+                  Confirm delete
+                </button>
+                <button
+                  onClick={() => setDeleteAll(false)}
+                  className={grayButtonStyle}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
           {filteredReadings.length === 0 ? (
             <p className="text-gray-500 mt-2">No data</p>
           ) : (
