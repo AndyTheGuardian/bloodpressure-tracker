@@ -247,7 +247,7 @@ function App() {
   };
 
   const grayButtonStyle =
-    "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-800 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600";
+    "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600";
 
   function exportToCSV() {
     const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse"];
@@ -635,63 +635,66 @@ function App() {
             </div>
           </div>
         )}
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`mt-4 p-6 border-2 border-dashed rounded-lg 
-        text-center transition hidden md:block ${
-          isDragging
-            ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
-            : "border-gray-300 dark:border-gray-600"
-        }`}
-        >
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Drag & drop CSV here
-          </p>
-          <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-            or use file upload
-          </p>
+        <div className="flex gap-1 mt-3">
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            className={`p-2 flex-1 w-1/2 border-2 border-dashed rounded-lg text-center transition hidden md:block ${
+              isDragging
+                ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
+                : "border-gray-300 dark:border-gray-600"
+            }`}
+          >
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              Drag & drop CSV here
+            </p>
+            <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+              or use file upload
+            </p>
+          </div>
+          <div className="flex-1 md:w-1/2 flex flex-row md:grid md:grid-col-2 gap-1">
+            <button
+              onClick={exportToCSV}
+              className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
+            >
+              → CSV
+            </button>
+            <button
+              onClick={exportToPDF}
+              className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
+            >
+              → PDF
+            </button>
+            <input
+              type="file"
+              accept=".csv"
+              title="Import CSV"
+              onChange={handleImportCSV}
+              className="w-1/2 md:w-full md:col-span-2
+                  text-xs text-gray-900 dark:text-gray-100 file:text-gray-900 dark:file:text-gray-100
+                  file:py-1 file:px-2 file:h-full
+                  file:rounded-s-xs file:border-none shadow-md
+                  border-[1px] border-gray-300 dark:border-gray-700 rounded
+                  bg-transparent file:bg-gray-300 dark:file:bg-gray-700
+                  hover:cursor-pointer hover:file:bg-gray-400 
+                  dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
+                  transition-colors duration-300"
+            />
+          </div>
         </div>
-        <div className="mt-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
+        <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
           <div className="flex place-content-between">
             <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
               Readings
             </h2>
-            <div className="grid grid-cols-2 gap-1 sm:flex -mt-1 mb-1">
+            <div>
               <button
                 onClick={deleteAllReadings}
                 className={`col-span-1 text-xs ${grayButtonStyle}`}
               >
                 Clear all
               </button>
-              <button
-                onClick={exportToCSV}
-                className={`col-span-1 text-xs ${grayButtonStyle}`}
-              >
-                → CSV
-              </button>
-              <button
-                onClick={exportToPDF}
-                className={`col-span-1 text-xs ${grayButtonStyle}`}
-              >
-                → PDF
-              </button>
-              <input
-                type="file"
-                accept=".csv"
-                title="Import CSV"
-                onChange={handleImportCSV}
-                className="col-span-2
-                  text-xs file:text-xs text-gray-900 dark:text-gray-100 file:text-gray-900 dark:file:text-gray-100
-                  file:py-1 file:px-2 
-                  file:rounded-s-xs file:border-none shadow-md file:shadow-md 
-                  border-[1px] border-gray-300 dark:border-gray-700 rounded 
-                  bg-transparent file:bg-gray-300 dark:file:bg-gray-700
-                  hover:file:cursor-pointer hover:file:bg-gray-400 
-                  dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
-                  transition-colors duration-300"
-              />
             </div>
           </div>
           {deleteAll && (
@@ -699,7 +702,7 @@ function App() {
               <p className=" mt-2 text-md text-gray-500">
                 Delete all readings?
               </p>
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-2 mt-1 mb-6">
                 <button
                   onClick={confirmDeleteAll}
                   disabled={readings.length === 0}
