@@ -29,6 +29,7 @@ type Reading = {
   systolic: number;
   diastolic: number;
   pulse: number;
+  comment: string;
   recorded_at: number;
 };
 

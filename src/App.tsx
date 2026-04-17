@@ -10,6 +10,7 @@ type Reading = {
   systolic: number;
   diastolic: number;
   pulse: number;
+  comment: string;
   recorded_at: number;
 };
 
@@ -23,6 +24,7 @@ function App() {
     systolic: "",
     diastolic: "",
     pulse: "",
+    comment: "",
     datetime: getNow(),
   });
 
@@ -50,6 +52,8 @@ function App() {
   });
 
   const [deleteAll, setDeleteAll] = useState(false);
+
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -101,12 +105,14 @@ function App() {
   const refSys = useRef<HTMLInputElement>(null);
   const refDia = useRef<HTMLInputElement>(null);
   const refPls = useRef<HTMLInputElement>(null);
+  const refCom = useRef<HTMLInputElement>(null);
   const refDat = useRef<HTMLInputElement>(null);
 
   function handleEnter(
     e: React.KeyboardEvent,
     nextRef: React.RefObject<HTMLInputElement | null>,
   ) {
+    if (!showComments && nextRef === refCom) nextRef = refDat;
     if (e.key === "Enter" || e.key === "ArrowRight") {
       e.preventDefault();
       nextRef.current?.focus();
@@ -121,6 +127,7 @@ function App() {
       systolic: Number(form.systolic),
       diastolic: Number(form.diastolic),
       pulse: Number(form.pulse),
+      comment: form.comment,
       recorded_at: form.datetime
         ? new Date(form.datetime).getTime()
         : Date.now(),
@@ -132,6 +139,7 @@ function App() {
       systolic: "",
       diastolic: "",
       pulse: "",
+      comment: "",
       datetime: getNow(),
     });
 
@@ -250,7 +258,7 @@ function App() {
     "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600";
 
   function exportToCSV() {
-    const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse"];
+    const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse", "Comment"];
 
     const rows = sortedReadings.map((r) => [
       r.id,
@@ -258,6 +266,7 @@ function App() {
       r.systolic,
       r.diastolic,
       r.pulse,
+      r.comment,
     ]);
 
     const csvContent = [headers, ...rows]
@@ -296,6 +305,7 @@ function App() {
           systolic: Number(parts[2]),
           diastolic: Number(parts[3]),
           pulse: Number(parts[4]),
+          comment: parts[5].toString(),
         };
 
         const isValid =
@@ -400,6 +410,7 @@ function App() {
       r.systolic,
       r.diastolic,
       r.pulse,
+      r.comment,
     ]);
 
     doc.setFontSize(16);
@@ -416,7 +427,7 @@ function App() {
 
     autoTable(doc, {
       startY: 30,
-      head: [["Date", "Systolic", "Diastolic", "Pulse"]],
+      head: [["Date", "Systolic", "Diastolic", "Pulse", "Comment"]],
       body: tableData,
 
       styles: {
@@ -438,6 +449,11 @@ function App() {
   function confirmDeleteAll() {
     setReadings([]);
     setDeleteAll(false);
+  }
+
+  function resetFilter() {
+    setFromDate("");
+    setToDate("");
   }
 
   return (
@@ -477,8 +493,17 @@ function App() {
             placeholder="Pulse"
             value={form.pulse}
             ref={refPls}
-            onKeyDown={(e) => handleEnter(e, refDat)}
+            onKeyDown={(e) => handleEnter(e, refCom)}
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
+          />
+          <input
+            className={`w-full sm:flex-1 h-10 p-2 border ${showComments ? "block" : "hidden"} rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            placeholder="Comment"
+            type="text"
+            value={form.comment}
+            ref={refCom}
+            onKeyDown={(e) => handleEnter(e, refDat)}
+            onChange={(e) => setForm({ ...form, comment: e.target.value })}
           />
           <input
             className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
@@ -537,7 +562,7 @@ function App() {
                   {trend == "stable" && (
                     <div className={trendTextStyle.stable}>
                       <p>→</p>
-                      <p className="hidden md:block"> Stable</p>
+                      <p className="hidden md:block">&nbsp;Stable</p>
                     </div>
                   )}
                   <p className="text-sm text-gray-500 mt-[6px] ml-2">
@@ -556,9 +581,17 @@ function App() {
         </div>
 
         {/* <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow"> */}
-        <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-          Filter
-        </h2>
+        <div className="flex place-content-between">
+          <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
+            Filter
+          </h2>
+          <button
+            onClick={resetFilter}
+            className={`col-span-1 text-xs mb-2 ${grayButtonStyle}`}
+          >
+            Reset
+          </button>
+        </div>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             className="w-full sd:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
@@ -575,8 +608,16 @@ function App() {
             onChange={(e) => setToDate(e.target.value)}
           />
         </div>
+        {/* <div className="flex tex-sm">
+          <p className="flex-1">{dayjs(fromDate).format("DD.MM.YYYY HH:mm")}</p>
+          <p className="flex-1">{dayjs(toDate).format("DD.MM.YYYY HH:mm")}</p>
+        </div> */}
         {/*</div>*/}
 
+        {/* <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
+          <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
+            File section
+          </h2> */}
         {showPreview && (
           <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
             <h2 className="font-semibold mb-2">Preview Import</h2>
@@ -591,6 +632,7 @@ function App() {
                     <th>Sys</th>
                     <th>Dia</th>
                     <th>Pulse</th>
+                    <th>Comment</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -600,6 +642,7 @@ function App() {
                       <td>{r.systolic}</td>
                       <td>{r.diastolic}</td>
                       <td>{r.pulse}</td>
+                      <td>{r.comment}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -683,19 +726,28 @@ function App() {
             />
           </div>
         </div>
+        {/* </div> */}
         <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
-          <div className="flex place-content-between">
-            <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
+          <div className="flex gap-1">
+            <h2 className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
               Readings
             </h2>
-            <div>
-              <button
-                onClick={deleteAllReadings}
-                className={`col-span-1 text-xs ${grayButtonStyle}`}
-              >
-                Clear all
-              </button>
-            </div>
+            <button
+              onClick={() => setShowComments(!showComments)}
+              className={`flex-shrink text-xs mb-2 ${
+                showComments
+                  ? "bg-blue-600 hover:bg-blue-500 text-gray-1000"
+                  : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md`}
+            >
+              Comments
+            </button>
+            <button
+              onClick={deleteAllReadings}
+              className={`flex-shrink text-xs mb-2 ${grayButtonStyle}`}
+            >
+              Clear all
+            </button>
           </div>
           {deleteAll && (
             <div>
@@ -733,8 +785,13 @@ function App() {
                     className={`flex p-2 border-2 rounded shadow-sm ${style}`}
                   >
                     <div className="flex flex-grow flex-col sm:flex-row ">
-                      <span className="text-left">
+                      <span className="flex-1 text-left">
                         {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
+                      </span>
+                      <span
+                        className={`flex-1 text-center ${showComments ? "block" : "hidden"}`}
+                      >
+                        {r.comment}
                       </span>
                       <span className="flex-1 sm:text-right">
                         {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
