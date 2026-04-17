@@ -54,6 +54,7 @@ function App() {
   const [deleteAll, setDeleteAll] = useState(false);
 
   const [showComments, setShowComments] = useState(false);
+  const [showFileSection, setShowFileSection] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -678,43 +679,44 @@ function App() {
             </div>
           </div>
         )}
-        <div className="flex gap-1 mt-3">
-          <div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            className={`p-2 flex-1 w-1/2 border-2 border-dashed rounded-lg text-center transition hidden md:block ${
-              isDragging
-                ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
-                : "border-gray-300 dark:border-gray-600"
-            }`}
-          >
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Drag & drop CSV here
-            </p>
-            <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-              or use file upload
-            </p>
-          </div>
-          <div className="flex-1 md:w-1/2 flex flex-row md:grid md:grid-col-2 gap-1">
-            <button
-              onClick={exportToCSV}
-              className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
+        {showFileSection && (
+          <div className="flex gap-1 mt-3">
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`p-2 flex-1 w-1/2 border-2 border-dashed rounded-lg text-center transition hidden md:block ${
+                isDragging
+                  ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
             >
-              → CSV
-            </button>
-            <button
-              onClick={exportToPDF}
-              className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
-            >
-              → PDF
-            </button>
-            <input
-              type="file"
-              accept=".csv"
-              title="Import CSV"
-              onChange={handleImportCSV}
-              className="w-1/2 md:w-full md:col-span-2
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Drag & drop CSV here
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                or use file upload
+              </p>
+            </div>
+            <div className="flex-1 md:w-1/2 flex flex-row md:grid md:grid-col-2 gap-1">
+              <button
+                onClick={exportToCSV}
+                className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
+              >
+                → CSV
+              </button>
+              <button
+                onClick={exportToPDF}
+                className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
+              >
+                → PDF
+              </button>
+              <input
+                type="file"
+                accept=".csv"
+                title="Import CSV"
+                onChange={handleImportCSV}
+                className="w-1/2 md:w-full md:col-span-2
                   text-xs text-gray-900 dark:text-gray-100 file:text-gray-900 dark:file:text-gray-100
                   file:py-1 file:px-2 file:h-full
                   file:rounded-s-xs file:border-none shadow-md
@@ -723,15 +725,26 @@ function App() {
                   hover:cursor-pointer hover:file:bg-gray-400 
                   dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
                   transition-colors duration-300"
-            />
+              />
+            </div>
           </div>
-        </div>
+        )}
         {/* </div> */}
         <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
           <div className="flex gap-1">
             <h2 className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
               Readings
             </h2>
+            <button
+              onClick={() => setShowFileSection(!showFileSection)}
+              className={`flex-shrink text-xs mb-2 ${
+                showFileSection
+                  ? "bg-blue-600 hover:bg-blue-500 text-gray-1000"
+                  : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md`}
+            >
+              File Section
+            </button>
             <button
               onClick={() => setShowComments(!showComments)}
               className={`flex-shrink text-xs mb-2 ${
