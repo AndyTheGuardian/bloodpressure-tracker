@@ -55,6 +55,7 @@ function App() {
 
   const [showComments, setShowComments] = useState(false);
   const [showFileSection, setShowFileSection] = useState(false);
+  const [isGradient, setIsGradient] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -68,6 +69,10 @@ function App() {
     localStorage.setItem("theme", theme);
     refSys.current?.focus();
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem("readings", JSON.stringify(readings));
+  }, [readings]);
 
   function getNow() {
     const now = new Date();
@@ -211,10 +216,6 @@ function App() {
 
   const { slope, trend } = calculateTrend(sortedReadings);
 
-  useEffect(() => {
-    localStorage.setItem("readings", JSON.stringify(readings));
-  }, [readings]);
-
   function getBPLevel(systolic: number, diastolic: number) {
     if (systolic >= sysCr || diastolic >= diaCr) return "crisis";
     if (systolic >= sysH2 || diastolic >= diaH2) return "high2";
@@ -223,7 +224,22 @@ function App() {
     return "normal";
   }
 
-  function getBPStyle(level: string) {
+  function getBPStyle(level: string, isGrad: Boolean) {
+    if (isGrad) {
+      switch (level) {
+        case "crisis":
+          return `bg-gradient-to-r from-red-700 to-red-950 border-red-800 text-gray-50 font-bold`;
+        case "high2":
+          return `bg-gradient-to-r from-red-500 to-red-950 border-red-600 text-gray-50`;
+        case "high1":
+          return `bg-gradient-to-r from-orange-400 to-orange-950 border-orange-500 text-gray-950`;
+        case "elevated":
+          return `bg-gradient-to-r from-yellow-300 to-yellow-950 border-yellow-400 text-gray-950`;
+        default:
+          return `bg-gradient-to-r from-emerald-500 to-emerald-950 border-emerald-600 text-gray-950`;
+        // return `bg-gradient-to-r from-[#2dd4bf]  to-[#1f2937] border-green-600 text-gray-950`;
+      }
+    }
     switch (level) {
       case "crisis":
         return `bg-red-700 border-red-800 text-gray-50 font-bold`;
@@ -234,7 +250,7 @@ function App() {
       case "elevated":
         return `bg-yellow-300 border-yellow-400 text-gray-950`;
       default:
-        return `bg-green-500 border-green-600 text-gray-950`;
+        return `bg-emerald-500 border-emerald-600 text-gray-950`;
     }
   }
 
@@ -245,14 +261,14 @@ function App() {
     high2: `text-xl font-bold underline underline-offset-2 decoration-red-300 dark:decoration-red-500`,
     high1: `text-xl font-bold underline underline-offset-2 decoration-orange-400`,
     elevated: `text-xl font-bold underline underline-offset-2 decoration-yellow-500 dark:decoration-yellow-300`,
-    normal: `text-xl font-bold underline underline-offset-2 decoration-green-500`,
+    normal: `text-xl font-bold underline underline-offset-2 decoration-emerald-500`,
   };
 
   const trendTextStyle = {
     up: "text-xl underline underline-offset-2 decoration-red-400 dark:decoration-red-700 font-bold flex justify-center",
-    down: "text-xl underline underline-offset-2 decoration-green-500 font-bold flex justify-center",
+    down: "text-xl underline underline-offset-2 decoration-emerald-500 font-bold flex justify-center",
     stable:
-      "text-xl text-gray-900 dark:text-gray-100 font-bold flex justify-center",
+      "text-xl underline underline-offset-2 decoration-gray-50 text-gray-900 dark:text-gray-100 font-bold flex justify-center",
   };
 
   const grayButtonStyle =
@@ -621,7 +637,9 @@ function App() {
           </h2> */}
         {showPreview && (
           <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
-            <h2 className="font-semibold mb-2">Preview Import</h2>
+            <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
+              Preview Import
+            </h2>
             <p className="text-xs mb-1 text-gray-700 dark:text-gray-300">
               Showing first 5 of {previewData.length} entries
             </p>
@@ -652,7 +670,7 @@ function App() {
 
             <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
               Total: {importSummary.total} |{" "}
-              <span className="text-green-500 font-semibold">
+              <span className="text-emerald-500 font-semibold">
                 Valid: {importSummary.valid}
               </span>{" "}
               |{" "}
@@ -669,7 +687,7 @@ function App() {
               <button
                 onClick={confirmImport}
                 disabled={importSummary.valid === 0}
-                className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-500 disabled:opacity-50"
+                className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50"
               >
                 Confirm Import
               </button>
@@ -732,7 +750,10 @@ function App() {
         {/* </div> */}
         <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
           <div className="flex gap-1">
-            <h2 className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
+            <h2
+              className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60"
+              onClick={() => setIsGradient(!isGradient)}
+            >
               Readings
             </h2>
             <button
@@ -771,7 +792,7 @@ function App() {
                 <button
                   onClick={confirmDeleteAll}
                   disabled={readings.length === 0}
-                  className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-green-500 disabled:opacity-50"
+                  className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50"
                 >
                   Confirm delete
                 </button>
@@ -790,7 +811,7 @@ function App() {
             <ul className="mt-2 space-y-2">
               {sortedReadings.map((r) => {
                 const level = getBPLevel(r.systolic, r.diastolic);
-                const style = getBPStyle(level);
+                const style = getBPStyle(level, isGradient);
 
                 return (
                   <li
@@ -806,12 +827,14 @@ function App() {
                       >
                         {r.comment}
                       </span>
-                      <span className="flex-1 sm:text-right">
+                      <span
+                        className={`flex-1 sm:text-right ${isGradient ? "md:text-gray-50" : ""}`}
+                      >
                         {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
                       </span>
                     </div>
                     <button
-                      className="-m-2 ml-3 px-2 text-gray-950 bg-red-500 bg-opacity-10 hover:bg-opacity-100"
+                      className={`-m-2 ml-3 px-2 ${isGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90`}
                       onClick={() => deleteReading(r.id)}
                     >
                       ❌
