@@ -14,10 +14,23 @@ type Reading = {
   recorded_at: number;
 };
 
+type Options = {
+  showComments: Boolean;
+  showGradient: Boolean;
+  showFileSection: Boolean;
+};
+
 function App() {
   const [readings, setReadings] = useState<Reading[]>(() => {
     const saved = localStorage.getItem("readings");
     return saved ? JSON.parse(saved) : [];
+  });
+
+  const [options, setOptions] = useState<Options>(() => {
+    const saved = localStorage.getItem("options");
+    return saved
+      ? JSON.parse(saved)
+      : { showComments: false, showGradient: false, showFileSection: false };
   });
 
   const [form, setForm] = useState({
@@ -27,6 +40,8 @@ function App() {
     comment: "",
     datetime: getNow(),
   });
+
+  const [settings, setSettings] = useState(false);
 
   const [importSummary, setImportSummary] = useState({
     total: 0,
@@ -53,10 +68,6 @@ function App() {
 
   const [deleteAll, setDeleteAll] = useState(false);
 
-  const [showComments, setShowComments] = useState(false);
-  const [showFileSection, setShowFileSection] = useState(false);
-  const [isGradient, setIsGradient] = useState(false);
-
   useEffect(() => {
     const root = document.documentElement;
 
@@ -73,6 +84,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("readings", JSON.stringify(readings));
   }, [readings]);
+
+  useEffect(() => {
+    localStorage.setItem("options", JSON.stringify(options));
+  }, [options]);
 
   function getNow() {
     const now = new Date();
@@ -118,7 +133,7 @@ function App() {
     e: React.KeyboardEvent,
     nextRef: React.RefObject<HTMLInputElement | null>,
   ) {
-    if (!showComments && nextRef === refCom) nextRef = refDat;
+    if (!options.showComments && nextRef === refCom) nextRef = refDat;
     if (e.key === "Enter" || e.key === "ArrowRight") {
       e.preventDefault();
       nextRef.current?.focus();
@@ -228,15 +243,15 @@ function App() {
     if (isGrad) {
       switch (level) {
         case "crisis":
-          return `bg-gradient-to-r from-red-700 to-red-950 border-red-800 text-gray-50 font-bold`;
+          return `bg-gradient-to-r from-red-700 to-red-950 border-red-800 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50 font-bold`;
         case "high2":
-          return `bg-gradient-to-r from-red-500 to-red-950 border-red-600 text-gray-50`;
+          return `bg-gradient-to-r from-red-500 to-red-950 border-red-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50`;
         case "high1":
-          return `bg-gradient-to-r from-orange-400 to-orange-950 border-orange-500 text-gray-950`;
+          return `bg-gradient-to-r from-orange-400 to-orange-950 border-orange-500 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
         case "elevated":
-          return `bg-gradient-to-r from-yellow-300 to-yellow-950 border-yellow-400 text-gray-950`;
+          return `bg-gradient-to-r from-yellow-300 to-yellow-950 border-yellow-400 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
         default:
-          return `bg-gradient-to-r from-emerald-500 to-emerald-950 border-emerald-600 text-gray-950`;
+          return `bg-gradient-to-r from-emerald-500 to-emerald-950 border-emerald-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
         // return `bg-gradient-to-r from-[#2dd4bf]  to-[#1f2937] border-green-600 text-gray-950`;
       }
     }
@@ -272,7 +287,7 @@ function App() {
   };
 
   const grayButtonStyle =
-    "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600";
+    "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600 transition duration-300";
 
   function exportToCSV() {
     const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse", "Comment"];
@@ -422,7 +437,6 @@ function App() {
     const doc = new jsPDF();
 
     const tableData = sortedReadings.map((r) => [
-      // new Date(r.recorded_at).toLocaleString(),
       dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm"),
       r.systolic,
       r.diastolic,
@@ -476,15 +490,68 @@ function App() {
   return (
     <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center transition-colors duration-300">
       <div className="w-screen max-w-4xl bg-gray-200 dark:bg-gray-900 p-6 rounded-xl shadow-md my-4 transition-colors duration-300">
-        <h1 className="text-2xl font-bold mb-4 text-center dark:text-gray-100">
-          Blood Pressure Tracker
-        </h1>
-        <button
+        <div className="flex">
+          <h1 className="flex-1 text-2xl font-bold mb-4 text-center dark:text-gray-100">
+            Blood Pressure Tracker
+          </h1>
+          <button
+            onClick={() => setSettings(!settings)}
+            className="mb-4 text-gray-700 dark:text-gray-300"
+          >
+            &#9776;
+          </button>
+        </div>
+        {/* <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="absolute top-4 right-4 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700"
+          className="absolute top-4 right-4 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 transition duration-300"
         >
           {theme === "dark" ? "☀️" : "🌙"}
-        </button>
+        </button> */}
+        {settings && (
+          <div className="max-w-4xl bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow mb-4 transition duration-300">
+            <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
+              Settings
+            </h2>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className={`rounded ${grayButtonStyle} transition duration-300`}
+              >
+                {theme === "dark" ? "☀️" : "🌙"}
+              </button>
+              <button
+                onClick={() =>
+                  setOptions({
+                    ...options,
+                    showFileSection: !options.showFileSection,
+                  })
+                }
+                className={`flex-shrink text-xs mb-2 ${
+                  options.showFileSection
+                    ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
+                    : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
+              >
+                File Section
+              </button>
+              <button
+                onClick={() =>
+                  setOptions({
+                    ...options,
+                    showComments: !options.showComments,
+                  })
+                }
+                className={`flex-shrink text-xs mb-2 ${
+                  options.showComments
+                    ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
+                    : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
+              >
+                Comments
+              </button>
+            </div>
+          </div>
+        )}
         <form
           onSubmit={handleSubmit}
           className="flex flex-col sm:flex-row gap-2"
@@ -514,7 +581,7 @@ function App() {
             onChange={(e) => setForm({ ...form, pulse: e.target.value })}
           />
           <input
-            className={`w-full sm:flex-1 h-10 p-2 border ${showComments ? "block" : "hidden"} rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-auto sm:flex-1 h-10 p-2 border ${options.showComments ? "block" : "hidden"} rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder="Comment"
             type="text"
             value={form.comment}
@@ -523,14 +590,14 @@ function App() {
             onChange={(e) => setForm({ ...form, comment: e.target.value })}
           />
           <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
+            className="w-auto sm:flex-auto h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             type="datetime-local"
             value={form.datetime}
             ref={refDat}
             onChange={(e) => setForm({ ...form, datetime: e.target.value })}
           />
           <button
-            className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500"
+            className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition duration-300"
             disabled={!form.systolic || !form.diastolic || !form.pulse}
           >
             Add
@@ -597,7 +664,6 @@ function App() {
           <BPChart readings={sortedReadings} />
         </div>
 
-        {/* <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow"> */}
         <div className="flex place-content-between">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Filter
@@ -625,16 +691,6 @@ function App() {
             onChange={(e) => setToDate(e.target.value)}
           />
         </div>
-        {/* <div className="flex tex-sm">
-          <p className="flex-1">{dayjs(fromDate).format("DD.MM.YYYY HH:mm")}</p>
-          <p className="flex-1">{dayjs(toDate).format("DD.MM.YYYY HH:mm")}</p>
-        </div> */}
-        {/*</div>*/}
-
-        {/* <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
-          <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
-            File section
-          </h2> */}
         {showPreview && (
           <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
             <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
@@ -687,7 +743,7 @@ function App() {
               <button
                 onClick={confirmImport}
                 disabled={importSummary.valid === 0}
-                className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50"
+                className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50 transition duration-300"
               >
                 Confirm Import
               </button>
@@ -697,7 +753,7 @@ function App() {
             </div>
           </div>
         )}
-        {showFileSection && (
+        {options.showFileSection && (
           <div className="flex gap-1 mt-3">
             <div
               onDrop={handleDrop}
@@ -742,40 +798,48 @@ function App() {
                   bg-transparent file:bg-gray-300 dark:file:bg-gray-700
                   hover:cursor-pointer hover:file:bg-gray-400 
                   dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
-                  transition-colors duration-300"
+                  transition-colors duration-300 file:transition-colors file:duration-300"
               />
             </div>
           </div>
         )}
-        {/* </div> */}
         <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
           <div className="flex gap-1">
             <h2
               className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60"
-              onClick={() => setIsGradient(!isGradient)}
+              onClick={() =>
+                setOptions({ ...options, showGradient: !options.showGradient })
+              }
             >
               Readings
             </h2>
-            <button
-              onClick={() => setShowFileSection(!showFileSection)}
+            {/* <button
+              onClick={() =>
+                setOptions({
+                  ...options,
+                  showFileSection: !options.showFileSection,
+                })
+              }
               className={`flex-shrink text-xs mb-2 ${
-                showFileSection
-                  ? "bg-blue-600 hover:bg-blue-500 text-gray-1000"
+                options.showFileSection
+                  ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
                   : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md`}
+              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
             >
               File Section
             </button>
             <button
-              onClick={() => setShowComments(!showComments)}
+              onClick={() =>
+                setOptions({ ...options, showComments: !options.showComments })
+              }
               className={`flex-shrink text-xs mb-2 ${
-                showComments
-                  ? "bg-blue-600 hover:bg-blue-500 text-gray-1000"
+                options.showComments
+                  ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
                   : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md`}
+              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
             >
               Comments
-            </button>
+            </button> */}
             <button
               onClick={deleteAllReadings}
               className={`flex-shrink text-xs mb-2 ${grayButtonStyle}`}
@@ -811,33 +875,33 @@ function App() {
             <ul className="mt-2 space-y-2">
               {sortedReadings.map((r) => {
                 const level = getBPLevel(r.systolic, r.diastolic);
-                const style = getBPStyle(level, isGradient);
+                const style = getBPStyle(level, options.showGradient);
 
                 return (
                   <li
                     key={r.id}
-                    className={`flex p-2 border-2 rounded shadow-sm ${style}`}
+                    className={`flex p-2 rounded shadow-sm border-[1px] transition duration-300 ${style}`}
                   >
                     <div className="flex flex-grow flex-col sm:flex-row ">
                       <span className="flex-1 text-left">
                         {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
                       </span>
                       <span
-                        className={`flex-1 text-center ${showComments ? "block" : "hidden"}`}
+                        className={`flex-1 text-center ${options.showComments ? "block" : "hidden"}`}
                       >
                         {r.comment}
                       </span>
                       <span
-                        className={`flex-1 sm:text-right ${isGradient ? "md:text-gray-50" : ""}`}
+                        className={`flex-1 sm:text-right ${options.showGradient ? "md:text-gray-50" : ""}`}
                       >
                         {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
                       </span>
                     </div>
                     <button
-                      className={`-m-2 ml-3 px-2 ${isGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90`}
+                      className={`-m-2 ml-3 px-2 font-mono text-sm ${options.showGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90 transition duration-300`}
                       onClick={() => deleteReading(r.id)}
                     >
-                      ❌
+                      x{/* ❌ */}
                     </button>
                   </li>
                 );
