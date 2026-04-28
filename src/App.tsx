@@ -1,36 +1,26 @@
 import { useEffect, useState } from "react";
+import type { Reading, Options } from "./types/BpTypes";
+import { getNow } from "./utils/date";
+import { grayButtonStyle } from "./utils/bp";
+import { parseCSV } from "./utils/csv";
+import { getAverages, calculateTrend } from "./utils/trend";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import dayjs from "dayjs";
-import BPChart from "./Chart";
+import BPChart from "./components/Chart";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { useRef } from "react";
-
-type Reading = {
-  id: number;
-  systolic: number;
-  diastolic: number;
-  pulse: number;
-  comment: string;
-  recorded_at: number;
-};
-
-type Options = {
-  showComments: Boolean;
-  showGradient: Boolean;
-  showFileSection: Boolean;
-};
+import { BpListPanel } from "./components/BpListPanel";
+import { InputForm } from "./components/InputForm";
+import { StatsPanel } from "./components/StatsPanel";
+import { Filter } from "./components/Filter";
 
 function App() {
-  const [readings, setReadings] = useState<Reading[]>(() => {
-    const saved = localStorage.getItem("readings");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
 
-  const [options, setOptions] = useState<Options>(() => {
-    const saved = localStorage.getItem("options");
-    return saved
-      ? JSON.parse(saved)
-      : { showComments: false, showGradient: false, showFileSection: false };
+  const [options, setOptions] = useLocalStorage<Options>("options", {
+    showComments: false,
+    showGradient: false,
+    showFileSection: false,
   });
 
   const [form, setForm] = useState({
@@ -78,33 +68,7 @@ function App() {
     }
 
     localStorage.setItem("theme", theme);
-    refSys.current?.focus();
   }, [theme]);
-
-  useEffect(() => {
-    localStorage.setItem("readings", JSON.stringify(readings));
-  }, [readings]);
-
-  useEffect(() => {
-    localStorage.setItem("options", JSON.stringify(options));
-  }, [options]);
-
-  function getNow() {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - offset * 60000);
-    return local.toISOString().slice(0, 16);
-  }
-
-  const sysCr = 180;
-  const sysH2 = 160;
-  const sysH1 = 140;
-  const sysEl = 130;
-
-  const diaCr = 109;
-  const diaH2 = 100;
-  const diaH1 = 90;
-  const diaEl = 85;
 
   const filteredReadings = readings.filter((r) => {
     if (!r.recorded_at) return true;
@@ -122,23 +86,6 @@ function App() {
   const sortedReadings = [...filteredReadings].sort(
     (a, b) => b.recorded_at - a.recorded_at,
   );
-
-  const refSys = useRef<HTMLInputElement>(null);
-  const refDia = useRef<HTMLInputElement>(null);
-  const refPls = useRef<HTMLInputElement>(null);
-  const refCom = useRef<HTMLInputElement>(null);
-  const refDat = useRef<HTMLInputElement>(null);
-
-  function handleEnter(
-    e: React.KeyboardEvent,
-    nextRef: React.RefObject<HTMLInputElement | null>,
-  ) {
-    if (!options.showComments && nextRef === refCom) nextRef = refDat;
-    if (e.key === "Enter" || e.key === "ArrowRight") {
-      e.preventDefault();
-      nextRef.current?.focus();
-    }
-  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,131 +110,35 @@ function App() {
       comment: "",
       datetime: getNow(),
     });
+  };
 
-    refSys.current?.focus();
+  const handleEdit = (
+    id: number,
+    sys: number,
+    dia: number,
+    pul: number,
+    com: string,
+    dat: string,
+  ) => {
+    setReadings(
+      readings.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              systolic: Number(sys),
+              diastolic: Number(dia),
+              pulse: Number(pul),
+              comment: com,
+              recorded_at: new Date(dat).getTime(),
+            }
+          : r,
+      ),
+    );
   };
 
   const deleteReading = (id: number) => {
     setReadings(readings.filter((r) => id != r.id));
   };
-
-  const averages = (() => {
-    if (filteredReadings.length === 0) {
-      return { systolic: 0, diastolic: 0, pulse: 0 };
-    }
-
-    const sum = filteredReadings.reduce(
-      (acc, r) => {
-        acc.systolic += r.systolic;
-        acc.diastolic += r.diastolic;
-        acc.pulse += r.pulse;
-        return acc;
-      },
-      { systolic: 0, diastolic: 0, pulse: 0 },
-    );
-
-    const count = sortedReadings.length;
-
-    return {
-      systolic: Math.round(sum.systolic / count),
-      diastolic: Math.round(sum.diastolic / count),
-      pulse: Math.round(sum.pulse / count),
-    };
-  })();
-
-  function calculateTrend(readings: typeof sortedReadings) {
-    if (readings.length < 2) {
-      return { slope: 0, trend: "stable" as const };
-    }
-
-    // sort by date
-    const sorted = [...readings].sort(
-      (a, b) =>
-        new Date(a.recorded_at || "").getTime() -
-        new Date(b.recorded_at || "").getTime(),
-    );
-
-    // x = index, y = systolic
-    const x = sorted.map((_, i) => i);
-    const y = sorted.map((r) => (r.systolic + r.diastolic) / 2);
-
-    const n = x.length;
-
-    const sumX = x.reduce((a, b) => a + b, 0);
-    const sumY = y.reduce((a, b) => a + b, 0);
-    const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
-    const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
-
-    // slope formula
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-
-    let trend: "up" | "down" | "stable" = "stable";
-
-    if (slope > 0.5) trend = "up";
-    else if (slope < -0.5) trend = "down";
-
-    return { slope, trend };
-  }
-
-  const { slope, trend } = calculateTrend(sortedReadings);
-
-  function getBPLevel(systolic: number, diastolic: number) {
-    if (systolic >= sysCr || diastolic >= diaCr) return "crisis";
-    if (systolic >= sysH2 || diastolic >= diaH2) return "high2";
-    if (systolic >= sysH1 || diastolic >= diaH1) return "high1";
-    if (systolic >= sysEl || diastolic >= diaEl) return "elevated";
-    return "normal";
-  }
-
-  function getBPStyle(level: string, isGrad: Boolean) {
-    if (isGrad) {
-      switch (level) {
-        case "crisis":
-          return `bg-gradient-to-r from-red-700 to-red-950 border-red-800 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50 font-bold`;
-        case "high2":
-          return `bg-gradient-to-r from-red-500 to-red-950 border-red-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50`;
-        case "high1":
-          return `bg-gradient-to-r from-orange-400 to-orange-950 border-orange-500 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
-        case "elevated":
-          return `bg-gradient-to-r from-yellow-300 to-yellow-950 border-yellow-400 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
-        default:
-          return `bg-gradient-to-r from-emerald-500 to-emerald-950 border-emerald-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
-        // return `bg-gradient-to-r from-[#2dd4bf]  to-[#1f2937] border-green-600 text-gray-950`;
-      }
-    }
-    switch (level) {
-      case "crisis":
-        return `bg-red-700 border-red-800 text-gray-50 font-bold`;
-      case "high2":
-        return `bg-red-500 border-red-600 text-gray-50`;
-      case "high1":
-        return `bg-orange-400 border-orange-500 text-gray-950`;
-      case "elevated":
-        return `bg-yellow-300 border-yellow-400 text-gray-950`;
-      default:
-        return `bg-emerald-500 border-emerald-600 text-gray-950`;
-    }
-  }
-
-  const avgLevel = getBPLevel(averages.systolic, averages.diastolic);
-
-  const avgTextStyle = {
-    crisis: `text-xl font-bold underline underline-offset-2 decoration-red-700`,
-    high2: `text-xl font-bold underline underline-offset-2 decoration-red-300 dark:decoration-red-500`,
-    high1: `text-xl font-bold underline underline-offset-2 decoration-orange-400`,
-    elevated: `text-xl font-bold underline underline-offset-2 decoration-yellow-500 dark:decoration-yellow-300`,
-    normal: `text-xl font-bold underline underline-offset-2 decoration-emerald-500`,
-  };
-
-  const trendTextStyle = {
-    up: "text-xl underline underline-offset-2 decoration-red-400 dark:decoration-red-700 font-bold flex justify-center",
-    down: "text-xl underline underline-offset-2 decoration-emerald-500 font-bold flex justify-center",
-    stable:
-      "text-xl underline underline-offset-2 decoration-gray-50 text-gray-900 dark:text-gray-100 font-bold flex justify-center",
-  };
-
-  const grayButtonStyle =
-    "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md hover:bg-gray-400 dark:hover:bg-gray-600 transition duration-300";
 
   function exportToCSV() {
     const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse", "Comment"];
@@ -315,44 +166,6 @@ function App() {
     a.click();
 
     URL.revokeObjectURL(url);
-  }
-
-  function parseCSV(text: string) {
-    const lines = text
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0)
-      .slice(1);
-
-    let valid = 0;
-    let invalid = 0;
-
-    const parsed = lines
-      .map((line) => {
-        const parts = line.split(";");
-
-        const reading = {
-          id: Number(parts[0]) || Date.now() + Math.random(),
-          recorded_at: new Date(parts[1]).getTime(),
-          systolic: Number(parts[2]),
-          diastolic: Number(parts[3]),
-          pulse: Number(parts[4]),
-          comment: parts[5].toString(),
-        };
-
-        const isValid =
-          !isNaN(reading.systolic) &&
-          !isNaN(reading.diastolic) &&
-          !isNaN(reading.pulse) &&
-          !isNaN(reading.recorded_at);
-        if (isValid) valid++;
-        else invalid++;
-
-        return isValid ? reading : null;
-      })
-      .filter(Boolean) as Reading[];
-
-    return { parsed, total: lines.length, valid, invalid };
   }
 
   function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
@@ -444,6 +257,10 @@ function App() {
       r.comment,
     ]);
 
+    const averages = getAverages(sortedReadings);
+
+    const { trend } = calculateTrend(sortedReadings);
+
     doc.setFontSize(16);
     doc.text("Blood Pressure Report", 14, 15);
 
@@ -486,6 +303,20 @@ function App() {
     setFromDate("");
     setToDate("");
   }
+
+  const bpListPanelState = {
+    options,
+    setOptions,
+    deleteAll,
+    setDeleteAll,
+  };
+
+  const bpListPanelActions = {
+    deleteAllReadings,
+    confirmDeleteAll,
+    deleteReading,
+    handleEdit,
+  };
 
   return (
     <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center transition-colors duration-300">
@@ -552,145 +383,28 @@ function App() {
             </div>
           </div>
         )}
-        <form
+        <InputForm
+          form={form}
+          setForm={setForm}
+          isEditing={false}
+          setIsEditing={null}
           onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-2"
-        >
-          <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
-            placeholder="Systolic"
-            value={form.systolic}
-            ref={refSys}
-            onKeyDown={(e) => handleEnter(e, refDia)}
-            onChange={(e) => setForm({ ...form, systolic: e.target.value })}
-          />
-          <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
-            placeholder="Diastolic"
-            value={form.diastolic}
-            ref={refDia}
-            onKeyDown={(e) => handleEnter(e, refPls)}
-            onChange={(e) => setForm({ ...form, diastolic: e.target.value })}
-          />
-          <input
-            className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
-            placeholder="Pulse"
-            value={form.pulse}
-            ref={refPls}
-            onKeyDown={(e) => handleEnter(e, refCom)}
-            onChange={(e) => setForm({ ...form, pulse: e.target.value })}
-          />
-          <input
-            className={`w-auto sm:flex-1 h-10 p-2 border ${options.showComments ? "block" : "hidden"} rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
-            placeholder="Comment"
-            type="text"
-            value={form.comment}
-            ref={refCom}
-            onKeyDown={(e) => handleEnter(e, refDat)}
-            onChange={(e) => setForm({ ...form, comment: e.target.value })}
-          />
-          <input
-            className="w-auto sm:flex-auto h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
-            type="datetime-local"
-            value={form.datetime}
-            ref={refDat}
-            onChange={(e) => setForm({ ...form, datetime: e.target.value })}
-          />
-          <button
-            className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition duration-300"
-            disabled={!form.systolic || !form.diastolic || !form.pulse}
-          >
-            Add
-          </button>
-        </form>
-
-        <div className="max-w-4xl bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-t-xl shadow mt-4 mb-2 transition-colors duration-300">
-          <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-            Average (Selected Range: {filteredReadings.length} readings)
-          </h2>
-          {filteredReadings.length === 0 ? (
-            <p className="text-gray-500">No data</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 sm:place-content-evenly gap-4 text-center">
-              <div>
-                <p className="text-sm text-gray-500">Systolic</p>
-                <p className={avgTextStyle[avgLevel]}>{averages.systolic}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Diastolic</p>
-                <p className={avgTextStyle[avgLevel]}>{averages.diastolic}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Pulse</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  {averages.pulse}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 text-wrap">
-                  Trend (Regression)
-                </p>
-                <div className="flex place-content-center">
-                  {trend === "up" && (
-                    <div className={trendTextStyle.up}>
-                      <p>↑</p>
-                      <p className="hidden md:block">&nbsp;Increasing</p>
-                    </div>
-                  )}
-                  {trend == "down" && (
-                    <div className={trendTextStyle.down}>
-                      <p>↓</p>
-                      <p className="hidden sm:block">&nbsp;Improving</p>
-                    </div>
-                  )}
-                  {trend == "stable" && (
-                    <div className={trendTextStyle.stable}>
-                      <p>→</p>
-                      <p className="hidden md:block">&nbsp;Stable</p>
-                    </div>
-                  )}
-                  <p className="text-sm text-gray-500 mt-[6px] ml-2">
-                    {slope.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+          options={options}
+        />
+        <StatsPanel sortedReadings={sortedReadings} />
         <div className="w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow mb-4 transition-colors duration-300">
           <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
             Trend
           </h2>
           <BPChart readings={sortedReadings} />
         </div>
-
-        <div className="flex place-content-between">
-          <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-            Filter
-          </h2>
-          <button
-            onClick={resetFilter}
-            className={`col-span-1 text-xs mb-2 ${grayButtonStyle}`}
-          >
-            Reset
-          </button>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            className="w-full sd:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
-            //type="datetime-local"
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
-          <input
-            className="w-full sd:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
-            //type="datetime-local"
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
-        </div>
+        <Filter
+          onResetFilter={resetFilter}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
+        />
         {showPreview && (
           <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
             <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
@@ -803,112 +517,11 @@ function App() {
             </div>
           </div>
         )}
-        <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
-          <div className="flex gap-1">
-            <h2
-              className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60"
-              onClick={() =>
-                setOptions({ ...options, showGradient: !options.showGradient })
-              }
-            >
-              Readings
-            </h2>
-            {/* <button
-              onClick={() =>
-                setOptions({
-                  ...options,
-                  showFileSection: !options.showFileSection,
-                })
-              }
-              className={`flex-shrink text-xs mb-2 ${
-                options.showFileSection
-                  ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                  : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
-            >
-              File Section
-            </button>
-            <button
-              onClick={() =>
-                setOptions({ ...options, showComments: !options.showComments })
-              }
-              className={`flex-shrink text-xs mb-2 ${
-                options.showComments
-                  ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                  : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-              } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
-            >
-              Comments
-            </button> */}
-            <button
-              onClick={deleteAllReadings}
-              className={`flex-shrink text-xs mb-2 ${grayButtonStyle}`}
-            >
-              Clear all
-            </button>
-          </div>
-          {deleteAll && (
-            <div>
-              <p className=" mt-2 text-md text-gray-500">
-                Delete all readings?
-              </p>
-              <div className="flex gap-2 mt-1 mb-6">
-                <button
-                  onClick={confirmDeleteAll}
-                  disabled={readings.length === 0}
-                  className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50"
-                >
-                  Confirm delete
-                </button>
-                <button
-                  onClick={() => setDeleteAll(false)}
-                  className={grayButtonStyle}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-          {filteredReadings.length === 0 ? (
-            <p className="text-gray-500 mt-2">No data</p>
-          ) : (
-            <ul className="mt-2 space-y-2">
-              {sortedReadings.map((r) => {
-                const level = getBPLevel(r.systolic, r.diastolic);
-                const style = getBPStyle(level, options.showGradient);
-
-                return (
-                  <li
-                    key={r.id}
-                    className={`flex p-2 rounded shadow-sm border-[1px] transition duration-300 ${style}`}
-                  >
-                    <div className="flex flex-grow flex-col sm:flex-row ">
-                      <span className="flex-1 text-left">
-                        {r.systolic} / {r.diastolic} (Pulse: {r.pulse})
-                      </span>
-                      <span
-                        className={`flex-1 text-center ${options.showComments ? "block" : "hidden"}`}
-                      >
-                        {r.comment}
-                      </span>
-                      <span
-                        className={`flex-1 sm:text-right ${options.showGradient ? "md:text-gray-50" : ""}`}
-                      >
-                        {dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}
-                      </span>
-                    </div>
-                    <button
-                      className={`-m-2 ml-3 px-2 font-mono text-sm ${options.showGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90 transition duration-300`}
-                      onClick={() => deleteReading(r.id)}
-                    >
-                      x{/* ❌ */}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+        <BpListPanel
+          sortedReadings={sortedReadings}
+          state={bpListPanelState}
+          actions={bpListPanelActions}
+        />
       </div>
     </div>
   );

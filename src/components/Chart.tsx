@@ -7,6 +7,7 @@ import {
   Legend,
   Tooltip,
 } from "chart.js";
+import type { Reading } from "../types/BpTypes";
 
 import { Line } from "react-chartjs-2";
 
@@ -23,15 +24,6 @@ ChartJS.register(
 );
 
 ChartJS.register(annotationPlugin);
-
-type Reading = {
-  id: number;
-  systolic: number;
-  diastolic: number;
-  pulse: number;
-  comment: string;
-  recorded_at: number;
-};
 
 export default function BPChart({ readings }: { readings: Reading[] }) {
   const sorted = [...readings].reverse(); // oldest -> newest
