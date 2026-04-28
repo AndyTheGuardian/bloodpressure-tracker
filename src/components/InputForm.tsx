@@ -50,7 +50,7 @@ export function InputForm({
         onKeyDown={(e) => handleEnter(e, refDia)}
         onChange={(e) => setForm({ ...form, systolic: e.target.value })}
       />
-      {isEditing ? <span className="py-2 sd:hidden">/</span> : <></>}
+      {isEditing ? <span className="py-2 hidden sm:block">/</span> : <></>}
       <input
         className="w-full sm:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
         placeholder="Diastolic"
@@ -79,7 +79,7 @@ export function InputForm({
         />
       )}
       <input
-        className="w-48 sm:flex-auto h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
+        className="w-fit sm:flex-auto h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
         type="datetime-local"
         value={form.datetime}
         ref={refDat}

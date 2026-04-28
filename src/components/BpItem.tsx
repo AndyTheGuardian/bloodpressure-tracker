@@ -79,7 +79,7 @@ export function BpItem({ reading, onEdit, onDelete, options }: Props) {
             </span>
           </div>
           <button
-            className={`-m-2 ml-3 pt-[2px] px-2 font-mono text-sm text ${options.showGradient ? "md:text-gray-50" : ""} hover:underline`}
+            className={`-m-2 ml-3 pt-[2px] px-2 font-mono text-sm text ${options.showGradient ? "text-gray-50" : ""} hover:underline`}
             onClick={handleEdit}
           >
             Edit
