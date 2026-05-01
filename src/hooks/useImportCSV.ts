@@ -3,18 +3,20 @@ import type { Reading } from "../types/BpTypes";
 import { parseCSV } from "../utils/parseCSV";
 import { getFingerprint } from "../utils/fingerprint";
 
+type PreviewRow = {
+  data: Reading | null;
+  errors: string[];
+  isDuplicate?: boolean;
+};
+
 type Preview = {
-  rows: {
-    data: Reading | null;
-    errors: string[];
-    isDuplicate?: boolean;
-  }[];
+  rows: PreviewRow[];
   total: number;
   valid: number;
   invalid: number;
 };
 
-export function useImportExport({
+export function useImportCSV({
   readings,
   setReadings,
 }: {
@@ -67,9 +69,6 @@ export function useImportExport({
         });
 
         setImportError(null);
-        console.log(
-          `Imported: ${result.valid} valid, ${result.invalid} invalid`,
-        );
       } catch (err) {
         console.error(err);
 
