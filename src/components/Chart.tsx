@@ -25,7 +25,7 @@ ChartJS.register(
 
 ChartJS.register(annotationPlugin);
 
-export default function BPChart({ readings }: { readings: Reading[] }) {
+export default function Chart({ readings }: { readings: Reading[] }) {
   const sorted = [...readings].reverse(); // oldest -> newest
 
   const x = sorted.map((_, i) => i);
@@ -214,5 +214,12 @@ export default function BPChart({ readings }: { readings: Reading[] }) {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <div className="w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow mb-4 transition-colors duration-300">
+      <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
+        Trend
+      </h2>
+      <Line data={data} options={options} />
+    </div>
+  );
 }

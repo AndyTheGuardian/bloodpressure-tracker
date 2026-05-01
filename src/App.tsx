@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import type { Reading, Options } from "./types/BpTypes";
 import { getNow } from "./utils/date";
 import { grayButtonStyle } from "./utils/bp";
-import { parseCSV } from "./utils/csv";
 import { getAverages, calculateTrend } from "./utils/trend";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import dayjs from "dayjs";
-import BPChart from "./components/Chart";
+import Chart from "./components/Chart";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { BpListPanel } from "./components/BpListPanel";
+import { ReadingsPanel } from "./components/ReadingsPanel";
 import { InputForm } from "./components/InputForm";
 import { StatsPanel } from "./components/StatsPanel";
 import { Filter } from "./components/Filter";
+import { FileSection } from "./components/FileSection";
+import { ImportPreviewModal } from "./components/ImportPreviewModal";
+import { useImportExport } from "./hooks/useImportExport";
 
 function App() {
   const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
@@ -33,18 +35,16 @@ function App() {
 
   const [settings, setSettings] = useState(false);
 
-  const [importSummary, setImportSummary] = useState({
-    total: 0,
-    valid: 0,
-    invalid: 0,
-  });
-
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const [previewData, setPreviewData] = useState<Reading[]>([]);
-  const [showPreview, setShowPreview] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const {
+    handleFile,
+    importPreview,
+    importError,
+    confirmImport,
+    cancelImport,
+  } = useImportExport({ readings, setReadings });
 
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -168,84 +168,6 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
-  function handleImportCSV(e: React.ChangeEvent<HTMLInputElement>) {
-    const input = e.target; // store reference
-    const file = input.files?.[0];
-    file ? console.info("File exists") : console.warn("File doen't exist");
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-
-      const { parsed, total, valid, invalid } = parseCSV(text);
-
-      setPreviewData(parsed);
-      setImportSummary({
-        total,
-        valid,
-        invalid,
-      });
-      setShowPreview(true);
-
-      // reset input
-      input.value = "";
-    };
-
-    reader.readAsText(file);
-  }
-
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    setIsDragging(false);
-
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (!file.name.endsWith(".csv")) {
-      alert("Please upload a CSV file");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-
-      const { parsed, total, valid, invalid } = parseCSV(text);
-
-      setPreviewData(parsed);
-      setImportSummary({ total, valid, invalid });
-      setShowPreview(true);
-    };
-
-    reader.readAsText(file);
-  }
-
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault();
-    setIsDragging(true);
-  }
-
-  function handleDragLeave() {
-    setIsDragging(false);
-  }
-
-  function confirmImport() {
-    setReadings((prev) => {
-      const existingIds = new Set(prev.map((r) => r.id));
-      const newOnes = previewData.filter((r) => !existingIds.has(r.id));
-      return [...prev, ...newOnes];
-    });
-    setPreviewData([]);
-    setShowPreview(false);
-  }
-
-  function cancelImport() {
-    setPreviewData([]);
-    setShowPreview(false);
-  }
-
   function exportToPDF() {
     const doc = new jsPDF();
 
@@ -304,18 +226,24 @@ function App() {
     setToDate("");
   }
 
-  const bpListPanelState = {
+  const ReadingsPanelState = {
     options,
     setOptions,
     deleteAll,
     setDeleteAll,
   };
 
-  const bpListPanelActions = {
+  const ReadingsPanelActions = {
     deleteAllReadings,
     confirmDeleteAll,
     deleteReading,
     handleEdit,
+  };
+
+  const FileSectionActions = {
+    handleFile,
+    exportToCSV,
+    exportToPDF,
   };
 
   return (
@@ -392,12 +320,7 @@ function App() {
           options={options}
         />
         <StatsPanel sortedReadings={sortedReadings} />
-        <div className="w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow mb-4 transition-colors duration-300">
-          <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-            Trend
-          </h2>
-          <BPChart readings={sortedReadings} />
-        </div>
+        <Chart readings={sortedReadings} />
         <Filter
           onResetFilter={resetFilter}
           fromDate={fromDate}
@@ -405,122 +328,25 @@ function App() {
           toDate={toDate}
           setToDate={setToDate}
         />
-        {showPreview && (
-          <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
-            <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
-              Preview Import
-            </h2>
-            <p className="text-xs mb-1 text-gray-700 dark:text-gray-300">
-              Showing first 5 of {previewData.length} entries
-            </p>
-            <div className="max-h-40 overflow-auto text-sm rounded shadow bg-gray-200 dark:bg-gray-900 p-2">
-              <table className="w-full text-left">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Sys</th>
-                    <th>Dia</th>
-                    <th>Pulse</th>
-                    <th>Comment</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {previewData.slice(0, 5).map((r) => (
-                    <tr key={r.id}>
-                      <td>{dayjs(r.recorded_at).format("DD.MM.YYYY HH:mm")}</td>
-                      <td>{r.systolic}</td>
-                      <td>{r.diastolic}</td>
-                      <td>{r.pulse}</td>
-                      <td>{r.comment}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
-              Total: {importSummary.total} |{" "}
-              <span className="text-emerald-500 font-semibold">
-                Valid: {importSummary.valid}
-              </span>{" "}
-              |{" "}
-              <span className="text-red-500 font-semibold">
-                Invalid: {importSummary.invalid}
-              </span>
-            </p>
-            {importSummary.invalid > 0 && (
-              <p className="text-red-500 text-sm mt-1">
-                Some rows could not be imported.
-              </p>
-            )}
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={confirmImport}
-                disabled={importSummary.valid === 0}
-                className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50 transition duration-300"
-              >
-                Confirm Import
-              </button>
-              <button onClick={cancelImport} className={grayButtonStyle}>
-                Cancel
-              </button>
-            </div>
+        {importError && (
+          <div className="mt-3 p-3 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
+            ⚠️ {importError}
           </div>
+        )}
+        {importPreview && (
+          <ImportPreviewModal
+            preview={importPreview}
+            onConfirm={confirmImport}
+            onCancel={cancelImport}
+          />
         )}
         {options.showFileSection && (
-          <div className="flex gap-1 mt-3">
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              className={`p-2 flex-1 w-1/2 border-2 border-dashed rounded-lg text-center transition hidden md:block ${
-                isDragging
-                  ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
-                  : "border-gray-300 dark:border-gray-600"
-              }`}
-            >
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Drag & drop CSV here
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-                or use file upload
-              </p>
-            </div>
-            <div className="flex-1 md:w-1/2 flex flex-row md:grid md:grid-col-2 gap-1">
-              <button
-                onClick={exportToCSV}
-                className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
-              >
-                → CSV
-              </button>
-              <button
-                onClick={exportToPDF}
-                className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
-              >
-                → PDF
-              </button>
-              <input
-                type="file"
-                accept=".csv"
-                title="Import CSV"
-                onChange={handleImportCSV}
-                className="w-1/2 md:w-full md:col-span-2
-                  text-xs text-gray-900 dark:text-gray-100 file:text-gray-900 dark:file:text-gray-100
-                  file:py-1 file:px-2 file:h-full
-                  file:rounded-s-xs file:border-none shadow-md
-                  border-[1px] border-gray-300 dark:border-gray-700 rounded
-                  bg-transparent file:bg-gray-300 dark:file:bg-gray-700
-                  hover:cursor-pointer hover:file:bg-gray-400 
-                  dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
-                  transition-colors duration-300 file:transition-colors file:duration-300"
-              />
-            </div>
-          </div>
+          <FileSection actions={FileSectionActions} />
         )}
-        <BpListPanel
+        <ReadingsPanel
           sortedReadings={sortedReadings}
-          state={bpListPanelState}
-          actions={bpListPanelActions}
+          state={ReadingsPanelState}
+          actions={ReadingsPanelActions}
         />
       </div>
     </div>

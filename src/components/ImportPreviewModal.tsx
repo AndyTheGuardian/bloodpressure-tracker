@@ -1,0 +1,109 @@
+import dayjs from "dayjs";
+import type { Reading } from "../types/BpTypes";
+import { grayButtonStyle } from "../utils/bp";
+
+type Props = {
+  preview: {
+    rows: {
+      data: Reading | null;
+      errors: string[];
+      isDuplicate?: boolean;
+    }[];
+    total: number;
+    valid: number;
+    invalid: number;
+  };
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+export function ImportPreviewModal({ preview, onConfirm, onCancel }: Props) {
+  const duplicates = preview.rows.filter((r) => r.isDuplicate).length;
+  return (
+    <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
+      <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
+        Preview Import
+      </h2>
+      {/* <p className="text-xs mb-1 text-gray-700 dark:text-gray-300">
+        Showing first 5 of {preview.rows.length} entries
+      </p> */}
+      <div className="max-h-40 overflow-auto text-sm rounded shadow bg-gray-200 dark:bg-gray-900 p-2">
+        <table className="w-full text-left">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Sys</th>
+              <th>Dia</th>
+              <th>Pulse</th>
+              <th>Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            {preview.rows.slice(0, preview.rows.length).map((r) => (
+              <tr
+                key={r.data?.id}
+                className={
+                  r.errors.length
+                    ? "bg-red-100 dark:bg-red-900/40"
+                    : r.isDuplicate
+                      ? "bg-yellow-100 dark:bg-yellow-900/40"
+                      : ""
+                }
+              >
+                <td>{dayjs(r.data?.recorded_at).format("DD.MM.YYYY HH:mm")}</td>
+                <td>{r.data?.systolic}</td>
+                <td>{r.data?.diastolic}</td>
+                <td>{r.data?.pulse}</td>
+                <td>{r.data?.comment}</td>
+                <td>
+                  {r.errors.join(", ")}
+                  {r.isDuplicate && " Duplicate"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
+        Total: {preview.total} |{" "}
+        <span className="text-emerald-500 font-semibold">
+          Valid: {preview.valid}
+        </span>{" "}
+        |{" "}
+        <span className="text-red-500 font-semibold">
+          Invalid: {preview.invalid}
+        </span>{" "}
+        |{" "}
+        <span className="text-yellow-500 font-semibold">
+          Duplicates: {duplicates}
+        </span>
+      </p>
+      {preview.invalid > 0 && (
+        <p className="text-red-500 text-sm mt-1 font-semibold">
+          Some rows could not be imported.
+        </p>
+      )}
+      {duplicates > 0 && (
+        <p className="text-yellow-500 text-sm mt-1 font-semibold">
+          Duplicate rows will not be imported.
+        </p>
+      )}
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={onConfirm}
+          disabled={preview.valid === 0}
+          className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-20 transition duration-300"
+        >
+          <span>Confirm Import</span>
+          {preview.invalid > 0 || duplicates > 0
+            ? ` ${preview.valid - duplicates}/${preview.total}`
+            : ""}
+        </button>
+        <button onClick={onCancel} className={grayButtonStyle}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}

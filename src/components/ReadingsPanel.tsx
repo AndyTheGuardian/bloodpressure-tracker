@@ -1,6 +1,6 @@
 import type { Reading, Options } from "../types/BpTypes";
 import { grayButtonStyle, getBPLevel, getBPStyle } from "../utils/bp";
-import { BpItem } from "./BpItem";
+import { ReadingItem } from "./ReadingItem";
 
 type Props = {
   sortedReadings: Reading[];
@@ -27,7 +27,7 @@ type Props = {
   };
 };
 
-export function BpListPanel({ sortedReadings, state, actions }: Props) {
+export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
   const { options, setOptions, deleteAll, setDeleteAll } = state;
   const { deleteAllReadings, confirmDeleteAll, handleEdit, deleteReading } =
     actions;
@@ -109,7 +109,7 @@ export function BpListPanel({ sortedReadings, state, actions }: Props) {
                 key={r.id}
                 className={`flex p-2 rounded shadow-sm border-[1px] transition duration-300 ${style}`}
               >
-                <BpItem
+                <ReadingItem
                   reading={r}
                   onEdit={handleEdit}
                   onDelete={deleteReading}
