@@ -25,6 +25,7 @@ export function useImportCSV({
 }) {
   const [importPreview, setImportPreview] = useState<Preview | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [overwriteDuplicates, setOverwriteDuplicates] = useState(false);
 
   function handleFile(file: File) {
     if (!file) return;
@@ -88,12 +89,26 @@ export function useImportCSV({
   function confirmImport() {
     if (!importPreview) return;
 
-    const clean = importPreview.rows
-      .filter((r) => r.data && !r.isDuplicate)
-      .map((r) => r.data!);
+    const validRows = importPreview.rows.filter((r) => r.data);
 
-    setReadings((prev) => [...prev, ...clean]);
+    if (overwriteDuplicates) {
+      const map = new Map<string, Reading>();
 
+      readings.forEach((r) => {
+        map.set(getFingerprint(r), r);
+      });
+
+      validRows.forEach((r) => {
+        const data = r.data!;
+        map.set(getFingerprint(data), data);
+      });
+
+      setReadings(Array.from(map.values()));
+    } else {
+      const clean = validRows.filter((r) => !r.isDuplicate).map((r) => r.data!);
+
+      setReadings((prev) => [...prev, ...clean]);
+    }
     setImportPreview(null);
   }
 
@@ -107,5 +122,7 @@ export function useImportCSV({
     importError,
     confirmImport,
     cancelImport,
+    overwriteDuplicates,
+    setOverwriteDuplicates,
   };
 }

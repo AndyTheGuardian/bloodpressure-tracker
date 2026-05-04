@@ -15,9 +15,17 @@ type Props = {
   };
   onConfirm: () => void;
   onCancel: () => void;
+  overwriteDuplicates: boolean;
+  setOverwriteDuplicates: (v: boolean) => void;
 };
 
-export function ImportPreviewModal({ preview, onConfirm, onCancel }: Props) {
+export function ImportPreviewModal({
+  preview,
+  onConfirm,
+  onCancel,
+  overwriteDuplicates,
+  setOverwriteDuplicates,
+}: Props) {
   const duplicates = preview.rows.filter((r) => r.isDuplicate).length;
   return (
     <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
@@ -84,19 +92,30 @@ export function ImportPreviewModal({ preview, onConfirm, onCancel }: Props) {
           Some rows could not be imported.
         </p>
       )}
+      <label className="flex items-center gap-2 mt-2">
+        <input
+          type="checkbox"
+          className="h-[14px] w-[14px] cursor-pointer transition hover:shadow-md border-2 border-gray-500 bg-red-500 rounded appearance-none checked:bg-emerald-500 checked:border-gray-500"
+          checked={overwriteDuplicates}
+          onChange={(e) => setOverwriteDuplicates(e.target.checked)}
+        />
+        <span className="text-sm font-semibold">Overwrite duplicates</span>
+      </label>
       {duplicates > 0 && (
-        <p className="text-yellow-500 text-sm mt-1 font-semibold">
-          Duplicate rows will not be imported.
+        <p className="text-gray-500 text-sm mt-1 font-semibold">
+          {overwriteDuplicates
+            ? `${duplicates} entries will be replaced`
+            : `${duplicates} duplicates will be skipped`}
         </p>
       )}
       <div className="flex gap-2 mt-3">
         <button
           onClick={onConfirm}
-          disabled={preview.valid === 0}
-          className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-20 transition duration-300"
+          //disabled={preview.valid === 0}
+          className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-20 disabled:bg-red-500 transition duration-300"
         >
           <span>Confirm Import</span>
-          {preview.invalid > 0 || duplicates > 0
+          {preview.invalid > 0 || (!overwriteDuplicates && duplicates > 0)
             ? ` ${preview.valid - duplicates}/${preview.total}`
             : ""}
         </button>

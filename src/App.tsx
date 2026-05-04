@@ -41,6 +41,8 @@ function App() {
     importError,
     confirmImport,
     cancelImport,
+    overwriteDuplicates,
+    setOverwriteDuplicates,
   } = useImportCSV({ readings, setReadings });
 
   const { exportToCSV, exportToPDF } = useExportData(readings);
@@ -265,6 +267,8 @@ function App() {
             preview={importPreview}
             onConfirm={confirmImport}
             onCancel={cancelImport}
+            overwriteDuplicates={overwriteDuplicates}
+            setOverwriteDuplicates={setOverwriteDuplicates}
           />
         )}
         {options.showFileSection && (
