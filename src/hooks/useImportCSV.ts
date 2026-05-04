@@ -1,20 +1,9 @@
 import { useState } from "react";
 import type { Reading } from "../types/BpTypes";
+import type { Parsed } from "../types/ParsedData";
 import { parseCSV } from "../utils/parseCSV";
 import { getFingerprint } from "../utils/fingerprint";
-
-type PreviewRow = {
-  data: Reading | null;
-  errors: string[];
-  isDuplicate?: boolean;
-};
-
-type Preview = {
-  rows: PreviewRow[];
-  total: number;
-  valid: number;
-  invalid: number;
-};
+import { detectDuplicates } from "../utils/detectDuplicates";
 
 export function useImportCSV({
   readings,
@@ -23,7 +12,7 @@ export function useImportCSV({
   readings: Reading[];
   setReadings: React.Dispatch<React.SetStateAction<Reading[]>>;
 }) {
-  const [importPreview, setImportPreview] = useState<Preview | null>(null);
+  const [importPreview, setImportPreview] = useState<Parsed | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [overwriteDuplicates, setOverwriteDuplicates] = useState(false);
 
@@ -43,33 +32,39 @@ export function useImportCSV({
 
         const result = parseCSV(text);
 
-        const existingSet = new Set(
-          Array.isArray(readings) ? readings.map(getFingerprint) : [],
-        );
+        const rowsWithDuplicates = detectDuplicates(readings, result.rows);
 
-        const seen = new Set<string>();
+        // const existingSet = new Set(
+        //   Array.isArray(readings) ? readings.map(getFingerprint) : [],
+        // );
 
-        const rowsWithDuplicates = result.rows.map((row) => {
-          if (!row.data) return row;
+        // const seen = new Set<string>();
 
-          const fp = getFingerprint(row.data);
+        // const rowsWithDuplicates = result.rows.map((row) => {
+        //   if (!row.data) return row;
 
-          const isDuplicate = existingSet.has(fp) || seen.has(fp);
+        //   const fp = getFingerprint(row.data);
 
-          seen.add(fp);
+        //   const isDuplicate = existingSet.has(fp) || seen.has(fp);
 
-          return {
-            ...row,
-            isDuplicate,
-          };
-        });
+        //   seen.add(fp);
 
-        setImportPreview({
-          ...result,
-          rows: rowsWithDuplicates,
-        });
+        //   return {
+        //     ...row,
+        //     isDuplicate,
+        //   };
+        // });
+        if (result.error) {
+          setImportError(result.error);
+          setImportPreview(null);
+        } else {
+          setImportPreview({
+            ...result,
+            rows: rowsWithDuplicates,
+          });
 
-        setImportError(null);
+          setImportError(null);
+        }
       } catch (err) {
         console.error(err);
 

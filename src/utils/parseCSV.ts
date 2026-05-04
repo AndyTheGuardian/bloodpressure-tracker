@@ -1,11 +1,12 @@
 import type { Reading } from "../types/BpTypes";
+import type { ParsedRow } from "../types/ParsedData";
 import { REQUIRED_HEADERS } from "./csvSchema";
 
-type ParsedRow = {
-  data: Reading | null;
-  errors: string[];
-  isDuplicate?: boolean;
-};
+// type ParsedRow = {
+//   data: Reading | null;
+//   errors: string[];
+//   isDuplicate?: boolean;
+// };
 
 export function parseCSV(text: string) {
   const lines = text
@@ -14,15 +15,41 @@ export function parseCSV(text: string) {
     .map((l) => l.trim())
     .filter((l) => l.length > 0); // remove empty lines
 
+  // if (lines.length < 2) {
+  //   throw new Error("CSV must contain header + at least one row");
+  // }
+  if (lines.length === 0 || lines[0].trim() === "") {
+    return {
+      rows: [],
+      total: 0,
+      valid: 0,
+      invalid: 0,
+      error: "CSV must contain header",
+    };
+  }
+
   if (lines.length < 2) {
-    throw new Error("CSV must contain header + at least one row");
+    return {
+      rows: [],
+      total: 0,
+      valid: 0,
+      invalid: 0,
+      error: "CSV contains no data rows",
+    };
   }
 
   const headers = lines[0].split(";").map((h) => h.trim().toLowerCase());
 
   const missing = REQUIRED_HEADERS.filter((h) => !headers.includes(h));
   if (missing.length > 0) {
-    throw new Error(`Missing headers: ${missing.join(", ")}`);
+    //throw new Error(`Missing headers: ${missing.join(", ")}`);
+    return {
+      rows: [],
+      total: 0,
+      valid: 0,
+      invalid: 0,
+      error: `Missing headers: ${missing.join(", ")}`,
+    };
   }
 
   const results: ParsedRow[] = [];
@@ -90,5 +117,6 @@ export function parseCSV(text: string) {
     total: results.length,
     valid: valid.length,
     invalid: invalid.length,
+    error: "",
   };
 }

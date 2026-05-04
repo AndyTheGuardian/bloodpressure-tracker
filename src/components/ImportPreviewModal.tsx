@@ -1,18 +1,20 @@
 import dayjs from "dayjs";
-import type { Reading } from "../types/BpTypes";
+import type { Parsed } from "../types/ParsedData";
 import { grayButtonStyle } from "../utils/bp";
 
 type Props = {
-  preview: {
-    rows: {
-      data: Reading | null;
-      errors: string[];
-      isDuplicate?: boolean;
-    }[];
-    total: number;
-    valid: number;
-    invalid: number;
-  };
+  // preview: {
+  //   rows: {
+  //     data: Reading | null;
+  //     errors: string[];
+  //     isDuplicate?: boolean;
+  //   }[];
+  //   total: number;
+  //   valid: number;
+  //   invalid: number;
+  //   error: string | null;
+  // };
+  preview: Parsed;
   onConfirm: () => void;
   onCancel: () => void;
   overwriteDuplicates: boolean;
