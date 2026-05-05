@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import type { Parsed } from "../types/ParsedData";
 import { grayButtonStyle } from "../utils/bp";
+import Checkbox from "./CheckBox";
 
 type Props = {
   // preview: {
@@ -94,21 +95,23 @@ export function ImportPreviewModal({
           Some rows could not be imported.
         </p>
       )}
-      <label className="flex items-center gap-2 mt-2">
-        <input
-          type="checkbox"
-          className="h-[14px] w-[14px] cursor-pointer transition hover:shadow-md border-2 border-gray-500 bg-red-500 rounded appearance-none checked:bg-emerald-500 checked:border-gray-500"
+      {duplicates > 0 && (
+        <Checkbox
+          id="duplicates"
+          label="Overwrite duplicates"
+          subLabel={
+            overwriteDuplicates
+              ? `${duplicates} entries will be replaced`
+              : `${duplicates} duplicates will be skipped`
+          }
           checked={overwriteDuplicates}
           onChange={(e) => setOverwriteDuplicates(e.target.checked)}
         />
-        <span className="text-sm font-semibold">Overwrite duplicates</span>
-      </label>
-      {duplicates > 0 && (
-        <p className="text-gray-500 text-sm mt-1 font-semibold">
-          {overwriteDuplicates
-            ? `${duplicates} entries will be replaced`
-            : `${duplicates} duplicates will be skipped`}
-        </p>
+        // <p className="text-gray-700 dark:text-gray-300 text-sm mt-1 font-semibold">
+        //   {overwriteDuplicates
+        //     ? `${duplicates} entries will be replaced`
+        //     : `${duplicates} duplicates will be skipped`}
+        // </p>
       )}
       <div className="flex gap-2 mt-3">
         <button
