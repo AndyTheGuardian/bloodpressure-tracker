@@ -37,36 +37,68 @@ export function FileSection({ actions }: Props) {
   }
 
   return (
-    <div className="flex gap-1 mt-3">
+    <div className="flex gap-2 mt-3">
       <div
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
-        className={`p-2 flex-1 w-1/2 border-2 border-dashed rounded-lg text-center transition hidden md:block ${
+        className={`flex-1 w-1/2 border-2 border-dashed rounded-lg text-center transition duration-200 hidden md:block  ${
           isDragging
-            ? "border-blue-500 bg-blue-50 dark:bg-gray-700"
+            ? "border-blue-500 bg-blue-50 dark:bg-gray-700 scale-[1.02]"
             : "border-gray-300 dark:border-gray-600"
         }`}
       >
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="mt-[6px] text-sm text-gray-600 dark:text-gray-300">
           Drag & drop CSV here
         </p>
         <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
           or use file upload
         </p>
       </div>
-      <div className="flex-1 md:w-1/2 flex flex-row md:grid md:grid-col-2 gap-1">
+      <div className="flex-1 w-1/2 flex flex-row md:grid md:grid-col-2 gap-2">
         <button
           onClick={exportToCSV}
           className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
         >
-          → CSV
+          <div className="flex place-content-center">
+            <span className="-mt-[5px] text-sm">→</span>
+            <svg
+              className="w-4 h-4 pointer-events-none stroke-gray-800 dark:stroke-gray-200 outline-none"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            >
+              <path stroke-linecap="round" d="M13 3v6h6"></path>{" "}
+              <path d="M13 3l6 6v12H5V3z"></path>
+            </svg>
+            <span className="ml-1">CSV</span>
+          </div>
+          {/* → CSV */}
         </button>
         <button
           onClick={exportToPDF}
           className={`w-1/4 md:w-full text-xs ${grayButtonStyle}`}
         >
-          → PDF
+          <div className="flex place-content-center">
+            <span className="-mt-[5px] text-sm">→</span>
+            <svg
+              className="w-4 h-4 pointer-events-none stroke-gray-800 dark:stroke-gray-200 outline-none"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            >
+              <path stroke-linecap="round" d="M13 3v6h6"></path>{" "}
+              <path d="M13 3l6 6v12H5V3z"></path>
+            </svg>
+            <span className="ml-1">PDF</span>
+          </div>
+          {/* → PDF */}
         </button>
         <input
           type="file"
@@ -85,7 +117,7 @@ export function FileSection({ actions }: Props) {
                   bg-transparent file:bg-gray-300 dark:file:bg-gray-700
                   hover:cursor-pointer hover:file:bg-gray-400 
                   dark:hover:file:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-600
-                  transition-colors duration-300 file:transition-colors file:duration-300"
+                  transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
         />
       </div>
     </div>

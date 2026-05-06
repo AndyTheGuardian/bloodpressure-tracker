@@ -71,7 +71,8 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
                     </button> */}
         <button
           onClick={deleteAllReadings}
-          className={`flex-shrink text-xs mb-2 ${grayButtonStyle}`}
+          className={`flex-shrink text-xs mb-2 ${grayButtonStyle} disabled`}
+          disabled={sortedReadings.length === 0}
         >
           Clear all
         </button>
@@ -82,8 +83,7 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
           <div className="flex gap-2 mt-1 mb-6">
             <button
               onClick={confirmDeleteAll}
-              disabled={sortedReadings.length === 0}
-              className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50"
+              className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
               Confirm delete
             </button>
@@ -107,7 +107,7 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
             return (
               <li
                 key={r.id}
-                className={`flex p-2 rounded shadow-sm border-[1px] transition duration-300 ${style}`}
+                className={`flex p-2 rounded shadow-sm border-[1px] transition-all duration-200 hover:scale-[1.02] ${style}`}
               >
                 <ReadingItem
                   reading={r}

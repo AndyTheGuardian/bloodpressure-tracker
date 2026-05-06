@@ -88,13 +88,13 @@ export function InputForm({
       {isEditing ? (
         <>
           <button
-            className="w-auto h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500"
+            className="w-auto h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             onClick={onSubmit}
           >
             Save
           </button>
           <button
-            className="w-auto h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500"
+            className="w-auto h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             onClick={() => setIsEditing(false)}
           >
             Cancel
@@ -102,7 +102,7 @@ export function InputForm({
         </>
       ) : (
         <button
-          className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition duration-300"
+          className="w-full sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           disabled={!form.systolic || !form.diastolic || !form.pulse}
         >
           Add

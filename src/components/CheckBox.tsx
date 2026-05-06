@@ -7,11 +7,14 @@ export interface CheckboxProps {
     | undefined;
   id: string;
   label: string;
-  subLabel: string | any;
+  sublabel?: string;
+  boxposition?: "items-start" | "items-center" | "items-end";
 }
 
 export const Checkbox = (props: CheckboxProps) => (
-  <div className="w-full flex gap-2 mt-2 items-center">
+  <div
+    className={`w-full flex gap-2 mt-2 ${props.boxposition ? props.boxposition : "items-start"}`}
+  >
     <input
       className="
         peer relative appearance-none shrink-0 w-4 h-4 rounded-sm mt-1 bg-gray-500/35
@@ -36,17 +39,17 @@ export const Checkbox = (props: CheckboxProps) => (
     </svg>
     <div className="flex flex-col">
       <label
-        className={`text-sm font-semibold select-none text-gray-700 dark:text-gray-300`}
+        className="text-sm font-semibold select-none text-gray-700 dark:text-gray-300"
         htmlFor={props.id}
       >
         {props.label}
       </label>
-      {props.subLabel && (
+      {props.sublabel && (
         <label
           className="-mt-[1px] text-[8pt] font-normal select-none text-gray-600 dark:text-gray-400"
           htmlFor={props.id}
         >
-          {props.subLabel}
+          {props.sublabel}
         </label>
       )}
     </div>

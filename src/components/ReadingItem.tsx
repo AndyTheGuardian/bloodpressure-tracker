@@ -65,7 +65,7 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
         />
       ) : (
         <>
-          <div className="flex flex-grow flex-col sm:flex-row ">
+          <div className="flex flex-grow flex-col sm:flex-row">
             <span className="flex-1 text-left">
               {reading.systolic} / {reading.diastolic} (Pulse: {reading.pulse})
             </span>
@@ -79,16 +79,41 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
             </span>
           </div>
           <button
-            className={`-m-2 ml-3 pt-[2px] font-mono text-sm text ${options.showGradient ? "text-gray-50" : ""} hover:underline`}
+            className={`ml-3 -my-2 px-2 bg-green-500 bg-opacity-0 hover:bg-opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
             onClick={handleEdit}
           >
-            Edit
+            <svg
+              className={`w-4 h-4 pointer-events-none ${options.showGradient ? "stroke-gray-50" : "stroke-gray-950"} transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              role="img"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            >
+              {" "}
+              <path d="M18.4142136 4.41421356L19.5857864 5.58578644C20.366835 6.36683502 20.366835 7.63316498 19.5857864 8.41421356L8 20 4 20 4 16 15.5857864 4.41421356C16.366835 3.63316498 17.633165 3.63316498 18.4142136 4.41421356zM14 6L18 10" />
+            </svg>
           </button>
           <button
-            className={`-m-2 ml-3 px-2 font-mono text-sm ${options.showGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90 transition duration-300`}
+            className={`-my-2 -mr-2 px-2 ${options.showGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
             onClick={() => onDelete(reading.id)}
           >
-            x{/* ❌ */}
+            {/* x❌ */}
+            <svg
+              className={`w-4 h-4 pointer-events-none ${options.showGradient ? "stroke-gray-50" : "stroke-gray-950"}`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="butt"
+              strokeLinejoin="round"
+            >
+              <path d="M19 6L5 6M14 5L10 5M6 10L6 20C6 20.6666667 6.33333333 21 7 21 7.66666667 21 11 21 17 21 17.6666667 21 18 20.6666667 18 20 18 19.3333333 18 16 18 10" />
+            </svg>
           </button>
         </>
       )}
