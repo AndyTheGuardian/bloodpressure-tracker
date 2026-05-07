@@ -11,4 +11,5 @@ export type Options = {
   showComments: Boolean;
   showGradient: Boolean;
   showFileSection: Boolean;
+  showPing: Boolean;
 };

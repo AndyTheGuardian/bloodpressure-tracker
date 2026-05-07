@@ -10,6 +10,8 @@ type Props = {
     setOptions: (options: Options) => void;
     deleteAll: boolean;
     setDeleteAll: (v: boolean) => void;
+    hoveredReadingId: number | null;
+    setHoveredReadingId: (id: number | null) => void;
   };
 
   actions: {
@@ -28,7 +30,8 @@ type Props = {
 };
 
 export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
-  const { options, setOptions, deleteAll, setDeleteAll } = state;
+  const { options, setOptions, deleteAll, setDeleteAll, setHoveredReadingId } =
+    state;
   const { deleteAllReadings, confirmDeleteAll, handleEdit, deleteReading } =
     actions;
   return (
@@ -108,6 +111,10 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
               <li
                 key={r.id}
                 className={`flex p-2 rounded shadow-sm border-[1px] transition-all duration-200 hover:scale-[1.02] ${style}`}
+                onMouseEnter={() =>
+                  options.showPing && setHoveredReadingId(r.id)
+                }
+                onMouseLeave={() => setHoveredReadingId(null)}
               >
                 <ReadingItem
                   reading={r}

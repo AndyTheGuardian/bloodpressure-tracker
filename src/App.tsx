@@ -20,6 +20,7 @@ function App() {
     showComments: false,
     showGradient: false,
     showFileSection: false,
+    showPing: false,
   });
 
   const [form, setForm] = useState({
@@ -58,6 +59,8 @@ function App() {
   });
 
   const [deleteAll, setDeleteAll] = useState(false);
+
+  const [hoveredReadingId, setHoveredReadingId] = useState<number | null>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -160,6 +163,8 @@ function App() {
     setOptions,
     deleteAll,
     setDeleteAll,
+    hoveredReadingId,
+    setHoveredReadingId,
   };
 
   const ReadingsPanelActions = {
@@ -237,6 +242,21 @@ function App() {
               >
                 Comments
               </button>
+              <button
+                onClick={() =>
+                  setOptions({
+                    ...options,
+                    showPing: !options.showPing,
+                  })
+                }
+                className={`flex-shrink text-xs mb-2 ${
+                  options.showPing
+                    ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
+                    : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+              >
+                Ping Animation
+              </button>
             </div>
           </div>
         )}
@@ -249,7 +269,7 @@ function App() {
           options={options}
         />
         <StatsPanel sortedReadings={sortedReadings} />
-        <Chart readings={sortedReadings} />
+        <Chart readings={sortedReadings} hoveredReadingId={hoveredReadingId} />
         <Filter
           onResetFilter={resetFilter}
           fromDate={fromDate}
