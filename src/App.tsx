@@ -31,8 +31,6 @@ function App() {
     datetime: getNow(),
   });
 
-  const [settings, setSettings] = useState(false);
-
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
