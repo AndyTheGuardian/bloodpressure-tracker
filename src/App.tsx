@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import type { Reading, Options } from "./types/BpTypes";
 import { getNow } from "./utils/date";
-import { grayButtonStyle } from "./utils/bp";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useImportCSV } from "./hooks/useImportCSV";
 import { useExportData } from "./hooks/useExportData";
+import { SettingsMenu } from "./components/SettingsMenu";
 import Chart from "./components/Chart";
 import { ReadingsPanel } from "./components/ReadingsPanel";
 import { InputForm } from "./components/InputForm";
@@ -187,79 +187,13 @@ function App() {
           <h1 className="flex-1 text-2xl font-bold mb-4 text-center dark:text-gray-100">
             Blood Pressure Tracker
           </h1>
-          <button
-            onClick={() => setSettings(!settings)}
-            className="mb-4 text-gray-700 dark:text-gray-300 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            &#9776;
-          </button>
         </div>
-        {/* <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="absolute top-4 right-4 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 transition duration-300"
-        >
-          {theme === "dark" ? "☀️" : "🌙"}
-        </button> */}
-        {settings && (
-          <div className="max-w-4xl bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow mb-4">
-            <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-              Settings
-            </h2>
-            <div className="flex gap-1">
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className={`rounded ${grayButtonStyle} transition duration-300`}
-              >
-                {theme === "dark" ? "☀️" : "🌙"}
-              </button>
-              <button
-                onClick={() =>
-                  setOptions({
-                    ...options,
-                    showFileSection: !options.showFileSection,
-                  })
-                }
-                className={`flex-shrink text-xs mb-2 ${
-                  options.showFileSection
-                    ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                    : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-              >
-                File Section
-              </button>
-              <button
-                onClick={() =>
-                  setOptions({
-                    ...options,
-                    showComments: !options.showComments,
-                  })
-                }
-                className={`flex-shrink text-xs mb-2 ${
-                  options.showComments
-                    ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                    : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-              >
-                Comments
-              </button>
-              <button
-                onClick={() =>
-                  setOptions({
-                    ...options,
-                    showPing: !options.showPing,
-                  })
-                }
-                className={`flex-shrink text-xs mb-2 ${
-                  options.showPing
-                    ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                    : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-              >
-                Ping Animation
-              </button>
-            </div>
-          </div>
-        )}
+        <SettingsMenu
+          theme={theme}
+          setTheme={setTheme}
+          options={options}
+          setOptions={setOptions}
+        />
         <InputForm
           form={form}
           setForm={setForm}
