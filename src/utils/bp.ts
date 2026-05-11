@@ -43,15 +43,15 @@ export function getBPStyle(level: BPLevel, isGrad: Boolean) {
   if (isGrad) {
     switch (level) {
       case "crisis":
-        return `bg-gradient-to-r from-red-700 to-red-950 border-red-800 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50 font-bold`;
+        return `bg-gradient-to-r from-red-700 to-red-50 dark:to-red-950 border-red-800 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50 font-bold`;
       case "high2":
-        return `bg-gradient-to-r from-red-500 to-red-950 border-red-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50`;
+        return `bg-gradient-to-r from-red-500 to-red-50 dark:to-red-950 border-red-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50`;
       case "high1":
-        return `bg-gradient-to-r from-orange-400 to-orange-950 border-orange-500 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
+        return `bg-gradient-to-r from-orange-400 to-orange-50 dark:to-orange-950 border-orange-500 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
       case "elevated":
-        return `bg-gradient-to-r from-yellow-300 to-yellow-950 border-yellow-400 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
+        return `bg-gradient-to-r from-yellow-300 to-yellow-50 dark:to-yellow-950 border-yellow-400 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
       default:
-        return `bg-gradient-to-r from-emerald-500 to-emerald-950 border-emerald-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
+        return `bg-gradient-to-r from-emerald-500 to-emerald-50 dark:to-emerald-950 border-emerald-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
       // return `bg-gradient-to-r from-[#2dd4bf]  to-[#1f2937] border-green-600 text-gray-950`;
     }
   }

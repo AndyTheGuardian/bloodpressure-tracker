@@ -38,43 +38,16 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
     <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
       <div className="flex gap-1">
         <h2
-          className="flex-1 text-md font-semibold dark:text-gray-50 dark:text-opacity-60"
+          className="flex-1 text-md font-semibold dark:text-gray-50/60"
           onClick={() =>
             setOptions({ ...options, showGradient: !options.showGradient })
           }
         >
           Readings
         </h2>
-        {/* <button
-                      onClick={() =>
-                        setOptions({
-                          ...options,
-                          showFileSection: !options.showFileSection,
-                        })
-                      }
-                      className={`flex-shrink text-xs mb-2 ${
-                        options.showFileSection
-                          ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                          : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                      } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
-                    >
-                      File Section
-                    </button>
-                    <button
-                      onClick={() =>
-                        setOptions({ ...options, showComments: !options.showComments })
-                      }
-                      className={`flex-shrink text-xs mb-2 ${
-                        options.showComments
-                          ? "bg-blue-600 hover:bg-blue-500 text-gray-100"
-                          : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                      } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition duration-300`}
-                    >
-                      Comments
-                    </button> */}
         <button
           onClick={deleteAllReadings}
-          className={`flex-shrink text-xs mb-2 ${grayButtonStyle} disabled`}
+          className={`text-xs mb-2 ${grayButtonStyle} disabled`}
           disabled={sortedReadings.length === 0}
         >
           Clear all
@@ -82,11 +55,16 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
       </div>
       {deleteAll && (
         <div>
-          <p className=" mt-2 text-md text-gray-500">Delete all readings?</p>
+          <p className=" mt-2 text-md font-semibold text-gray-600 dark:text-gray-400">
+            Delete all readings?
+          </p>
           <div className="flex gap-2 mt-1 mb-6">
             <button
               onClick={confirmDeleteAll}
-              className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-emerald-600 text-white px-3 py-1 
+              rounded hover:cursor-pointer hover:bg-emerald-500 
+              shadow-md disabled:opacity-50 transition-all duration-200 
+              hover:scale-[1.02] active:scale-[0.98]"
             >
               Confirm delete
             </button>

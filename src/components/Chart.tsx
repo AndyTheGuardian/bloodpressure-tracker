@@ -177,7 +177,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
         },
         {
           label: "Diastolic",
-          data: readings.map((r) => r.diastolic),
+          data: sorted.map((r) => r.diastolic),
           readings: sorted,
           borderColor: "rgb(180,4,249)",
           borderWidth: 2,
@@ -187,7 +187,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
         },
         {
           label: "Pulse",
-          data: readings.map((r) => r.pulse),
+          data: sorted.map((r) => r.pulse),
           readings: sorted,
           borderColor: "rgb(160,160,1)",
           borderWidth: 2,

@@ -73,7 +73,7 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
               <span className="flex-1 text-center">{reading.comment}</span>
             )}
             <span
-              className={`flex-1 sm:text-right ${options.showGradient ? "md:text-gray-50" : ""}`}
+              className={`flex-1 sm:text-right ${options.showGradient ? "dark:md:text-gray-50" : ""}`}
             >
               {dayjs(reading.recorded_at).format("DD.MM.YYYY HH:mm")}
             </span>
@@ -83,7 +83,7 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
             onClick={handleEdit}
           >
             <svg
-              className={`w-4 h-4 pointer-events-none ${options.showGradient ? "stroke-gray-50" : "stroke-gray-950"} transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+              className={`w-4 h-4 pointer-events-none ${options.showGradient ? "dark:stroke-gray-50" : "stroke-gray-950"} transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               role="img"
@@ -98,12 +98,12 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
             </svg>
           </button>
           <button
-            className={`-my-2 -mr-2 px-2 ${options.showGradient ? "text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+            className={`-my-2 -mr-2 px-2 ${options.showGradient ? "dark:text-gray-50" : "text-gray-950"} bg-red-600 bg-opacity-0 hover:bg-opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
             onClick={() => onDelete(reading.id)}
           >
             {/* x❌ */}
             <svg
-              className={`w-4 h-4 pointer-events-none ${options.showGradient ? "stroke-gray-50" : "stroke-gray-950"}`}
+              className={`w-4 h-4 pointer-events-none ${options.showGradient ? "dark:stroke-gray-50" : "stroke-gray-950"}`}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"

@@ -116,7 +116,11 @@ export function ImportPreviewModal({
       <div className="flex gap-2 mt-3">
         <button
           onClick={onConfirm}
-          className="bg-emerald-600 text-white px-3 py-1 rounded hover:cursor-pointer hover:bg-emerald-500 disabled:opacity-20 disabled:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          className="bg-emerald-600 text-white px-3 py-1 
+          rounded hover:cursor-pointer hover:bg-emerald-500 
+          disabled:opacity-20 disabled:bg-red-500 
+          transition-all duration-200 shadow-md
+          hover:scale-[1.02] active:scale-[0.98]"
         >
           <span>Confirm Import</span>
           {preview.invalid > 0 || (!overwriteDuplicates && duplicates > 0)

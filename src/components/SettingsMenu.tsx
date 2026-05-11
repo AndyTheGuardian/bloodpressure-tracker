@@ -17,18 +17,45 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed top-4 right-3 z-50 p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-50 shadow-lg"
+        className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-50 shadow-lg"
       >
         {open ? <X size={16} /> : <Menu size={16} />}
       </button>
 
       <div
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 bg-gray-900/20 z-40 transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`
+            fixed inset-0 
+            bg-gray-900/20 
+            z-40 
+            transition-opacity 
+            duration-300 
+            ${
+              open
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            }`}
       />
 
       <div
-        className={`fixed top-14 right-4 z-50 w-32 rounded-lg bg-gray-300 dark:bg-gray-900 shadow-2xl border border-gray-300 dark:border-gray-800 transform-gpu transition-all duration-300 ease-out will-change-transform ${open ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
+        className={`
+            fixed 
+            top-14 
+            right-4 
+            z-50 
+            w-32 
+            rounded-lg 
+            bg-gray-300 
+            dark:bg-gray-900
+            shadow-2xl border 
+            border-gray-300 dark:border-gray-800 
+            transform-gpu transition-all duration-300 ease-out 
+            will-change-transform 
+            ${
+              open
+                ? "translate-x-0 opacity-100 ease-out scale-100"
+                : "translate-x-full opacity-0 ease-out scale-95"
+            }`}
       >
         <div className="p-4 flex flex-col">
           <h2 className="text-lg font-semibold mb-4 dark:text-gray-300">
