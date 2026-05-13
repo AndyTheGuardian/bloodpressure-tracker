@@ -12,4 +12,5 @@ export type Options = {
   showGradient: Boolean;
   showFileSection: Boolean;
   showPing: Boolean;
+  showStats: Boolean;
 };

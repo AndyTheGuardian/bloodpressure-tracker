@@ -21,6 +21,7 @@ function App() {
     showGradient: false,
     showFileSection: false,
     showPing: false,
+    showStats: false,
   });
 
   const [form, setForm] = useState({
@@ -200,7 +201,7 @@ function App() {
           onSubmit={handleSubmit}
           options={options}
         />
-        <StatsPanel sortedReadings={sortedReadings} />
+        {options.showStats && <StatsPanel sortedReadings={sortedReadings} />}
         <Chart readings={sortedReadings} hoveredReadingId={hoveredReadingId} />
         <Filter
           onResetFilter={resetFilter}

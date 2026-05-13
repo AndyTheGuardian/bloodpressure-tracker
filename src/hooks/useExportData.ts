@@ -2,7 +2,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import dayjs from "dayjs";
 import type { Reading } from "../types/BpTypes";
-import { getAverages, calculateTrend } from "../utils/trend";
+import { calculateStats } from "../utils/stats";
+import { calculateTrend } from "../utils/trend";
 
 export function useExportData(readings: Reading[]) {
   function exportToCSV() {
@@ -44,7 +45,7 @@ export function useExportData(readings: Reading[]) {
       r.comment,
     ]);
 
-    const averages = getAverages(readings);
+    const stats = calculateStats(readings);
 
     const { trend } = calculateTrend(readings);
 
@@ -53,7 +54,7 @@ export function useExportData(readings: Reading[]) {
 
     doc.setFontSize(12);
     doc.text(
-      `Average: ${averages.systolic}/${averages.diastolic} (Pulse: ${averages.pulse})   Trend: ${
+      `Average: ${stats.systolic}/${stats.diastolic} (Pulse: ${stats})   Trend: ${
         trend === "up" ? "rising" : trend === "down" ? "falling" : "stable"
       }`,
       14,

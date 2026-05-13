@@ -71,7 +71,7 @@ export function getBPStyle(level: BPLevel, isGrad: Boolean) {
 
 export const grayButtonStyle =
   "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-60 disabled:animate-none transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]";
-export const avgTextStyle: Record<BPLevel, string> = {
+export const statTextStyle: Record<BPLevel, string> = {
   crisis: `text-xl font-bold underline underline-offset-2 decoration-red-700`,
   high2: `text-xl font-bold underline underline-offset-2 decoration-red-300 dark:decoration-red-500`,
   high1: `text-xl font-bold underline underline-offset-2 decoration-orange-400`,

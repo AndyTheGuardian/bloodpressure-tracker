@@ -7,6 +7,7 @@ import {
   Legend,
   Tooltip,
 } from "chart.js";
+import { calculateTrend } from "../utils/trend";
 import { useState, useMemo, useEffect } from "react";
 import type { Reading } from "../types/BpTypes";
 import type { Plugin } from "chart.js";
@@ -126,29 +127,26 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
 
   const sorted = [...readings].reverse(); // oldest -> newest
 
-  const x = sorted.map((_, i) => i);
-  const y = sorted.map((r) => r.systolic);
+  const trend = ["Sys", "Dia", "Pls"];
 
-  const n = x.length;
+  const [index, setIndex] = useState(0);
 
-  const sumX = x.reduce((a, b) => a + b, 0);
-  const sumY = y.reduce((a, b) => a + b, 0);
-  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
-  const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+  function switchTrend() {
+    if (index < trend.length - 1) {
+      setIndex(index + 1);
+    } else {
+      setIndex(0);
+    }
+  }
 
-  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-
-  const intercept = (sumY - slope * sumX) / n;
-
-  // predicted values (regression line)
-  const trendLine = x.map((xi) => slope * xi + intercept);
+  const { slope, trendLine } = calculateTrend(readings, trend[index]);
 
   const trendColor =
     slope > 0.5
       ? "rgba(185, 28, 28,1)" // red
       : slope < -0.5
         ? "rgba(34, 197, 94,1)" // green
-        : "rgba(255, 255, 255,0.75)";
+        : "rgba(128, 128, 128,0.75)";
 
   const data = useMemo(
     () => ({
@@ -171,7 +169,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
           readings: sorted,
           borderColor: "rgb(4,94,249)",
           borderWidth: 2,
-          pointRadius: 2, //sorted.map((r) => (r.id === hoveredReadingId ? 6 : 2)),
+          pointRadius: window.innerWidth < 800 ? 1 : 2, //sorted.map((r) => (r.id === hoveredReadingId ? 6 : 2)),
           tension: 0,
           backgroundColor: "rgba(4,94,249)",
         },
@@ -181,7 +179,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
           readings: sorted,
           borderColor: "rgb(180,4,249)",
           borderWidth: 2,
-          pointRadius: 2, //sorted.map((r) => (r.id === hoveredReadingId ? 6 : 2)),
+          pointRadius: window.innerWidth < 800 ? 1 : 2, //sorted.map((r) => (r.id === hoveredReadingId ? 6 : 2)),
           tension: 0,
           backgroundColor: "rgba(180,4,249)",
         },
@@ -191,12 +189,12 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
           readings: sorted,
           borderColor: "rgb(160,160,1)",
           borderWidth: 2,
-          pointRadius: 2, //sorted.map((r) => (r.id === hoveredReadingId ? 6 : 2)),
+          pointRadius: window.innerWidth < 800 ? 1 : 2, //sorted.map((r) => (r.id === hoveredReadingId ? 6 : 2)),
           tension: 0,
           backgroundColor: "rgba(160,160,1)",
         },
         {
-          label: "Trend",
+          label: `Trend (${trend[index]}: ${slope.toFixed(2)})`,
           data: trendLine,
           borderColor: trendColor,
           borderWidth: 2,
@@ -213,6 +211,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
   const options: ChartOptions<"line"> = useMemo(
     () => ({
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         ping: {
           hoveredReadingId,
@@ -295,11 +294,15 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
   );
 
   return (
-    <div className="w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded rounded-b-xl shadow mb-4 transition-colors duration-300">
+    <div
+      className={`mt-3 w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded-t-xl rounded-b-xl shadow mb-4 transition-colors duration-300`}
+    >
       <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-        Trend
+        <button onClick={switchTrend}>Trend</button>
       </h2>
-      <Line data={data} options={options} />
+      <div className="h-[300px] sm:h-[400px]">
+        <Line data={data} options={options} />
+      </div>
     </div>
   );
 }

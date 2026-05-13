@@ -35,7 +35,7 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
   const { deleteAllReadings, confirmDeleteAll, handleEdit, deleteReading } =
     actions;
   return (
-    <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow transition-colors duration-300">
+    <div className="mt-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow">
       <div className="flex gap-1">
         <h2
           className="flex-1 text-md font-semibold dark:text-gray-50/60"
@@ -80,30 +80,32 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
       {sortedReadings.length === 0 ? (
         <p className="text-gray-500 mt-2">No data</p>
       ) : (
-        <ul className="mt-2 space-y-2">
-          {sortedReadings.map((r) => {
-            const level = getBPLevel(r.systolic, r.diastolic);
-            const style = getBPStyle(level, options.showGradient);
+        <div className="mt-2 max-h-[40vh] md:max-h-[60vh] overflow-y-auto">
+          <ul className="space-y-2 px-2">
+            {sortedReadings.map((r) => {
+              const level = getBPLevel(r.systolic, r.diastolic);
+              const style = getBPStyle(level, options.showGradient);
 
-            return (
-              <li
-                key={r.id}
-                className={`flex p-2 rounded shadow-sm border-[1px] transition-all duration-200 hover:scale-[1.02] ${style}`}
-                onMouseEnter={() =>
-                  options.showPing && setHoveredReadingId(r.id)
-                }
-                onMouseLeave={() => setHoveredReadingId(null)}
-              >
-                <ReadingItem
-                  reading={r}
-                  onEdit={handleEdit}
-                  onDelete={deleteReading}
-                  options={options}
-                />
-              </li>
-            );
-          })}
-        </ul>
+              return (
+                <li
+                  key={r.id}
+                  className={`flex p-2 rounded shadow-sm border-[1px] transition-all duration-200 hover:scale-[1.02] ${style}`}
+                  onMouseEnter={() =>
+                    options.showPing && setHoveredReadingId(r.id)
+                  }
+                  onMouseLeave={() => setHoveredReadingId(null)}
+                >
+                  <ReadingItem
+                    reading={r}
+                    onEdit={handleEdit}
+                    onDelete={deleteReading}
+                    options={options}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
   );

@@ -112,6 +112,21 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
           >
             Ping Animation
           </button>
+          <button
+            onClick={() =>
+              setOptions({
+                ...options,
+                showStats: !options.showStats,
+              })
+            }
+            className={`flex-shrink text-xs mb-2 ${
+              options.showStats
+                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
+                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+          >
+            Stats
+          </button>
         </div>
       </div>
     </div>

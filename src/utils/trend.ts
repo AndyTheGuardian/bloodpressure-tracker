@@ -1,30 +1,9 @@
 import type { Reading } from "../types/BpTypes";
 
-export function getAverages(readings: Reading[]) {
-  if (readings.length === 0) {
-    return { systolic: 0, diastolic: 0, pulse: 0 };
-  }
-
-  const sum = readings.reduce(
-    (acc, r) => {
-      acc.systolic += r.systolic;
-      acc.diastolic += r.diastolic;
-      acc.pulse += r.pulse;
-      return acc;
-    },
-    { systolic: 0, diastolic: 0, pulse: 0 },
-  );
-
-  const count = readings.length;
-
-  return {
-    systolic: Math.round(sum.systolic / count),
-    diastolic: Math.round(sum.diastolic / count),
-    pulse: Math.round(sum.pulse / count),
-  };
-}
-
-export function calculateTrend(readings: Reading[]) {
+export function calculateTrend(
+  readings: Reading[],
+  type?: string, //"Sys" | "Dia" | "Pls",
+) {
   if (readings.length < 2) {
     return { slope: 0, trend: "stable" as const };
   }
@@ -36,9 +15,27 @@ export function calculateTrend(readings: Reading[]) {
       new Date(b.recorded_at || "").getTime(),
   );
 
+  let y = [0];
   // x = index, y = systolic
   const x = sorted.map((_, i) => i);
-  const y = sorted.map((r) => (r.systolic + r.diastolic) / 2);
+  switch (type) {
+    case "Sys": {
+      y = sorted.map((r) => r.systolic); // + r.diastolic) / 2);
+      break;
+    }
+    case "Dia": {
+      y = sorted.map((r) => r.diastolic);
+      break;
+    }
+    case "Pls": {
+      y = sorted.map((r) => r.pulse);
+      break;
+    }
+    default: {
+      y = sorted.map((r) => (r.systolic + r.diastolic) / 2);
+      break;
+    }
+  }
 
   const n = x.length;
 
@@ -50,10 +47,15 @@ export function calculateTrend(readings: Reading[]) {
   // slope formula
   const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 
+  const intercept = (sumY - slope * sumX) / n;
+
+  // predicted values (regression line)
+  const trendLine = x.map((xi) => slope * xi + intercept);
+
   let trend: "up" | "down" | "stable" = "stable";
 
   if (slope > 0.5) trend = "up";
   else if (slope < -0.5) trend = "down";
 
-  return { slope, trend };
+  return { slope, trend, trendLine };
 }
