@@ -8,3 +8,7 @@
 .dark {
   color-scheme: dark;
 }
+
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
