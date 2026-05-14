@@ -203,7 +203,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
         },
       ],
     }),
-    [sorted, hoveredReadingId, pulse],
+    [sorted, hoveredReadingId, pulse, window.innerWidth],
   );
 
   //const colNm = 'rgba(34, 197, 94,0.2)';

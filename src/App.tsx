@@ -61,6 +61,8 @@ function App() {
 
   const [hoveredReadingId, setHoveredReadingId] = useState<number | null>(null);
 
+  const [showFilter, setShowFilter] = useState(true);
+
   useEffect(() => {
     const root = document.documentElement;
 
@@ -209,6 +211,8 @@ function App() {
           setFromDate={setFromDate}
           toDate={toDate}
           setToDate={setToDate}
+          showFilter={showFilter}
+          setShowFilter={setShowFilter}
         />
         {importError && (
           <div className="mt-3 p-3 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
