@@ -13,4 +13,5 @@ export type Options = {
   showFileSection: Boolean;
   showPing: Boolean;
   showStats: Boolean;
+  showFilter: Boolean;
 };

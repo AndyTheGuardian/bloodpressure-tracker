@@ -21,7 +21,8 @@ function App() {
     showGradient: false,
     showFileSection: false,
     showPing: false,
-    showStats: false,
+    showStats: true,
+    showFilter: true,
   });
 
   const [form, setForm] = useState({
@@ -205,15 +206,17 @@ function App() {
         />
         {options.showStats && <StatsPanel sortedReadings={sortedReadings} />}
         <Chart readings={sortedReadings} hoveredReadingId={hoveredReadingId} />
-        <Filter
-          onResetFilter={resetFilter}
-          fromDate={fromDate}
-          setFromDate={setFromDate}
-          toDate={toDate}
-          setToDate={setToDate}
-          showFilter={showFilter}
-          setShowFilter={setShowFilter}
-        />
+        {options.showFilter && (
+          <Filter
+            onResetFilter={resetFilter}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            showFilter={showFilter}
+            setShowFilter={setShowFilter}
+          />
+        )}
         {importError && (
           <div className="mt-3 p-3 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
             ⚠️ {importError}

@@ -295,7 +295,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
 
   return (
     <div
-      className={`mt-3 w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded-t-xl rounded-b-xl shadow mb-4 transition-colors duration-300`}
+      className={`mt-3 w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 rounded-t-xl rounded-b-xl shadow mb-3 transition-colors duration-300`}
     >
       <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
         <button onClick={switchTrend}>Trend</button>
