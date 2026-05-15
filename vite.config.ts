@@ -28,56 +28,56 @@ export default defineConfig({
           {
             purpose: "maskable",
             sizes: "1024x1024",
-            src: "/BPIcon1024.png",
+            src: "/BPIcon-1024.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "512x512",
-            src: "/BPIcon512.png",
+            src: "/BPIcon-512.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "384x384",
-            src: "/BPIcon384.png",
+            src: "/BPIcon-384.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "192x192",
-            src: "/BPIcon192.png",
+            src: "/BPIcon-192.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "128x128",
-            src: "/BPIcon128.png",
+            src: "/BPIcon-128.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "96x96",
-            src: "/BPIcon96.png",
+            src: "/BPIcon-96.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "72x72",
-            src: "/BPIcon72.png",
+            src: "/BPIcon-72.png",
             type: "image/png",
           },
 
           {
             purpose: "maskable",
             sizes: "48x48",
-            src: "/BPIcon48.png",
+            src: "/BPIcon-48.png",
             type: "image/png",
           },
         ],
