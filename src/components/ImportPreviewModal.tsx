@@ -1,20 +1,10 @@
 import dayjs from "dayjs";
 import type { Parsed } from "../types/ParsedData";
 import { grayButtonStyle } from "../utils/bp";
+import { useTranslation } from "react-i18next";
 import Checkbox from "./CheckBox";
 
 type Props = {
-  // preview: {
-  //   rows: {
-  //     data: Reading | null;
-  //     errors: string[];
-  //     isDuplicate?: boolean;
-  //   }[];
-  //   total: number;
-  //   valid: number;
-  //   invalid: number;
-  //   error: string | null;
-  // };
   preview: Parsed;
   onConfirm: () => void;
   onCancel: () => void;
@@ -30,10 +20,11 @@ export function ImportPreviewModal({
   setOverwriteDuplicates,
 }: Props) {
   const duplicates = preview.rows.filter((r) => r.isDuplicate).length;
+  const { t } = useTranslation();
   return (
     <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
       <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
-        Preview Import
+        {t("previewImport")}
       </h2>
       {/* <p className="text-xs mb-1 text-gray-700 dark:text-gray-300">
         Showing first 5 of {preview.rows.length} entries
@@ -42,11 +33,11 @@ export function ImportPreviewModal({
         <table className="w-full text-left">
           <thead>
             <tr>
-              <th>Date</th>
+              <th>{t("date")}</th>
               <th>Sys</th>
               <th>Dia</th>
-              <th>Pulse</th>
-              <th>Comment</th>
+              <th>{t("pulse")}</th>
+              <th>{t("note")}</th>
             </tr>
           </thead>
           <tbody>
@@ -68,7 +59,7 @@ export function ImportPreviewModal({
                 <td>{r.data?.comment}</td>
                 <td>
                   {r.errors.join(", ")}
-                  {r.isDuplicate && " Duplicate"}
+                  {r.isDuplicate && ` ${t("duplicate")}`}
                 </td>
               </tr>
             ))}
@@ -77,17 +68,17 @@ export function ImportPreviewModal({
       </div>
 
       <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
-        Total: {preview.total} |{" "}
+        {t("total")}: {preview.total} |{" "}
         <span className="text-emerald-500 font-semibold">
-          Valid: {preview.valid}
+          {t("valid")}: {preview.valid}
         </span>{" "}
         |{" "}
         <span className="text-red-500 font-semibold">
-          Invalid: {preview.invalid}
+          {t("invalid")}: {preview.invalid}
         </span>{" "}
         |{" "}
         <span className="text-yellow-500 font-semibold">
-          Duplicates: {duplicates}
+          {t("duplicates")}: {duplicates}
         </span>
       </p>
       {preview.invalid > 0 && (
@@ -98,11 +89,11 @@ export function ImportPreviewModal({
       {duplicates > 0 && (
         <Checkbox
           id="duplicates"
-          label="Overwrite duplicates"
+          label={t("overwriteDuplicates")}
           sublabel={
             overwriteDuplicates
-              ? `${duplicates} entries will be replaced`
-              : `${duplicates} duplicates will be skipped`
+              ? `${duplicates} ${t("entriesReplaced")}`
+              : `${duplicates} ${t("duplicatesSkipped")}`
           }
           checked={overwriteDuplicates}
           onChange={(e) => setOverwriteDuplicates(e.target.checked)}
@@ -122,13 +113,13 @@ export function ImportPreviewModal({
           transition-all duration-200 shadow-md
           hover:scale-[1.02] active:scale-[0.98]"
         >
-          <span>Confirm Import</span>
+          <span>{t("confirmImport")}</span>
           {preview.invalid > 0 || (!overwriteDuplicates && duplicates > 0)
             ? ` ${preview.valid - duplicates}/${preview.total}`
             : ""}
         </button>
         <button onClick={onCancel} className={grayButtonStyle}>
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </div>

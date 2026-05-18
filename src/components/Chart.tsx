@@ -10,6 +10,7 @@ import {
 import { calculateTrend } from "../utils/trend";
 import { useState, useMemo, useEffect } from "react";
 import type { Reading } from "../types/BpTypes";
+import { useTranslation } from "react-i18next";
 import type { Plugin } from "chart.js";
 
 import { Line } from "react-chartjs-2";
@@ -108,6 +109,7 @@ ChartJS.register(ping);
 
 export default function Chart({ readings, hoveredReadingId }: Props) {
   const [pulse, setPulse] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!hoveredReadingId) return;
@@ -164,7 +166,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
       ),
       datasets: [
         {
-          label: "Systolic",
+          label: t("systolic"),
           data: sorted.map((r) => r.systolic),
           readings: sorted,
           borderColor: "rgb(4,94,249)",
@@ -174,7 +176,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
           backgroundColor: "rgba(4,94,249)",
         },
         {
-          label: "Diastolic",
+          label: t("diastolic"),
           data: sorted.map((r) => r.diastolic),
           readings: sorted,
           borderColor: "rgb(180,4,249)",
@@ -184,7 +186,7 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
           backgroundColor: "rgba(180,4,249)",
         },
         {
-          label: "Pulse",
+          label: t("pulse"),
           data: sorted.map((r) => r.pulse),
           readings: sorted,
           borderColor: "rgb(160,160,1)",
