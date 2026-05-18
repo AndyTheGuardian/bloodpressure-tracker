@@ -4,6 +4,7 @@ import { calculateStats } from "../utils/stats";
 import { getBPLevel, statTextStyle } from "../utils/bp";
 import { StatCard } from "./StatCard";
 import { TrendIndicator } from "./TrendIndicator";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
 
 export function StatsPanel({ sortedReadings }: Props) {
   const stats = calculateStats(sortedReadings);
+
+  const { t } = useTranslation();
 
   const trendType = ["", "Sys", "Dia", "Pls"];
 
@@ -33,22 +36,22 @@ export function StatsPanel({ sortedReadings }: Props) {
   return (
     <div className="max-w-4xl bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow mt-3 mb-2 transition-colors duration-300">
       <h2 className="text-md font-semibold mb-2 dark:text-gray-50 dark:text-opacity-60">
-        <button onClick={switchTrend}>Stats</button>
+        <button onClick={switchTrend}>{t("stats")}</button>
       </h2>
       {sortedReadings.length === 0 ? (
         <p className="text-gray-500">No data</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 sm:place-content-evenly gap-4 text-center">
           <StatCard
-            label="Systolic"
+            label={t("systolic")}
             value={<p className={statTextStyle[avgLevel]}>{stats.systolic}</p>}
           />
           <StatCard
-            label="Diastolic"
+            label={t("diastolic")}
             value={<p className={statTextStyle[avgLevel]}>{stats.diastolic}</p>}
           />
           <StatCard
-            label="Pulse"
+            label={t("pulse")}
             value={
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {stats.pulse}
@@ -56,19 +59,19 @@ export function StatsPanel({ sortedReadings }: Props) {
             }
           />
           <StatCard
-            label={`Trend (Regression) ${trendType[index]}`}
+            label={`${trendType[index]} Trend (Regression)`}
             value={<TrendIndicator trend={trend} slope={slope} />}
           />
           <StatCard
-            label="Max Systolic"
+            label={`Max ${t("systolic").toLowerCase()}`}
             value={<p className={statTextStyle[maxLevel]}>{stats.maxSys}</p>}
           />
           <StatCard
-            label="Max Diastolic"
+            label={`Max ${t("diastolic").toLowerCase()}`}
             value={<p className={statTextStyle[maxLevel]}>{stats.maxDia}</p>}
           />
           <StatCard
-            label="Max Pulse"
+            label={`Max ${t("pulse")}`}
             value={
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {stats.maxPul}
@@ -76,7 +79,7 @@ export function StatsPanel({ sortedReadings }: Props) {
             }
           />
           <StatCard
-            label="Total Readings"
+            label={`${t("total")} ${t("readings")}`}
             value={
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {stats.count}

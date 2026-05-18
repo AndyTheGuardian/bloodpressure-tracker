@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import type { Options } from "../types/BpTypes";
 import { grayButtonStyle } from "../utils/bp";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type Props = {
   theme: string;
@@ -13,6 +15,7 @@ type Props = {
 export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
   const [open, setOpen] = useState(false);
 
+  const { t } = useTranslation();
   return (
     <div className="relative">
       <button
@@ -43,7 +46,7 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
             top-14 
             right-4 
             z-50 
-            w-32 
+            w-auto 
             rounded-lg 
             bg-gray-300 
             dark:bg-gray-900
@@ -59,7 +62,7 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
       >
         <div className="p-4 flex flex-col">
           <h2 className="text-lg font-semibold mb-4 dark:text-gray-300">
-            Settings
+            {t("settings")}
           </h2>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -67,6 +70,7 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
           >
             {theme === "dark" ? "☀️" : "🌙"}
           </button>
+          <LanguageSwitcher />
           <button
             onClick={() =>
               setOptions({
@@ -74,13 +78,13 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 showComments: !options.showComments,
               })
             }
-            className={`flex-shrink text-xs mb-2 ${
+            className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showComments
                 ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
-            Comments
+            {t("notes")}
           </button>
           <button
             onClick={() =>
@@ -89,13 +93,13 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 showStats: !options.showStats,
               })
             }
-            className={`flex-shrink text-xs mb-2 ${
+            className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showStats
                 ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
-            Stats
+            {t("stats")}
           </button>
           <button
             onClick={() =>
@@ -104,13 +108,13 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 showFilter: !options.showFilter,
               })
             }
-            className={`flex-shrink text-xs mb-2 ${
+            className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showFilter
                 ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
-            Filter
+            {t("filter")}
           </button>
           <button
             onClick={() =>
@@ -119,13 +123,13 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 showFileSection: !options.showFileSection,
               })
             }
-            className={`flex-shrink text-xs mb-2 ${
+            className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showFileSection
                 ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
-            File Section
+            {t("fileSection")}
           </button>
           <button
             onClick={() =>
@@ -134,13 +138,13 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 showPing: !options.showPing,
               })
             }
-            className={`flex-shrink text-xs mb-2 ${
+            className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showPing
                 ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
-            Ping Animation
+            {t("pingAnimation")}
           </button>
         </div>
       </div>

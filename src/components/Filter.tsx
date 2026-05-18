@@ -1,4 +1,5 @@
 import { grayButtonStyle } from "../utils/bp";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onResetFilter: () => void;
@@ -19,17 +20,20 @@ export function Filter({
   showFilter,
   setShowFilter,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="flex place-content-between">
         <h2 className="text-md font-semibold dark:text-gray-50 dark:text-opacity-60">
-          <button onClick={() => setShowFilter(!showFilter)}>Filter</button>
+          <button onClick={() => setShowFilter(!showFilter)}>
+            {t("filter")}
+          </button>
         </h2>
         <button
           onClick={onResetFilter}
           className={`col-span-1 text-xs  ${grayButtonStyle}`}
         >
-          Reset
+          {t("reset")}
         </button>
       </div>
       {showFilter && (

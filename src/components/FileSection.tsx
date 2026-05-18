@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { grayButtonStyle } from "../utils/bp";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   actions: {
@@ -12,6 +13,7 @@ type Props = {
 export function FileSection({ actions }: Props) {
   const { handleFile, exportToCSV, exportToPDF } = actions;
 
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
 
   function onDragOver(e: React.DragEvent) {
@@ -49,10 +51,10 @@ export function FileSection({ actions }: Props) {
         }`}
       >
         <p className="mt-[6px] text-sm text-gray-600 dark:text-gray-300">
-          Drag & drop CSV here
+          {t("dragDrop")}
         </p>
         <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-          or use file upload
+          {t("useFileUpload")}
         </p>
       </div>
       <div className="flex-1 w-1/2 flex flex-row md:grid md:grid-col-2 gap-2">

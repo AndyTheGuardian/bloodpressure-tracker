@@ -12,6 +12,7 @@ import { StatsPanel } from "./components/StatsPanel";
 import { Filter } from "./components/Filter";
 import { FileSection } from "./components/FileSection";
 import { ImportPreviewModal } from "./components/ImportPreviewModal";
+import { useTranslation } from "react-i18next";
 
 function App() {
   const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
@@ -32,6 +33,8 @@ function App() {
     comment: "",
     datetime: getNow(),
   });
+
+  const { t } = useTranslation();
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -187,7 +190,7 @@ function App() {
       <div className="w-screen max-w-4xl bg-gray-200 dark:bg-gray-900 p-6 rounded-xl shadow-md my-4 transition-colors duration-300">
         <div className="flex">
           <h1 className="flex-1 text-2xl font-bold mb-4 text-center dark:text-gray-100">
-            Blood Pressure Tracker
+            {t("title")}
           </h1>
         </div>
         <SettingsMenu
