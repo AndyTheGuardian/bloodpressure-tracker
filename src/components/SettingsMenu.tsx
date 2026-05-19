@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import type { Options } from "../types/BpTypes";
+import type { Theme } from "../types/theme";
 import { grayButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type Props = {
   theme: string;
-  setTheme: (s: string) => void;
+  setTheme: (s: Theme) => void;
   options: Options;
   setOptions: (o: Options) => void;
 };

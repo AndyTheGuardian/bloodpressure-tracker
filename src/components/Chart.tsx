@@ -30,6 +30,7 @@ ChartJS.register(
 type Props = {
   readings: Reading[];
   hoveredReadingId: number | null;
+  theme: "light" | "dark";
 };
 
 ChartJS.register(annotationPlugin);
@@ -107,7 +108,7 @@ const ping: Plugin<"line"> = {
 
 ChartJS.register(ping);
 
-export default function Chart({ readings, hoveredReadingId }: Props) {
+export default function Chart({ readings, hoveredReadingId, theme }: Props) {
   const [pulse, setPulse] = useState(0);
   const { t } = useTranslation();
 
@@ -133,6 +134,8 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
 
   const [index, setIndex] = useState(0);
 
+  const isDark = theme === "dark";
+
   function switchTrend() {
     if (index < trend.length - 1) {
       setIndex(index + 1);
@@ -148,7 +151,9 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
       ? "rgba(185, 28, 28,1)" // red
       : slope < -0.5
         ? "rgba(34, 197, 94,1)" // green
-        : "rgba(128, 128, 128,0.75)";
+        : isDark
+          ? "rgba(255, 255, 255, 0.7)"
+          : "rgba(0, 0, 0, 0.7)";
 
   const data = useMemo(
     () => ({
@@ -205,7 +210,13 @@ export default function Chart({ readings, hoveredReadingId }: Props) {
         },
       ],
     }),
-    [sorted, hoveredReadingId, pulse, window.innerWidth],
+    [
+      sorted,
+      hoveredReadingId,
+      pulse,
+      window.innerWidth,
+      document.documentElement.classList,
+    ],
   );
 
   //const colNm = 'rgba(34, 197, 94,0.2)';

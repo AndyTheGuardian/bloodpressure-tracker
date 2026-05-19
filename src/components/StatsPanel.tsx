@@ -43,15 +43,15 @@ export function StatsPanel({ sortedReadings }: Props) {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 sm:place-content-evenly gap-4 text-center">
           <StatCard
-            label={t("systolic")}
+            label={`Ø ${t("systolic")}`}
             value={<p className={statTextStyle[avgLevel]}>{stats.systolic}</p>}
           />
           <StatCard
-            label={t("diastolic")}
+            label={`Ø ${t("diastolic")}`}
             value={<p className={statTextStyle[avgLevel]}>{stats.diastolic}</p>}
           />
           <StatCard
-            label={t("pulse")}
+            label={`Ø ${t("pulse")}`}
             value={
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {stats.pulse}

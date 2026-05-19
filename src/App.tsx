@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Reading, Options } from "./types/BpTypes";
+import type { Theme } from "./types/theme";
 import { getNow } from "./utils/date";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useImportCSV } from "./hooks/useImportCSV";
@@ -51,10 +52,12 @@ function App() {
 
   const { exportToCSV, exportToPDF } = useExportData(readings);
 
-  const [theme, setTheme] = useState(() => {
+  const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("theme");
 
-    if (saved) return saved;
+    if (saved === "dark" || saved === "light") {
+      return saved;
+    }
 
     return window.matchMedia("(prefers-color-scheme: dark").matches
       ? "dark"
@@ -208,7 +211,11 @@ function App() {
           options={options}
         />
         {options.showStats && <StatsPanel sortedReadings={sortedReadings} />}
-        <Chart readings={sortedReadings} hoveredReadingId={hoveredReadingId} />
+        <Chart
+          readings={sortedReadings}
+          hoveredReadingId={hoveredReadingId}
+          theme={theme}
+        />
         {options.showFilter && (
           <Filter
             onResetFilter={resetFilter}
