@@ -21,6 +21,11 @@ export function ImportPreviewModal({
 }: Props) {
   const duplicates = preview.rows.filter((r) => r.isDuplicate).length;
   const { t } = useTranslation();
+  const calculatedImport = overwriteDuplicates
+    ? preview.rows.filter((p) => p.errors.length === 0).length
+    : preview.rows.filter((p) => p.errors.length === 0 && !p.isDuplicate)
+        .length;
+
   return (
     <div className="mt-4 bg-blue-50 dark:bg-gray-800 p-4 rounded-xl shadow">
       <h2 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">
@@ -98,11 +103,6 @@ export function ImportPreviewModal({
           checked={overwriteDuplicates}
           onChange={(e) => setOverwriteDuplicates(e.target.checked)}
         />
-        // <p className="text-gray-700 dark:text-gray-300 text-sm mt-1 font-semibold">
-        //   {overwriteDuplicates
-        //     ? `${duplicates} entries will be replaced`
-        //     : `${duplicates} duplicates will be skipped`}
-        // </p>
       )}
       <div className="flex gap-2 mt-3">
         <button
@@ -115,7 +115,7 @@ export function ImportPreviewModal({
         >
           <span>{t("confirmImport")}</span>
           {preview.invalid > 0 || (!overwriteDuplicates && duplicates > 0)
-            ? ` ${preview.valid - duplicates}/${preview.total}`
+            ? ` ${calculatedImport}/${preview.total}`
             : ""}
         </button>
         <button onClick={onCancel} className={grayButtonStyle}>

@@ -2,29 +2,20 @@ import type { Reading } from "../types/BpTypes";
 import type { ParsedRow } from "../types/ParsedData";
 import { REQUIRED_HEADERS } from "./csvSchema";
 
-// type ParsedRow = {
-//   data: Reading | null;
-//   errors: string[];
-//   isDuplicate?: boolean;
-// };
-
-export function parseCSV(text: string) {
+export function parseCSV(text: string, t: (key: string) => string) {
   const lines = text
     .replace(/^\ueFEFF/, "") // remove BOM (Byte Order Mark)
     .split("\n")
     .map((l) => l.trim())
-    .filter((l) => l.length > 0); // remove empty lines
+    .filter((l) => l.length > 0);
 
-  // if (lines.length < 2) {
-  //   throw new Error("CSV must contain header + at least one row");
-  // }
   if (lines.length === 0 || lines[0].trim() === "") {
     return {
       rows: [],
       total: 0,
       valid: 0,
       invalid: 0,
-      error: "CSV must contain header",
+      error: t("noHeader"),
     };
   }
 
@@ -34,7 +25,7 @@ export function parseCSV(text: string) {
       total: 0,
       valid: 0,
       invalid: 0,
-      error: "CSV contains no data rows",
+      error: t("noDataRows"),
     };
   }
 
@@ -48,7 +39,7 @@ export function parseCSV(text: string) {
       total: 0,
       valid: 0,
       invalid: 0,
-      error: `Missing headers: ${missing.join(", ")}`,
+      error: `${t("missingHeaders")}: ${missing.join(", ")}`,
     };
   }
 
@@ -73,26 +64,35 @@ export function parseCSV(text: string) {
 
     const timestamp = new Date(dateStr).getTime();
     if (isNaN(timestamp)) {
-      errors.push("Invalid date");
+      errors.push(t("invalidDate"));
     }
 
-    if (isNaN(systolic)) errors.push("Systolic must be a number");
+    if (isNaN(systolic)) errors.push(t("sysNumber"));
 
-    if (isNaN(diastolic)) errors.push("Diastolic must be a number");
+    if (isNaN(diastolic)) errors.push(t("diaNumber"));
 
-    if (isNaN(pulse)) errors.push("Pulse must be a number");
+    if (isNaN(pulse)) errors.push(t("plsNumber"));
 
-    if (systolic < 70 || systolic > 250) errors.push("Systolic out of range");
+    if (systolic < 70 || systolic > 250) errors.push(t("sysRange"));
 
-    if (diastolic < 40 || diastolic > 150)
-      errors.push("Diastolic out of range");
+    if (diastolic < 40 || diastolic > 150) errors.push(t("diaRange"));
 
-    if (pulse < 30 || pulse > 220) errors.push("Pulse out of range");
+    if (pulse < 30 || pulse > 220) errors.push(t("plsRange"));
 
-    if (diastolic >= systolic) errors.push("Diastolic >= Systolic");
+    if (diastolic >= systolic) errors.push(t("diaGreaterSys"));
 
     if (errors.length > 0) {
-      results.push({ data: null, errors });
+      results.push({
+        data: {
+          id,
+          systolic,
+          diastolic,
+          pulse,
+          comment,
+          recorded_at: timestamp,
+        },
+        errors,
+      });
     } else {
       results.push({
         data: {
@@ -108,8 +108,8 @@ export function parseCSV(text: string) {
     }
   }
 
-  const valid = results.filter((r) => r.data !== null);
-  const invalid = results.filter((r) => r.data === null);
+  const valid = results.filter((r) => r.errors.length === 0);
+  const invalid = results.filter((r) => r.errors.length > 0);
 
   return {
     rows: results,

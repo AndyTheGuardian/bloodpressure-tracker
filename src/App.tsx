@@ -13,6 +13,7 @@ import { StatsPanel } from "./components/StatsPanel";
 import { Filter } from "./components/Filter";
 import { FileSection } from "./components/FileSection";
 import { ImportPreviewModal } from "./components/ImportPreviewModal";
+import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 function App() {
@@ -44,13 +45,14 @@ function App() {
     handleFile,
     importPreview,
     importError,
+    setImportError,
     confirmImport,
     cancelImport,
     overwriteDuplicates,
     setOverwriteDuplicates,
   } = useImportCSV({ readings, setReadings });
 
-  const { exportToCSV, exportToPDF } = useExportData(readings);
+  const { exportToCSV, exportToPDF } = useExportData(readings, t);
 
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("theme");
@@ -228,8 +230,14 @@ function App() {
           />
         )}
         {importError && (
-          <div className="mt-3 p-3 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
-            ⚠️ {importError}
+          <div className="mt-3 p-3 flex place-content-between bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
+            <p>⚠️ {importError}</p>
+            <button
+              className="text-red-700"
+              onClick={() => setImportError(null)}
+            >
+              <X />
+            </button>
           </div>
         )}
         {importPreview && (

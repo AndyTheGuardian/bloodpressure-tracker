@@ -5,7 +5,7 @@ import type { Reading } from "../types/BpTypes";
 import { calculateStats } from "../utils/stats";
 import { calculateTrend } from "../utils/trend";
 
-export function useExportData(readings: Reading[]) {
+export function useExportData(readings: Reading[], t: (key: string) => string) {
   function exportToCSV() {
     const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse", "Comment"];
 
@@ -50,12 +50,16 @@ export function useExportData(readings: Reading[]) {
     const { trend } = calculateTrend(readings);
 
     doc.setFontSize(16);
-    doc.text("Blood Pressure Report", 14, 15);
+    doc.text(`${t("bp")} Report`, 14, 15);
 
     doc.setFontSize(12);
     doc.text(
-      `Average: ${stats.systolic}/${stats.diastolic} (Pulse: ${stats})   Trend: ${
-        trend === "up" ? "rising" : trend === "down" ? "falling" : "stable"
+      `${t("average")}: ${stats.systolic} / ${stats.diastolic} (${t("pulse")}: ${stats.pulse})   Trend: ${
+        trend === "up"
+          ? t("rising")
+          : trend === "down"
+            ? t("falling")
+            : t("stable")
       }`,
       14,
       25,
@@ -63,7 +67,7 @@ export function useExportData(readings: Reading[]) {
 
     autoTable(doc, {
       startY: 30,
-      head: [["Date", "Systolic", "Diastolic", "Pulse", "Comment"]],
+      head: [[t("date"), t("systolic"), t("diastolic"), t("pulse"), t("note")]],
       body: tableData,
 
       styles: {

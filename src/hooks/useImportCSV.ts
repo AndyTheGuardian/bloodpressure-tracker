@@ -4,6 +4,7 @@ import type { Parsed } from "../types/ParsedData";
 import { parseCSV } from "../utils/parseCSV";
 import { getFingerprint } from "../utils/fingerprint";
 import { detectDuplicates } from "../utils/detectDuplicates";
+import { useTranslation } from "react-i18next";
 
 export function useImportCSV({
   readings,
@@ -16,13 +17,20 @@ export function useImportCSV({
   const [importError, setImportError] = useState<string | null>(null);
   const [overwriteDuplicates, setOverwriteDuplicates] = useState(false);
 
+  const { t } = useTranslation();
+
   function handleFile(file: File) {
     if (!file) return;
+
+    if (!file.name.endsWith(".csv")) {
+      setImportError(t("uploadCsv"));
+      return;
+    }
 
     const reader = new FileReader();
 
     reader.onerror = () => {
-      setImportError("Failed to read file");
+      setImportError(t("readFail"));
     };
 
     reader.onload = (event) => {
@@ -30,30 +38,10 @@ export function useImportCSV({
         const text = event.target?.result;
         if (typeof text !== "string") return;
 
-        const result = parseCSV(text);
+        const result = parseCSV(text, t);
 
         const rowsWithDuplicates = detectDuplicates(readings, result.rows);
 
-        // const existingSet = new Set(
-        //   Array.isArray(readings) ? readings.map(getFingerprint) : [],
-        // );
-
-        // const seen = new Set<string>();
-
-        // const rowsWithDuplicates = result.rows.map((row) => {
-        //   if (!row.data) return row;
-
-        //   const fp = getFingerprint(row.data);
-
-        //   const isDuplicate = existingSet.has(fp) || seen.has(fp);
-
-        //   seen.add(fp);
-
-        //   return {
-        //     ...row,
-        //     isDuplicate,
-        //   };
-        // });
         if (result.error) {
           setImportError(result.error);
           setImportPreview(null);
@@ -71,7 +59,7 @@ export function useImportCSV({
         if (err instanceof Error) {
           setImportError(err.message);
         } else {
-          setImportError("Unknown import error");
+          setImportError(t("unknownError"));
         }
 
         setImportPreview(null);
@@ -84,7 +72,7 @@ export function useImportCSV({
   function confirmImport() {
     if (!importPreview) return;
 
-    const validRows = importPreview.rows.filter((r) => r.data);
+    const validRows = importPreview.rows.filter((r) => r.errors.length === 0);
 
     if (overwriteDuplicates) {
       const map = new Map<string, Reading>();
@@ -115,6 +103,7 @@ export function useImportCSV({
     handleFile,
     importPreview,
     importError,
+    setImportError,
     confirmImport,
     cancelImport,
     overwriteDuplicates,

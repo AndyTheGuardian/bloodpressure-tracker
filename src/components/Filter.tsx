@@ -37,7 +37,7 @@ export function Filter({
         </button>
       </div>
       {showFilter && (
-        <div className="flex flex-row sm:flex-row gap-2 mt-3">
+        <div className="flex flex-row sm:flex-row gap-2 mt-2">
           <input
             className="w-full sd:flex-1 h-10 p-2 border rounded shadow dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300"
             //type="datetime-local"

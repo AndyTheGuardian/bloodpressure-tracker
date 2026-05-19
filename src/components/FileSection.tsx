@@ -31,10 +31,6 @@ export function FileSection({ actions }: Props) {
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (!file) return;
-    if (!file.name.endsWith(".csv")) {
-      alert("Please upload a CSV file");
-      return;
-    }
     handleFile(file);
   }
 
