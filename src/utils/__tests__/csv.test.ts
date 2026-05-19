@@ -2,11 +2,13 @@ import { describe, it, expect } from "vitest";
 import { parseCSV } from "../parseCSV";
 
 describe("parseCSV", () => {
+  const t = (key: string) => key;
+
   it("parses valid CSV correctly", () => {
     const csv = `Id;Date;Systolic;Diastolic;Pulse;Comment
         1777395480000;4/28/2026, 7:02:00 PM;120;80;70;`;
 
-    const result = parseCSV(csv);
+    const result = parseCSV(csv, t);
 
     expect(result.total).toBe(1);
     expect(result.valid).toBe(1);
@@ -22,7 +24,7 @@ describe("parseCSV", () => {
   it("skips header row", () => {
     const csv = `Id;Date;Systolic;Diastolic;Pulse;Comment`;
 
-    const result = parseCSV(csv);
+    const result = parseCSV(csv, t);
 
     expect(result.total).toBe(0);
   });
@@ -31,7 +33,7 @@ describe("parseCSV", () => {
     const csv = `Id;Date;Systolic;Diastolic;Pulse;Comment
         1777395480000;4/28/2026, 7:02:00 PM;abc;80;70;`;
 
-    const result = parseCSV(csv);
+    const result = parseCSV(csv, t);
 
     expect(result.valid).toBe(0);
     expect(result.invalid).toBe(1);
@@ -39,7 +41,7 @@ describe("parseCSV", () => {
   });
 
   it("handles empty file", () => {
-    const result = parseCSV("");
+    const result = parseCSV("", t);
 
     expect(result.total).toBe(0);
     expect(result.rows).toEqual([]);
