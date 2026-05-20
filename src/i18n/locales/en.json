@@ -18,6 +18,7 @@
     "reset": "Reset",
     "previewImport": "Preview Import",
     "date": "Date",
+    "someRows": "Some rows could not be imported.",
     "overwriteDuplicates": "Overwrite duplicates",
     "entriesReplaced": "entries will be replaced",
     "duplicatesSkipped": "duplicates will be skipped",
@@ -51,5 +52,10 @@
     "diaGreaterSys": "Diastolic >= Systolic",
     "readFail": "Failed to read file",
     "unknownError": "Unknown import error",
-    "uploadCsv": "Please upload a CSV file"
+    "uploadCsv": "Please upload a CSV file",
+    "readingDeleted": "Reading deleted",
+    "readingsDeleted": "All readings deleted",
+    "filterReset": "Filter reseted",
+    "readingAdded": "Reading added",
+    "entryUpdated": "Reading updated"
 }

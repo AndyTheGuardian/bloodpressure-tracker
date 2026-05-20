@@ -18,6 +18,7 @@
     "reset": "Zurücksetzen",
     "previewImport": "Import-Vorschau",
     "date": "Datum",
+    "someRows": "Einige Einträge können nicht importiert werden.",
     "overwriteDuplicates": "Duplikate überschreiben",
     "entriesReplaced": "Einträge werden überschrieben",
     "duplicatesSkipped": "Duplikate werden übersprungen",
@@ -51,5 +52,10 @@
     "diaGreaterSys": "Diastolisch >= Systolisch",
     "readFail": "Fehler beim Lesen",
     "unknownError": "Unbekannter Fehler beim Import",
-    "uploadCsv": "Bitte eine CSV-Datei hochladen"
+    "uploadCsv": "Bitte eine CSV-Datei hochladen",
+    "readingDeleted": "Messwert gelöscht",
+    "readingsDeleted": "Alle Messwerte gelöscht",
+    "filterReset": "Filter zurückgesetzt",
+    "readingAdded": "Messwert hinzugefügt",
+    "entryUpdated": "Messwert aktualisiert"
 }

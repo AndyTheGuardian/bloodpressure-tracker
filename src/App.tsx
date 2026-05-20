@@ -15,6 +15,7 @@ import { FileSection } from "./components/FileSection";
 import { ImportPreviewModal } from "./components/ImportPreviewModal";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 function App() {
   const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
@@ -124,6 +125,7 @@ function App() {
       comment: "",
       datetime: getNow(),
     });
+    toast.success(t("readingAdded"));
   };
 
   const handleEdit = (
@@ -148,14 +150,17 @@ function App() {
           : r,
       ),
     );
+    toast.success(t("entryUpdated"));
   };
 
   const deleteReading = (id: number) => {
     setReadings(readings.filter((r) => id != r.id));
+    toast.success(t("readingDeleted"));
   };
 
   function deleteAllReadings() {
     setDeleteAll(true);
+    toast.success(t("readingsDeleted"));
   }
 
   function confirmDeleteAll() {
@@ -166,6 +171,7 @@ function App() {
   function resetFilter() {
     setFromDate("");
     setToDate("");
+    toast.success(t("filterReset"));
   }
 
   const ReadingsPanelState = {

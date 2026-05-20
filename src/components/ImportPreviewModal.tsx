@@ -88,7 +88,7 @@ export function ImportPreviewModal({
       </p>
       {preview.invalid > 0 && (
         <p className="text-red-500 text-sm mt-1 font-semibold">
-          Some rows could not be imported.
+          {t("someRows")}
         </p>
       )}
       {duplicates > 0 && (
