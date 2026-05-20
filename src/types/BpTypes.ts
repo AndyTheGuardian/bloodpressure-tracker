@@ -14,4 +14,5 @@ export type Options = {
   showPing: Boolean;
   showStats: Boolean;
   showFilter: Boolean;
+  showStaticErrors: Boolean;
 };

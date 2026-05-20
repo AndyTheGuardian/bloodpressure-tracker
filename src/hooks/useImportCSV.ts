@@ -5,6 +5,7 @@ import { parseCSV } from "../utils/parseCSV";
 import { getFingerprint } from "../utils/fingerprint";
 import { detectDuplicates } from "../utils/detectDuplicates";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 export function useImportCSV({
   readings,
@@ -24,6 +25,7 @@ export function useImportCSV({
 
     if (!file.name.endsWith(".csv")) {
       setImportError(t("uploadCsv"));
+      toast.error(t("uploadCsv"));
       return;
     }
 
@@ -31,6 +33,7 @@ export function useImportCSV({
 
     reader.onerror = () => {
       setImportError(t("readFail"));
+      toast.error(t("readFail"));
     };
 
     reader.onload = (event) => {
@@ -44,6 +47,7 @@ export function useImportCSV({
 
         if (result.error) {
           setImportError(result.error);
+          toast.error(result.error);
           setImportPreview(null);
         } else {
           setImportPreview({
@@ -58,8 +62,10 @@ export function useImportCSV({
 
         if (err instanceof Error) {
           setImportError(err.message);
+          toast.error(err.message);
         } else {
           setImportError(t("unknownError"));
+          toast.error(t("unknownError"));
         }
 
         setImportPreview(null);
@@ -71,6 +77,8 @@ export function useImportCSV({
 
   function confirmImport() {
     if (!importPreview) return;
+
+    const id = toast.loading(t("importing"));
 
     const validRows = importPreview.rows.filter((r) => r.errors.length === 0);
 
@@ -85,12 +93,14 @@ export function useImportCSV({
         const data = r.data!;
         map.set(getFingerprint(data), data);
       });
-
-      setReadings(Array.from(map.values()));
+      const mapped = Array.from(map.values());
+      setReadings(mapped);
+      toast.success(`${mapped.length} ${t("readingsImported")}`, { id });
     } else {
       const clean = validRows.filter((r) => !r.isDuplicate).map((r) => r.data!);
 
       setReadings((prev) => [...prev, ...clean]);
+      toast.success(`${clean.length} ${t("readingsImported")}`, { id });
     }
     setImportPreview(null);
   }

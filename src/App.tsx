@@ -27,6 +27,7 @@ function App() {
     showPing: false,
     showStats: true,
     showFilter: true,
+    showStaticErrors: false,
   });
 
   const [form, setForm] = useState({
@@ -235,7 +236,7 @@ function App() {
             setShowFilter={setShowFilter}
           />
         )}
-        {importError && (
+        {options.showStaticErrors && importError && (
           <div className="mt-3 p-3 flex place-content-between bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
             <p>⚠️ {importError}</p>
             <button

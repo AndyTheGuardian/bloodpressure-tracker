@@ -38,7 +38,8 @@
     "stats": "Stats",
     "notes": "Notes",
     "fileSection": "File Section",
-    "pingAnimation": "Ping animation",
+    "staticErrorMsgs": "Static Error Messages",
+    "pingAnimation": "Ping Animation",
     "noHeader": "CSV must contain header",
     "noDataRows" : "CSV contains no data rows",
     "missingHeaders": "Missing headers",
@@ -57,5 +58,7 @@
     "readingsDeleted": "All readings deleted",
     "filterReset": "Filter reseted",
     "readingAdded": "Reading added",
-    "entryUpdated": "Reading updated"
+    "entryUpdated": "Reading updated",
+    "importing": "Importing ...",
+    "readingsImported": "readings imported"
 }

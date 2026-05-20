@@ -38,6 +38,7 @@
     "stats": "Statistiken",
     "notes": "Anmerkungen",
     "fileSection": "Dateiverwaltung",
+    "staticErrorMsgs": "Statische Fehlermeldungen",
     "pingAnimation": "Messpunkt Animation",
     "noHeader": "CSV muss eine Kopfzeile haben",
     "noDataRows" : "CSV enthält keine Datenreihen",
@@ -57,5 +58,7 @@
     "readingsDeleted": "Alle Messwerte gelöscht",
     "filterReset": "Filter zurückgesetzt",
     "readingAdded": "Messwert hinzugefügt",
-    "entryUpdated": "Messwert aktualisiert"
+    "entryUpdated": "Messwert aktualisiert",
+    "importing": "Importiere ...",
+    "readingsImported": "Messwerte importiert"
 }
