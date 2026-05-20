@@ -160,12 +160,12 @@ function App() {
 
   function deleteAllReadings() {
     setDeleteAll(true);
-    toast.success(t("readingsDeleted"));
   }
 
   function confirmDeleteAll() {
     setReadings([]);
     setDeleteAll(false);
+    toast.success(t("readingsDeleted"));
   }
 
   function resetFilter() {
