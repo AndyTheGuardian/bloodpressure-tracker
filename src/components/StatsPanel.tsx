@@ -39,7 +39,7 @@ export function StatsPanel({ sortedReadings }: Props) {
         <button onClick={switchTrend}>{t("stats")}</button>
       </h2>
       {sortedReadings.length === 0 ? (
-        <p className="text-gray-500">No data</p>
+        <p className="text-gray-500">{t("noData")}</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 sm:place-content-evenly gap-4 text-center">
           <StatCard

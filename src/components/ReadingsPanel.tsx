@@ -80,7 +80,7 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
         </div>
       )}
       {sortedReadings.length === 0 ? (
-        <p className="text-gray-500 mt-2">No data</p>
+        <p className="text-gray-500 mt-2">{t("noData")}</p>
       ) : (
         <div className="mt-1 max-h-[40vh] md:max-h-[60vh] overflow-y-auto">
           <ul className="space-y-2 px-2">
