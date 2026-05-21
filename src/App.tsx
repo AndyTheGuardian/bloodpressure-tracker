@@ -145,6 +145,13 @@ function App() {
     com: string,
     dat: string,
   ) => {
+    const bpError = validateBloodPressure(sys.toString(), dia.toString());
+
+    if (bpError) {
+      toast.error(bpError);
+      return;
+    }
+
     setReadings(
       readings.map((r) =>
         r.id === id

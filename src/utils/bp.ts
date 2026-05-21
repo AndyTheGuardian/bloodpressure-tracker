@@ -43,9 +43,9 @@ export function getBPStyle(level: BPLevel, isGrad: Boolean) {
   if (isGrad) {
     switch (level) {
       case "crisis":
-        return `bg-gradient-to-r from-red-700 to-red-50 dark:to-red-950 border-red-800 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50 font-bold`;
+        return `bg-gradient-to-r from-red-700 to-red-50 dark:to-red-950 border-red-800 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-905 font-bold`;
       case "high2":
-        return `bg-gradient-to-r from-red-500 to-red-50 dark:to-red-950 border-red-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-50`;
+        return `bg-gradient-to-r from-red-500 to-red-50 dark:to-red-950 border-red-600 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950 font-semibold`;
       case "high1":
         return `bg-gradient-to-r from-orange-400 to-orange-50 dark:to-orange-950 border-orange-500 border-[1px] border-opacity-0 hover:border-opacity-100 text-gray-950`;
       case "elevated":
@@ -57,9 +57,9 @@ export function getBPStyle(level: BPLevel, isGrad: Boolean) {
   }
   switch (level) {
     case "crisis":
-      return `bg-red-700 border-red-800 text-gray-50 font-bold`;
+      return `bg-red-700 border-red-800 text-gray-950 font-bold`;
     case "high2":
-      return `bg-red-500 border-red-600 text-gray-50`;
+      return `bg-red-500 border-red-600 text-gray-950 font-semibold`;
     case "high1":
       return `bg-orange-400 border-orange-500 text-gray-950`;
     case "elevated":

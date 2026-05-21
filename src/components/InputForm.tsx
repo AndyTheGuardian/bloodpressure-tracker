@@ -58,11 +58,11 @@ export function InputForm({
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-2">
-      <div className="grid grid-flow-col-dense sm:flex gap-2">
-        <div className="flex flex-col sm:flex-1">
+      <div className="grid grid-cols-3 gap-2 sm:flex">
+        <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.systolic && errors.systolic && (
-              <p className="text-red-500 text-xs -mt-1 ml-1 ">
+              <p className="text-red-500 text-xs font-semibold -mt-1">
                 {errors.systolic}
               </p>
             )}
@@ -89,8 +89,8 @@ export function InputForm({
             }}
           />
         </div>
-        {isEditing ? <span className="py-2">/</span> : <></>}
-        <div className="flex flex-col sm:flex-1">
+        {/* {isEditing ? <span className="py-2">/</span> : <></>} */}
+        <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.diastolic && errors.diastolic && (
               <p className="text-red-500 text-xs -mt-1 ml-1 ">
@@ -120,7 +120,7 @@ export function InputForm({
             }}
           />
         </div>
-        <div className="flex flex-col sm:flex-1">
+        <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.pulse && errors.pulse && (
               <p className="text-red-500 text-xs -mt-1">{errors.pulse}</p>
@@ -151,7 +151,7 @@ export function InputForm({
       </div>
       {options.showComments && (
         <input
-          className={`w-full mt-[12px] sm:flex-none sm:max-w-44 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+          className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-44 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
           placeholder={t("note")}
           type="text"
           value={form.comment}
@@ -161,7 +161,7 @@ export function InputForm({
         />
       )}
       <input
-        className={`w-full mt-[12px] sm:flex-none sm:max-w-52 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+        className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-52 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
         type="datetime-local"
         value={form.datetime}
         ref={refDat}
@@ -170,13 +170,21 @@ export function InputForm({
       {isEditing ? (
         <div className="sm:flex-none grid grid-cols-2 gap-2">
           <button
-            className="w-auto mt-[12px] h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-auto sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500 disabled:bg-gray-500/50 disabled:hover:bg-gray-500/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             onClick={onSubmit}
+            disabled={
+              !form.systolic ||
+              !form.diastolic ||
+              !form.pulse ||
+              !!errors.systolic ||
+              !!errors.diastolic ||
+              !!errors.pulse
+            }
           >
             {t("save")}
           </button>
           <button
-            className="w-auto mt-[12px] h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-auto sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             onClick={() => setIsEditing(false)}
           >
             {t("cancel")}
@@ -184,7 +192,7 @@ export function InputForm({
         </div>
       ) : (
         <button
-          className="w-full mt-[12px] sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full sm:mt-[12px] sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           disabled={
             !form.systolic ||
             !form.diastolic ||
