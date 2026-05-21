@@ -16,6 +16,7 @@ import { ImportPreviewModal } from "./components/ImportPreviewModal";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
+import { validateBloodPressure } from "./utils/validation";
 
 function App() {
   const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
@@ -105,6 +106,13 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const bpError = validateBloodPressure(form.systolic, form.diastolic);
+
+    if (bpError) {
+      toast.error(bpError);
+      return;
+    }
 
     const newReading = {
       id: new Date(form.datetime).getTime(),

@@ -60,5 +60,8 @@
     "readingAdded": "Reading added",
     "entryUpdated": "Reading updated",
     "importing": "Importing ...",
-    "readingsImported": "readings imported"
+    "readingsImported": "readings imported",
+    "valueNaN": "Not a number",
+    "valueOutOfRange": "Range:",
+    "diaLowerSys": "Diastolic must be lower than systolic"
 }

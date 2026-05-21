@@ -60,5 +60,8 @@
     "readingAdded": "Messwert hinzugefügt",
     "entryUpdated": "Messwert aktualisiert",
     "importing": "Importiere ...",
-    "readingsImported": "Messwerte importiert"
+    "readingsImported": "Messwerte importiert",
+    "valueNaN": "Nicht numerisch",
+    "valueOutOfRange": "Bereich:",
+    "diaLowerSys": "Diastolischer Wert muss unterhalb des systolischen liegen"
 }
