@@ -55,7 +55,7 @@
     "unknownError": "Unbekannter Fehler beim Import",
     "uploadCsv": "Bitte eine CSV-Datei hochladen",
     "readingDeleted": "Messwert gelöscht",
-    "readingsDeleted": "Alle Messwerte gelöscht",
+    "readingsDeleted": "Messwerte gelöscht",
     "filterReset": "Filter zurückgesetzt",
     "readingAdded": "Messwert hinzugefügt",
     "entryUpdated": "Messwert aktualisiert",

@@ -13,19 +13,19 @@ export function TrendIndicator({ trend, slope }: Props) {
       {trend === "up" && (
         <div className={trendTextStyle.up}>
           <p>↑</p>
-          <p className="hidden md:block">&nbsp;{t("rising")}</p>
+          <p>&nbsp;{t("rising")}</p>
         </div>
       )}
       {trend == "down" && (
         <div className={trendTextStyle.down}>
           <p>↓</p>
-          <p className="hidden sm:block">&nbsp;{t("falling")}</p>
+          <p>&nbsp;{t("falling")}</p>
         </div>
       )}
       {trend == "stable" && (
         <div className={trendTextStyle.stable}>
           <p>→</p>
-          <p className="hidden md:block">&nbsp;{t("stable")}</p>
+          <p>&nbsp;{t("stable")}</p>
         </div>
       )}
       <p className="text-sm text-gray-500 mt-[6px] ml-2">{slope.toFixed(2)}</p>

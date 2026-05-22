@@ -48,11 +48,21 @@ export function InputForm({
   function handleEnter(
     e: React.KeyboardEvent,
     nextRef: React.RefObject<HTMLInputElement | null>,
+    prevRef?: React.RefObject<HTMLInputElement | null>,
   ) {
     if (!options.showComments && nextRef === refCom) nextRef = refDat;
     if (e.key === "Enter" || e.key === "ArrowRight") {
       e.preventDefault();
       nextRef.current?.focus();
+    }
+    const active = document.activeElement as HTMLInputElement;
+    if (
+      e.key === "Backspace" &&
+      active instanceof HTMLInputElement &&
+      active.value === ""
+    ) {
+      e.preventDefault();
+      prevRef?.current?.focus();
     }
   }
 
@@ -104,7 +114,7 @@ export function InputForm({
             type="numeric"
             value={form.diastolic}
             ref={refDia}
-            onKeyDown={(e) => handleEnter(e, refPls)}
+            onKeyDown={(e) => handleEnter(e, refPls, refSys)}
             onChange={(e) => {
               setForm({ ...form, diastolic: e.target.value });
             }}
@@ -132,7 +142,7 @@ export function InputForm({
             type="numeric"
             value={form.pulse}
             ref={refPls}
-            onKeyDown={(e) => handleEnter(e, refCom)}
+            onKeyDown={(e) => handleEnter(e, refCom, refDia)}
             onChange={(e) => {
               setForm({ ...form, pulse: e.target.value });
             }}
@@ -156,7 +166,7 @@ export function InputForm({
           type="text"
           value={form.comment}
           ref={refCom}
-          onKeyDown={(e) => handleEnter(e, refDat)}
+          onKeyDown={(e) => handleEnter(e, refDat, refPls)}
           onChange={(e) => setForm({ ...form, comment: e.target.value })}
         />
       )}

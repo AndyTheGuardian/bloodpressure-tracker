@@ -204,9 +204,29 @@ function App() {
   }
 
   function confirmDeleteAll() {
+    const deleted = readings;
     setReadings([]);
+
     setDeleteAll(false);
-    toast.success(t("readingsDeleted"));
+    toast(
+      (tt) => (
+        <div className="flex items-center gap-2">
+          <span>{t("readingsDeleted")}</span>
+
+          <button
+            className="text-emerald-500 font-semibold"
+            onClick={() => {
+              setReadings(deleted);
+              toast.dismiss(tt.id);
+            }}
+          >
+            {t("undo")}
+          </button>
+        </div>
+      ),
+      { duration: 5000 },
+    );
+    //toast.success(t("readingsDeleted"));
   }
 
   function resetFilter() {
