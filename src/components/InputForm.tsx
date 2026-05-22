@@ -68,7 +68,7 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.systolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 bg-opacity-50 dark:border-gray-700/50"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.systolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 bg-opacity-50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("systolic")}
             type="numeric"
             value={form.systolic}
@@ -99,7 +99,7 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.diastolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700/50"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.diastolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("diastolic")}
             type="numeric"
             value={form.diastolic}
@@ -127,7 +127,7 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.pulse ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700/50"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.pulse ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("pulse")}
             type="numeric"
             value={form.pulse}

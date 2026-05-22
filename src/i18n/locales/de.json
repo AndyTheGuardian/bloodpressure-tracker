@@ -63,5 +63,6 @@
     "readingsImported": "Messwerte importiert",
     "valueNaN": "Nicht numerisch",
     "valueOutOfRange": "Bereich:",
-    "diaLowerSys": "Diastolischer Wert muss unterhalb des systolischen liegen"
+    "diaLowerSys": "Diastolischer Wert muss unterhalb des systolischen liegen",
+    "undo": "wiederherstellen"
 }

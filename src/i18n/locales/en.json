@@ -63,5 +63,6 @@
     "readingsImported": "readings imported",
     "valueNaN": "Not a number",
     "valueOutOfRange": "Range:",
-    "diaLowerSys": "Diastolic must be lower than systolic"
+    "diaLowerSys": "Diastolic must be lower than systolic",
+    "undo": "undo"
 }

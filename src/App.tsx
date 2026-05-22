@@ -169,10 +169,35 @@ function App() {
     toast.success(t("entryUpdated"));
   };
 
-  const deleteReading = (id: number) => {
-    setReadings(readings.filter((r) => id != r.id));
-    toast.success(t("readingDeleted"));
-  };
+  function deleteReading(id: number) {
+    const deleted = readings.find((r) => r.id === id);
+
+    if (!deleted) return;
+
+    // setReadings(readings.filter((r) => id != r.id));
+    // toast.success(t("readingDeleted"));
+
+    setReadings((prev) => prev.filter((r) => r.id !== id));
+
+    toast(
+      (tt) => (
+        <div className="flex items-center gap-2">
+          <span>{t("readingDeleted")}</span>
+
+          <button
+            className="text-emerald-500 font-semibold"
+            onClick={() => {
+              setReadings((prev) => [...prev, deleted]);
+              toast.dismiss(tt.id);
+            }}
+          >
+            {t("undo")}
+          </button>
+        </div>
+      ),
+      { duration: 5000 },
+    );
+  }
 
   function deleteAllReadings() {
     setDeleteAll(true);
