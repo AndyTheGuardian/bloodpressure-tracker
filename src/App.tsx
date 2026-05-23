@@ -174,9 +174,6 @@ function App() {
 
     if (!deleted) return;
 
-    // setReadings(readings.filter((r) => id != r.id));
-    // toast.success(t("readingDeleted"));
-
     setReadings((prev) => prev.filter((r) => r.id !== id));
 
     toast(

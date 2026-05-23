@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import type { Options } from "../types/BpTypes";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { validators } from "../utils/validation";
+import { validateField } from "../utils/validation";
 
 type Props = {
   form: any;
@@ -45,25 +45,77 @@ export function InputForm({
     pulse: false,
   });
 
+  function shouldAutoAdvance(field: string, value: string) {
+    if (
+      (field === "systolic" &&
+        value.length === 2 &&
+        !["1", "2"].includes(value[0])) ||
+      (field !== "systolic" &&
+        value.length === 2 &&
+        !value[0].startsWith("1")) ||
+      value.length === 3
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
   function handleEnter(
-    e: React.KeyboardEvent,
+    e: React.KeyboardEvent<HTMLInputElement>,
     nextRef: React.RefObject<HTMLInputElement | null>,
     prevRef?: React.RefObject<HTMLInputElement | null>,
   ) {
     if (!options.showComments && nextRef === refCom) nextRef = refDat;
+
+    const value = e.currentTarget.value ?? "";
+
     if (e.key === "Enter" || e.key === "ArrowRight") {
       e.preventDefault();
       nextRef.current?.focus();
+      return;
     }
-    const active = document.activeElement as HTMLInputElement;
-    if (
-      e.key === "Backspace" &&
-      active instanceof HTMLInputElement &&
-      active.value === ""
-    ) {
+
+    if ((e.key === "Backspace" || e.key === "ArrowLeft") && value === "") {
       e.preventDefault();
       prevRef?.current?.focus();
     }
+  }
+
+  function onChange(
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+    nextRef: React.RefObject<HTMLInputElement | null>,
+  ) {
+    const { name, value } = e.target;
+
+    setForm({
+      ...form,
+      [name]: value,
+    });
+
+    if (value === "") {
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
+    }
+    if (shouldAutoAdvance(name, value)) {
+      e.preventDefault();
+      nextRef?.current?.focus();
+    }
+  }
+
+  function onBlur(e: React.FocusEvent<HTMLInputElement, Element>) {
+    const { name, value } = e.target;
+
+    setTouched({
+      ...touched,
+      [name]: true,
+    });
+    setErrors({
+      ...errors,
+      [name]: validateField(name, value),
+    });
   }
 
   return (
@@ -80,23 +132,14 @@ export function InputForm({
           <input
             className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.systolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 bg-opacity-50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("systolic")}
+            name="systolic"
             type="numeric"
+            inputMode="numeric"
             value={form.systolic}
             ref={refSys}
             onKeyDown={(e) => handleEnter(e, refDia)}
-            onChange={(e) => {
-              setForm({ ...form, systolic: e.target.value });
-            }}
-            onBlur={() => {
-              setTouched({
-                ...touched,
-                systolic: true,
-              });
-              setErrors({
-                ...errors,
-                systolic: validators.systolic(form.systolic),
-              });
-            }}
+            onChange={(e) => onChange(e, refDia)}
+            onBlur={onBlur}
           />
         </div>
         {/* {isEditing ? <span className="py-2">/</span> : <></>} */}
@@ -111,23 +154,14 @@ export function InputForm({
           <input
             className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.diastolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("diastolic")}
+            name="diastolic"
             type="numeric"
+            inputMode="numeric"
             value={form.diastolic}
             ref={refDia}
             onKeyDown={(e) => handleEnter(e, refPls, refSys)}
-            onChange={(e) => {
-              setForm({ ...form, diastolic: e.target.value });
-            }}
-            onBlur={() => {
-              setTouched({
-                ...touched,
-                diastolic: true,
-              });
-              setErrors({
-                ...errors,
-                diastolic: validators.diastolic(form.diastolic),
-              });
-            }}
+            onChange={(e) => onChange(e, refPls)}
+            onBlur={onBlur}
           />
         </div>
         <div className="flex flex-col sm:flex-1 self-start">
@@ -139,23 +173,17 @@ export function InputForm({
           <input
             className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.pulse ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("pulse")}
+            name="pulse"
             type="numeric"
+            inputMode="numeric"
             value={form.pulse}
             ref={refPls}
             onKeyDown={(e) => handleEnter(e, refCom, refDia)}
             onChange={(e) => {
-              setForm({ ...form, pulse: e.target.value });
+              const nextRef = options.showComments ? refCom : refDat;
+              onChange(e, nextRef);
             }}
-            onBlur={() => {
-              setTouched({
-                ...touched,
-                pulse: true,
-              });
-              setErrors({
-                ...errors,
-                pulse: validators.pulse(form.pulse),
-              });
-            }}
+            onBlur={onBlur}
           />
         </div>
       </div>
@@ -163,6 +191,7 @@ export function InputForm({
         <input
           className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-44 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
           placeholder={t("note")}
+          name="note"
           type="text"
           value={form.comment}
           ref={refCom}
@@ -172,6 +201,7 @@ export function InputForm({
       )}
       <input
         className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-52 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+        name="date"
         type="datetime-local"
         value={form.datetime}
         ref={refDat}
@@ -181,6 +211,7 @@ export function InputForm({
         <div className="sm:flex-none grid grid-cols-2 gap-2">
           <button
             className="w-auto sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500 disabled:bg-gray-500/50 disabled:hover:bg-gray-500/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            name="save"
             onClick={onSubmit}
             disabled={
               !form.systolic ||
@@ -195,6 +226,7 @@ export function InputForm({
           </button>
           <button
             className="w-auto sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            name="cancel"
             onClick={() => setIsEditing(false)}
           >
             {t("cancel")}
@@ -203,6 +235,7 @@ export function InputForm({
       ) : (
         <button
           className="w-full sm:mt-[12px] sm:w-auto h-10 bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 hover:cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-500 focus:border-gray-400 dark:focus:border-gray-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          name="add"
           disabled={
             !form.systolic ||
             !form.diastolic ||

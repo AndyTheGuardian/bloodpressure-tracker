@@ -37,3 +37,16 @@ export const validators = {
   // Heart rate / Pulse (bpm): integer 30–220 (typical: 40–180)
   pulse: (v: string) => validateRange(v, 30, 220),
 };
+
+export function validateField(name: string, value: string) {
+  switch (name) {
+    case "systolic":
+      return validators.systolic(value);
+    case "diastolic":
+      return validators.diastolic(value);
+    case "pulse":
+      return validators.pulse(value);
+    default:
+      return "";
+  }
+}
