@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ToastPosition } from "react-hot-toast";
 
 export type Reading = {
@@ -19,7 +20,7 @@ export type toastPosition = [
 ];
 
 export type ToastOption = {
-  label: string;
+  icon: ReactNode;
   value: ToastPosition;
   style: string;
 };

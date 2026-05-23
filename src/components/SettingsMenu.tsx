@@ -1,11 +1,21 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  SquareArrowUpLeft,
+  SquareArrowUp,
+  SquareArrowUpRight,
+  SquareArrowDownLeft,
+  SquareArrowDown,
+  SquareArrowDownRight,
+  X,
+} from "lucide-react";
 import type { Options, ToastOption } from "../types/BpTypes";
 import type { Theme } from "../types/theme";
 import { grayButtonStyle, settingsButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import toast from "react-hot-toast";
+import i18next from "i18next";
 
 type Props = {
   theme: string;
@@ -19,38 +29,95 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
 
   const { t } = useTranslation();
 
+  const language = i18next.language.toLowerCase();
+
   const toastPositions: ToastOption[] = [
     {
-      label: "🢄",
+      //label: "🢄",
+      // icon: (
+      //   <svg
+      //     viewBox="0 0 24 24"
+      //     className="w-4 h-4 bg-red-400 -p-2 fill-gray-900 dark:fill-gray-50 stroke-none"
+      //   >
+      //     <path d="M2 2V10.5L3.5 12L6.33579 9.16421L12.5858 15.4142L15.4142 12.5858L9.16421 6.33579L12 3.5L10.5 2H2Z" />
+      //   </svg>
+      // ),
+      icon: <SquareArrowUpLeft size={15} />,
       value: "top-left",
       style: "rounded-tl-md",
     },
     {
-      label: "🢁",
+      //label: "🢁",
+      // icon: (
+      //   <svg
+      //     viewBox="0 0 24 24"
+      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
+      //   >
+      //     <path d="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z" />
+      //   </svg>
+      // ),
+      icon: <SquareArrowUp size={15} />,
       value: "top-center",
       style: "rounded-none",
     },
     {
-      label: "🢅",
+      //label: "🢅",
+      // icon: (
+      //   <svg
+      //     viewBox="0 0 24 24"
+      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
+      //   >
+      //     <path d="M14 2H5.50003L4.00003 3.5L6.83581 6.33579L0.585815 12.5858L3.41424 15.4142L9.66424 9.16421L12.5 12L14 10.5L14 2Z" />
+      //   </svg>
+      // ),
+      icon: <SquareArrowUpRight size={15} />,
       value: "top-right",
       style: "rounded-tr-md",
     },
     {
-      label: "🢇",
+      //label: "🢇",
+      // icon: (
+      //   <svg
+      //     viewBox="0 0 24 24"
+      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
+      //   >
+      //     <path d="M9.16421 9.66421L15.4142 3.41421L12.5858 0.585785L6.33579 6.83578L3.5 4L2 5.5V14H10.5L12 12.5L9.16421 9.66421Z" />
+      //   </svg>
+      // ),
+      icon: <SquareArrowDownLeft size={15} />,
       value: "bottom-left",
       style: "rounded-bl-md",
     },
     {
-      label: "🢃",
+      //label: "🢃",
+      // icon: (
+      //   <svg
+      //     viewBox="0 0 24 24"
+      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
+      //   >
+      //     <path d="M10 8L14 8V10L8 16L2 10V8H6V0L10 4.76995e-08V8Z" />
+      //   </svg>
+      // ),
+      icon: <SquareArrowDown size={15} />,
       value: "bottom-center",
       style: "rounded-none",
     },
     {
-      label: "🢆",
+      //label: "🢆",
+      // icon: (
+      //   <svg
+      //     viewBox="0 0 24 24"
+      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
+      //   >
+      //     <path d="M9.66411 6.8359L3.414 0.585785L0.585571 3.41421L6.83568 9.66432L4.00002 12.5L5.50002 14H14V5.49999L12.5 3.99999L9.66411 6.8359Z" />
+      //   </svg>
+      // ),
+      icon: <SquareArrowDownRight size={15} />,
       value: "bottom-right",
       style: "rounded-br-md",
     },
   ] as const;
+
   return (
     <div className="relative">
       <button
@@ -98,7 +165,7 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
         <div className="p-4 flex flex-col">
           <div className="flex">
             <h2
-              className="text-lg font-semibold mb-4 select-none dark:text-gray-300"
+              className={`text-lg font-semibold mb-4 select-none dark:text-gray-300`}
               onClick={() =>
                 setOptions({
                   ...options,
@@ -109,7 +176,17 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
               {t("settings")}
             </h2>
             <p
-              className={` ${options.toastOverkill ? "text-emerald-500 block text-[7pt] mt-[.25px] -ml-[35px]" : "hidden"}`}
+              className={`
+                ${
+                  options.toastOverkill
+                    ? "text-emerald-500 block text-[7pt]"
+                    : "hidden"
+                } 
+                  ${
+                    language === "en"
+                      ? "mt-[.25px] -ml-[35px]"
+                      : "mt-[.25px] -ml-[105.5px]"
+                  }`}
             >
               ●{/* ⬢ */}
             </p>
@@ -274,13 +351,20 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                   });
                   toast.success(`Position ${t("setTo")} '${pos.value}'`);
                 }}
-                className={`flex-shrink text-xs text-wrap mb-0 ${
-                  options.toastPosition === pos.value
-                    ? settingsButtonStyle.selected
-                    : settingsButtonStyle.unselected
-                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 ${pos.style} shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+                className={`flex items-center justify-center 
+                  text-xs text-wrap 
+                  ${
+                    options.toastPosition === pos.value
+                      ? settingsButtonStyle.selected
+                      : settingsButtonStyle.unselected
+                  } 
+                px-3 py-1 
+                border-[1px] border-gray-300 dark:border-gray-700 
+                ${pos.style} shadow-md transition-all duration-200 
+                hover:scale-[1.02] active:scale-[0.98]`}
               >
-                {pos.label}
+                {/* {pos.label} */}
+                {pos.icon}
               </button>
             ))}
           </div>

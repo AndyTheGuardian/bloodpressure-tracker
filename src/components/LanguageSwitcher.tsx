@@ -1,10 +1,17 @@
 import i18n from "i18next";
+import toast from "react-hot-toast";
 
 export function LanguageSwitcher() {
-  function changeLanguage(lang: "en" | "de") {
-    i18n.changeLanguage(lang);
+  async function changeLanguage(lang: "en" | "de") {
+    await i18n.changeLanguage(lang);
 
     localStorage.setItem("language", lang);
+
+    toast.success(
+      `${i18n.t("language")} ${i18n.t("setTo")} ${
+        lang === "de" ? "deutsch" : "english"
+      }`,
+    );
   }
 
   return (
