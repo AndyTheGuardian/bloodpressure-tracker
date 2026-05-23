@@ -1,22 +1,30 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
+import type { ToastPosition } from "react-hot-toast";
+// import type { Options } from "../types/BpTypes";
 
-export function ResponsiveToaster() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+type Props = {
+  position: ToastPosition;
+  // options: Options;
+  // setOptions: (o: Options) => void;
+};
 
-  useEffect(() => {
-    const onResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
+export function ResponsiveToaster({ position }: Props) {
+  // const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
-    window.addEventListener("resize", onResize);
+  // useEffect(() => {
+  //   const onResize = () => {
+  //     setIsMobile(window.innerWidth < 640);
+  //   };
 
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+  //   window.addEventListener("resize", onResize);
+
+  //   return () => window.removeEventListener("resize", onResize);
+  // }, []);
 
   return (
     <Toaster
-      position={isMobile ? "bottom-center" : "top-center"}
+      position={position}
       toastOptions={{ className: "dark:bg-gray-800 dark:text-gray-100" }}
     />
   );

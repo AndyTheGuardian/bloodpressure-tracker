@@ -85,3 +85,9 @@ export const trendTextStyle = {
   stable:
     "text-xl underline underline-offset-2 decoration-gray-50 text-gray-900 dark:text-gray-100 font-bold flex justify-center",
 };
+
+export const settingsButtonStyle = {
+  selected: "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100",
+  unselected:
+    "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100",
+};

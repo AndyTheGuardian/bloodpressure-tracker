@@ -1,3 +1,5 @@
+import type { ToastPosition } from "react-hot-toast";
+
 export type Reading = {
   id: number;
   systolic: number;
@@ -7,12 +9,30 @@ export type Reading = {
   recorded_at: number;
 };
 
+export type toastPosition = [
+  "top-left",
+  "top-center",
+  "top-right",
+  "bottom-left",
+  "bottom-center",
+  "bottom-right",
+];
+
+export type ToastOption = {
+  label: string;
+  value: ToastPosition;
+  style: string;
+};
+
 export type Options = {
-  showComments: Boolean;
-  showGradient: Boolean;
-  showFileSection: Boolean;
-  showPing: Boolean;
-  showStats: Boolean;
-  showFilter: Boolean;
-  showStaticErrors: Boolean;
+  showComments: boolean;
+  showGradient: boolean;
+  showFileSection: boolean;
+  showPing: boolean;
+  showStats: boolean;
+  showFilter: boolean;
+  showStaticErrors: boolean;
+  autoAdvance: boolean;
+  toastPosition: ToastPosition;
+  toastOverkill: boolean;
 };

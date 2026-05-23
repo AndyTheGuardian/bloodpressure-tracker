@@ -1,14 +1,37 @@
 import { useState, useEffect } from "react";
 
 export function useLocalStorage<T>(key: string, initial: T) {
-    const [value, setValue] = useState<T>(() => {
-        const saved = localStorage.getItem(key);
-        return saved ? JSON.parse(saved) : initial;
-    })
+  const [value, setValue] = useState<T>(() => {
+    const saved = localStorage.getItem(key);
 
-    useEffect(() => {
-        localStorage.setItem(key, JSON.stringify(value));
-    }, [key, value]);
+    if (!saved) {
+      return initial;
+    }
 
-    return [value, setValue] as const;
+    try {
+      const parsed = JSON.parse(saved);
+
+      // defualt config merging only plain objects
+      if (
+        typeof initial === "object" &&
+        !Array.isArray(initial) &&
+        initial !== null
+      ) {
+        return {
+          ...initial,
+          ...parsed,
+        };
+      }
+
+      return parsed;
+    } catch {
+      return initial;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
 }

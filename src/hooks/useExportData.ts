@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import type { Reading } from "../types/BpTypes";
 import { calculateStats } from "../utils/stats";
 import { calculateTrend } from "../utils/trend";
+import toast from "react-hot-toast";
 
 export function useExportData(readings: Reading[], t: (key: string) => string) {
   function exportToCSV() {
@@ -32,6 +33,8 @@ export function useExportData(readings: Reading[], t: (key: string) => string) {
     a.click();
 
     URL.revokeObjectURL(url);
+
+    toast.success(`CSV ${t("exported")}`);
   }
 
   function exportToPDF() {
@@ -80,6 +83,8 @@ export function useExportData(readings: Reading[], t: (key: string) => string) {
     });
 
     doc.save("blood-pressure.pdf");
+
+    toast.success(`PDF ${t("exported")}`);
   }
 
   return {

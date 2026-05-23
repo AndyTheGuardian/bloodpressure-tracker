@@ -99,7 +99,7 @@ export function InputForm({
         [name]: "",
       });
     }
-    if (shouldAutoAdvance(name, value)) {
+    if (options.autoAdvance && shouldAutoAdvance(name, value)) {
       e.preventDefault();
       nextRef?.current?.focus();
     }
@@ -139,6 +139,7 @@ export function InputForm({
             ref={refSys}
             onKeyDown={(e) => handleEnter(e, refDia)}
             onChange={(e) => onChange(e, refDia)}
+            onFocus={(e) => e.currentTarget.select()}
             onBlur={onBlur}
           />
         </div>
@@ -161,6 +162,7 @@ export function InputForm({
             ref={refDia}
             onKeyDown={(e) => handleEnter(e, refPls, refSys)}
             onChange={(e) => onChange(e, refPls)}
+            onFocus={(e) => e.currentTarget.select()}
             onBlur={onBlur}
           />
         </div>
@@ -183,6 +185,7 @@ export function InputForm({
               const nextRef = options.showComments ? refCom : refDat;
               onChange(e, nextRef);
             }}
+            onFocus={(e) => e.currentTarget.select()}
             onBlur={onBlur}
           />
         </div>
@@ -197,6 +200,7 @@ export function InputForm({
           ref={refCom}
           onKeyDown={(e) => handleEnter(e, refDat, refPls)}
           onChange={(e) => setForm({ ...form, comment: e.target.value })}
+          onFocus={(e) => e.currentTarget.select()}
         />
       )}
       <input

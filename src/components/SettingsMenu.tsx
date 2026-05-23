@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import type { Options } from "../types/BpTypes";
+import type { Options, ToastOption } from "../types/BpTypes";
 import type { Theme } from "../types/theme";
-import { grayButtonStyle } from "../utils/bp";
+import { grayButtonStyle, settingsButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import toast from "react-hot-toast";
 
 type Props = {
   theme: string;
@@ -17,6 +18,39 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
   const [open, setOpen] = useState(false);
 
   const { t } = useTranslation();
+
+  const toastPositions: ToastOption[] = [
+    {
+      label: "🢄",
+      value: "top-left",
+      style: "rounded-tl-md",
+    },
+    {
+      label: "🢁",
+      value: "top-center",
+      style: "rounded-none",
+    },
+    {
+      label: "🢅",
+      value: "top-right",
+      style: "rounded-tr-md",
+    },
+    {
+      label: "🢇",
+      value: "bottom-left",
+      style: "rounded-bl-md",
+    },
+    {
+      label: "🢃",
+      value: "bottom-center",
+      style: "rounded-none",
+    },
+    {
+      label: "🢆",
+      value: "bottom-right",
+      style: "rounded-br-md",
+    },
+  ] as const;
   return (
     <div className="relative">
       <button
@@ -62,9 +96,24 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
             }`}
       >
         <div className="p-4 flex flex-col">
-          <h2 className="text-lg font-semibold mb-4 dark:text-gray-300">
-            {t("settings")}
-          </h2>
+          <div className="flex">
+            <h2
+              className="text-lg font-semibold mb-4 select-none dark:text-gray-300"
+              onClick={() =>
+                setOptions({
+                  ...options,
+                  toastOverkill: !options.toastOverkill,
+                })
+              }
+            >
+              {t("settings")}
+            </h2>
+            <p
+              className={` ${options.toastOverkill ? "text-emerald-500 block text-[7pt] mt-[.25px] -ml-[35px]" : "hidden"}`}
+            >
+              ●{/* ⬢ */}
+            </p>
+          </div>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className={`mb-2 rounded ${grayButtonStyle} transition duration-300`}
@@ -72,96 +121,169 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
             {theme === "dark" ? "☀️" : "🌙"}
           </button>
           <LanguageSwitcher />
+          <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
+            {t("visibility")}
+          </p>
           <button
-            onClick={() =>
+            onClick={() => {
               setOptions({
                 ...options,
                 showComments: !options.showComments,
-              })
-            }
+              });
+              if (options.toastOverkill) {
+                const state = options.showComments ? "off" : "on";
+                toast.success(`${t("notes")} ${t(state)}`);
+              }
+            }}
             className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showComments
-                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
             {t("notes")}
           </button>
           <button
-            onClick={() =>
+            onClick={() => {
               setOptions({
                 ...options,
                 showStats: !options.showStats,
-              })
-            }
+              });
+              if (options.toastOverkill) {
+                const state = options.showStats ? "off" : "on";
+                toast.success(`${t("stats")} ${t(state)}`);
+              }
+            }}
             className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showStats
-                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
             {t("stats")}
           </button>
           <button
-            onClick={() =>
+            onClick={() => {
               setOptions({
                 ...options,
                 showFilter: !options.showFilter,
-              })
-            }
+              });
+              if (options.toastOverkill) {
+                const state = options.showFilter ? "off" : "on";
+                toast.success(`${t("filter")} ${t(state)}`);
+              }
+            }}
             className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showFilter
-                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
             {t("filter")}
           </button>
           <button
-            onClick={() =>
+            onClick={() => {
               setOptions({
                 ...options,
                 showFileSection: !options.showFileSection,
-              })
-            }
+              });
+              if (options.toastOverkill) {
+                const state = options.showFileSection ? "off" : "on";
+                toast.success(`${t("fileSection")} ${t(state)}`);
+              }
+            }}
             className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showFileSection
-                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
             {t("fileSection")}
           </button>
           <button
-            onClick={() =>
+            onClick={() => {
               setOptions({
                 ...options,
                 showStaticErrors: !options.showStaticErrors,
-              })
-            }
+              });
+              if (options.toastOverkill) {
+                const state = options.showStaticErrors ? "off" : "on";
+                toast.success(`${t("staticErrorMsgs")} ${t(state)}`);
+              }
+            }}
             className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showStaticErrors
-                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
             {t("staticErrorMsgs")}
           </button>
+          <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
+            {t("functions")}
+          </p>
           <button
-            onClick={() =>
+            onClick={() => {
+              setOptions({
+                ...options,
+                autoAdvance: !options.autoAdvance,
+              });
+              if (options.toastOverkill) {
+                const state = options.autoAdvance ? "off" : "on";
+                toast.success(`${t("autoAdvance")} ${t(state)}`);
+              }
+            }}
+            className={`flex-shrink text-xs text-wrap mb-2 ${
+              options.autoAdvance
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
+            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+          >
+            {t("autoAdvance")}
+          </button>
+          <button
+            onClick={() => {
               setOptions({
                 ...options,
                 showPing: !options.showPing,
-              })
-            }
+              });
+              if (options.toastOverkill) {
+                const state = options.showPing ? "off" : "on";
+                toast.success(`${t("pingAnimation")} ${t(state)}`);
+              }
+            }}
             className={`flex-shrink text-xs text-wrap mb-2 ${
               options.showPing
-                ? "bg-blue-600 hover:bg-blue-500 border-blue-600 text-gray-100"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                ? settingsButtonStyle.selected
+                : settingsButtonStyle.unselected
             } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
           >
             {t("pingAnimation")}
           </button>
+          <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
+            {t("notifyPosition")}
+          </p>
+          <div className="grid grid-cols-3 gap-[2px]">
+            {toastPositions.map((pos) => (
+              <button
+                key={pos.value}
+                onClick={() => {
+                  setOptions({
+                    ...options,
+                    toastPosition: pos.value,
+                  });
+                  toast.success(`Position ${t("setTo")} '${pos.value}'`);
+                }}
+                className={`flex-shrink text-xs text-wrap mb-0 ${
+                  options.toastPosition === pos.value
+                    ? settingsButtonStyle.selected
+                    : settingsButtonStyle.unselected
+                } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 ${pos.style} shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+              >
+                {pos.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

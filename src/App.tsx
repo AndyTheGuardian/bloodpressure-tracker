@@ -17,6 +17,7 @@ import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { validateBloodPressure } from "./utils/validation";
+import { ResponsiveToaster } from "./components/ResponsiveToaster";
 
 function App() {
   const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
@@ -29,6 +30,9 @@ function App() {
     showStats: true,
     showFilter: true,
     showStaticErrors: false,
+    autoAdvance: true,
+    toastPosition: window.innerWidth < 640 ? "bottom-center" : "top-right",
+    toastOverkill: false,
   });
 
   const [form, setForm] = useState({
@@ -255,74 +259,77 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center transition-colors duration-300">
-      <div className="w-screen max-w-4xl bg-gray-200 dark:bg-gray-900 p-6 rounded-xl shadow-md my-4 transition-colors duration-300">
-        <div className="flex">
-          <h1 className="flex-1 text-2xl font-bold mb-4 text-center dark:text-gray-100">
-            {t("title")}
-          </h1>
-        </div>
-        <SettingsMenu
-          theme={theme}
-          setTheme={setTheme}
-          options={options}
-          setOptions={setOptions}
-        />
-        <InputForm
-          form={form}
-          setForm={setForm}
-          isEditing={false}
-          setIsEditing={null}
-          onSubmit={handleSubmit}
-          options={options}
-        />
-        {options.showStats && <StatsPanel sortedReadings={sortedReadings} />}
-        <Chart
-          readings={sortedReadings}
-          hoveredReadingId={hoveredReadingId}
-          theme={theme}
-        />
-        {options.showFilter && (
-          <Filter
-            onResetFilter={resetFilter}
-            fromDate={fromDate}
-            setFromDate={setFromDate}
-            toDate={toDate}
-            setToDate={setToDate}
-            showFilter={showFilter}
-            setShowFilter={setShowFilter}
-          />
-        )}
-        {options.showStaticErrors && importError && (
-          <div className="mt-3 p-3 flex place-content-between bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
-            <p>⚠️ {importError}</p>
-            <button
-              className="text-red-700"
-              onClick={() => setImportError(null)}
-            >
-              <X />
-            </button>
+    <>
+      <ResponsiveToaster position={options.toastPosition} />
+      <div className="min-h-screen min-w-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center transition-colors duration-300">
+        <div className="w-screen max-w-4xl bg-gray-200 dark:bg-gray-900 p-6 rounded-xl shadow-md my-4 transition-colors duration-300">
+          <div className="flex">
+            <h1 className="flex-1 text-2xl font-bold mb-4 text-center dark:text-gray-100">
+              {t("title")}
+            </h1>
           </div>
-        )}
-        {importPreview && (
-          <ImportPreviewModal
-            preview={importPreview}
-            onConfirm={confirmImport}
-            onCancel={cancelImport}
-            overwriteDuplicates={overwriteDuplicates}
-            setOverwriteDuplicates={setOverwriteDuplicates}
+          <SettingsMenu
+            theme={theme}
+            setTheme={setTheme}
+            options={options}
+            setOptions={setOptions}
           />
-        )}
-        {options.showFileSection && (
-          <FileSection actions={FileSectionActions} />
-        )}
-        <ReadingsPanel
-          sortedReadings={sortedReadings}
-          state={ReadingsPanelState}
-          actions={ReadingsPanelActions}
-        />
+          <InputForm
+            form={form}
+            setForm={setForm}
+            isEditing={false}
+            setIsEditing={null}
+            onSubmit={handleSubmit}
+            options={options}
+          />
+          {options.showStats && <StatsPanel sortedReadings={sortedReadings} />}
+          <Chart
+            readings={sortedReadings}
+            hoveredReadingId={hoveredReadingId}
+            theme={theme}
+          />
+          {options.showFilter && (
+            <Filter
+              onResetFilter={resetFilter}
+              fromDate={fromDate}
+              setFromDate={setFromDate}
+              toDate={toDate}
+              setToDate={setToDate}
+              showFilter={showFilter}
+              setShowFilter={setShowFilter}
+            />
+          )}
+          {options.showStaticErrors && importError && (
+            <div className="mt-3 p-3 flex place-content-between bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
+              <p>⚠️ {importError}</p>
+              <button
+                className="text-red-700"
+                onClick={() => setImportError(null)}
+              >
+                <X />
+              </button>
+            </div>
+          )}
+          {importPreview && (
+            <ImportPreviewModal
+              preview={importPreview}
+              onConfirm={confirmImport}
+              onCancel={cancelImport}
+              overwriteDuplicates={overwriteDuplicates}
+              setOverwriteDuplicates={setOverwriteDuplicates}
+            />
+          )}
+          {options.showFileSection && (
+            <FileSection actions={FileSectionActions} />
+          )}
+          <ReadingsPanel
+            sortedReadings={sortedReadings}
+            state={ReadingsPanelState}
+            actions={ReadingsPanelActions}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
