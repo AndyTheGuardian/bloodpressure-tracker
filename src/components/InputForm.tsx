@@ -125,7 +125,7 @@ export function InputForm({
         <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.systolic && errors.systolic && (
-              <p className="text-red-500 text-xs font-semibold -mt-1">
+              <p className="text-red-500 text-xs font-medium -mt-1">
                 {errors.systolic}
               </p>
             )}
@@ -149,7 +149,7 @@ export function InputForm({
         <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.diastolic && errors.diastolic && (
-              <p className="text-red-500 text-xs font-semibold -mt-1 ml-1 ">
+              <p className="text-red-500 text-xs font-medium -mt-1">
                 {errors.diastolic}
               </p>
             )}
@@ -172,7 +172,7 @@ export function InputForm({
         <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.pulse && errors.pulse && (
-              <p className="text-red-500 text-xs font-semibold -mt-1">
+              <p className="text-red-500 text-xs font-medium -mt-1">
                 {errors.pulse}
               </p>
             )}
