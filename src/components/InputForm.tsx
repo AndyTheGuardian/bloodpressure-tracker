@@ -130,7 +130,7 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.systolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 bg-opacity-50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.systolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 bg-opacity-50 dark:border-gray-700"} dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("systolic")}
             name="systolic"
             type="numeric"
@@ -153,7 +153,7 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.diastolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.diastolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("diastolic")}
             name="diastolic"
             type="numeric"
@@ -173,7 +173,7 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.pulse ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.pulse ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
             placeholder={t("pulse")}
             name="pulse"
             type="numeric"
@@ -192,7 +192,7 @@ export function InputForm({
       </div>
       {options.showComments && (
         <input
-          className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-44 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+          className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-44 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
           placeholder={t("note")}
           name="note"
           type="text"
