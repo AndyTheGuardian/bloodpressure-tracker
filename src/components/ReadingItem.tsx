@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Reading, Options } from "../types/BpTypes";
 import { InputForm } from "./InputForm";
 import dayjs from "dayjs";
+import { CircleGauge, HeartPulse } from "lucide-react";
 
 type Props = {
   reading: Reading;
@@ -66,9 +67,14 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
       ) : (
         <>
           <div className="flex flex-grow flex-col sm:flex-row">
-            <span className="flex-1 text-left">
-              {reading.systolic} / {reading.diastolic} (Pulse: {reading.pulse})
-            </span>
+            <div className="flex-1 flex gap-1">
+              <CircleGauge className="mt-1" size={15} />
+              <span className="text-left">
+                {reading.systolic} / {reading.diastolic}
+              </span>
+              <HeartPulse className="mt-1 ml-2" size={15} />
+              <span>{reading.pulse}</span>
+            </div>
             {options.showComments && (
               <span className="flex-1 text-center">{reading.comment}</span>
             )}

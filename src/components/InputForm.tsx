@@ -3,6 +3,7 @@ import type { Options } from "../types/BpTypes";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { validateField } from "../utils/validation";
+import { inputFormStyle } from "../utils/bp";
 
 type Props = {
   form: any;
@@ -130,7 +131,8 @@ export function InputForm({
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.systolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 bg-opacity-50 dark:border-gray-700"} dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 ${inputFormStyle.basic} 
+            ${errors.systolic ? inputFormStyle.invalid : inputFormStyle.valid}`}
             placeholder={t("systolic")}
             name="systolic"
             type="numeric"
@@ -147,13 +149,14 @@ export function InputForm({
         <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.diastolic && errors.diastolic && (
-              <p className="text-red-500 text-xs -mt-1 ml-1 ">
+              <p className="text-red-500 text-xs font-semibold -mt-1 ml-1 ">
                 {errors.diastolic}
               </p>
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow  ${errors.diastolic ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 ${inputFormStyle.basic} 
+            ${errors.diastolic ? inputFormStyle.invalid : inputFormStyle.valid}`}
             placeholder={t("diastolic")}
             name="diastolic"
             type="numeric"
@@ -169,11 +172,14 @@ export function InputForm({
         <div className="flex flex-col sm:flex-1 self-start">
           <div className="h-[12px]">
             {touched.pulse && errors.pulse && (
-              <p className="text-red-500 text-xs -mt-1">{errors.pulse}</p>
+              <p className="text-red-500 text-xs font-semibold -mt-1">
+                {errors.pulse}
+              </p>
             )}
           </div>
           <input
-            className={`w-full sm:min-w-11 h-10 p-2 border rounded shadow ${errors.pulse ? "border-red-500/60 bg-red-500/30" : "bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700"} dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+            className={`w-full sm:min-w-11 ${inputFormStyle.basic} 
+            ${errors.pulse ? inputFormStyle.invalid : inputFormStyle.valid}`}
             placeholder={t("pulse")}
             name="pulse"
             type="numeric"
@@ -192,7 +198,7 @@ export function InputForm({
       </div>
       {options.showComments && (
         <input
-          className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-44 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 selection:bg-blue-300 selection:text-gray-950 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+          className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-44 ${inputFormStyle.basic} ${inputFormStyle.valid}`}
           placeholder={t("note")}
           name="note"
           type="text"
@@ -204,7 +210,7 @@ export function InputForm({
         />
       )}
       <input
-        className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-52 h-10 p-2 border rounded shadow bg-gray-200/50 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-100 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors duration-300`}
+        className={`w-full sm:mt-[12px] sm:flex-none sm:max-w-52 ${inputFormStyle.basic} ${inputFormStyle.valid}`}
         name="date"
         type="datetime-local"
         value={form.datetime}
@@ -212,9 +218,9 @@ export function InputForm({
         onChange={(e) => setForm({ ...form, datetime: e.target.value })}
       />
       {isEditing ? (
-        <div className="sm:flex-none grid grid-cols-2 gap-2">
+        <div className="sm:flex grid grid-cols-2 gap-2">
           <button
-            className="w-auto sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500 disabled:bg-gray-500/50 disabled:hover:bg-gray-500/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-green-600 hover:bg-green-500 disabled:bg-gray-500/50 disabled:hover:bg-gray-500/50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             name="save"
             onClick={onSubmit}
             disabled={
@@ -229,7 +235,7 @@ export function InputForm({
             {t("save")}
           </button>
           <button
-            className="w-auto sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full sm:mt-[12px] h-10 p-2 rounded text-gray-50 bg-red-600 hover:bg-red-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             name="cancel"
             onClick={() => setIsEditing(false)}
           >
