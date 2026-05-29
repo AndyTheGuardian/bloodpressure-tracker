@@ -1,5 +1,5 @@
 import type { Reading, Options } from "../types/BpTypes";
-import { grayButtonStyle, getBPLevel, getBPStyle } from "../utils/bp";
+import { getBPLevel, getBPStyle } from "../utils/bp";
 import { ReadingItem } from "./ReadingItem";
 import { useTranslation } from "react-i18next";
 
@@ -49,7 +49,7 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
         </h2>
         <button
           onClick={deleteAllReadings}
-          className={`text-xs mb-2 ${grayButtonStyle} disabled`}
+          className="mb-2 gray-button disabled"
           disabled={sortedReadings.length === 0}
         >
           {t("clearAll")}
@@ -61,18 +61,12 @@ export function ReadingsPanel({ sortedReadings, state, actions }: Props) {
             {t("deleteAllReadings")}
           </p>
           <div className="flex gap-2 mt-1 mb-6">
-            <button
-              onClick={confirmDeleteAll}
-              className="bg-emerald-600 text-white px-3 py-1 
-              rounded hover:cursor-pointer hover:bg-emerald-500 
-              shadow-md disabled:opacity-50 transition-all duration-200 
-              hover:scale-[1.02] active:scale-[0.98]"
-            >
+            <button onClick={confirmDeleteAll} className="green-button">
               {t("confirmDelete")}
             </button>
             <button
               onClick={() => setDeleteAll(false)}
-              className={grayButtonStyle}
+              className="gray-button text-base"
             >
               {t("cancel")}
             </button>

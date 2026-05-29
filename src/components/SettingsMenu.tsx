@@ -1,21 +1,24 @@
 import { useState } from "react";
 import {
   Menu,
+  // Moon,
   SquareArrowUpLeft,
   SquareArrowUp,
   SquareArrowUpRight,
   SquareArrowDownLeft,
   SquareArrowDown,
   SquareArrowDownRight,
+  // Sun,
   X,
 } from "lucide-react";
 import type { Options, ToastOption } from "../types/BpTypes";
 import type { Theme } from "../types/theme";
-import { grayButtonStyle, settingsButtonStyle } from "../utils/bp";
+import { settingsButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import toast from "react-hot-toast";
 import i18next from "i18next";
+import { SettingsButton } from "./SettingsButton";
 
 type Props = {
   theme: string;
@@ -193,15 +196,17 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
           </div>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className={`mb-2 rounded ${grayButtonStyle} transition duration-300`}
+            className="mb-2 gray-button flex items-center justify-center"
           >
             {theme === "dark" ? "☀️" : "🌙"}
+            {/* {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} */}
           </button>
           <LanguageSwitcher />
           <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
             {t("visibility")}
           </p>
-          <button
+          <SettingsButton
+            active={options.showComments}
             onClick={() => {
               setOptions({
                 ...options,
@@ -212,15 +217,10 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("notes")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.showComments
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("notes")}
-          </button>
-          <button
+            label={t("notes")}
+          />
+          <SettingsButton
+            active={options.showStats}
             onClick={() => {
               setOptions({
                 ...options,
@@ -231,15 +231,10 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("stats")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.showStats
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("stats")}
-          </button>
-          <button
+            label={t("stats")}
+          />
+          <SettingsButton
+            active={options.showFilter}
             onClick={() => {
               setOptions({
                 ...options,
@@ -250,15 +245,10 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("filter")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.showFilter
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("filter")}
-          </button>
-          <button
+            label={t("filter")}
+          />
+          <SettingsButton
+            active={options.showFileSection}
             onClick={() => {
               setOptions({
                 ...options,
@@ -269,15 +259,10 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("fileSection")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.showFileSection
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("fileSection")}
-          </button>
-          <button
+            label={t("fileSection")}
+          />
+          <SettingsButton
+            active={options.showStaticErrors}
             onClick={() => {
               setOptions({
                 ...options,
@@ -288,18 +273,13 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("staticErrorMsgs")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.showStaticErrors
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("staticErrorMsgs")}
-          </button>
+            label={t("staticErrorMsgs")}
+          />
           <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
             {t("functions")}
           </p>
-          <button
+          <SettingsButton
+            active={options.autoAdvance}
             onClick={() => {
               setOptions({
                 ...options,
@@ -310,15 +290,10 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("autoAdvance")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.autoAdvance
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("autoAdvance")}
-          </button>
-          <button
+            label={t("autoAdvance")}
+          />
+          <SettingsButton
+            active={options.showPing}
             onClick={() => {
               setOptions({
                 ...options,
@@ -329,14 +304,8 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
                 toast.success(`${t("pingAnimation")} ${t(state)}`);
               }
             }}
-            className={`flex-shrink text-xs text-wrap mb-2 ${
-              options.showPing
-                ? settingsButtonStyle.selected
-                : settingsButtonStyle.unselected
-            } px-3 py-1 border-[1px] border-gray-300 dark:border-gray-700 rounded shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
-          >
-            {t("pingAnimation")}
-          </button>
+            label={t("pingAnimation")}
+          />
           <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
             {t("notifyPosition")}
           </p>

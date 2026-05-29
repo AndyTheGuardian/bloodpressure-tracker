@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { grayButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -55,10 +54,7 @@ export function FileSection({ actions }: Props) {
       </div>
       <div className="col-span-2 md:col-span-1 grid grid-cols-2 gap-2">
         <div className="grid grid-cols-2 md:col-span-2 w-full gap-2">
-          <button
-            onClick={exportToCSV}
-            className={`w-full text-xs ${grayButtonStyle}`}
-          >
+          <button onClick={exportToCSV} className="w-full text-xs gray-button">
             <div className="flex place-content-center">
               <span className="-mt-[5px] text-sm">→</span>
               <svg
@@ -77,10 +73,7 @@ export function FileSection({ actions }: Props) {
             </div>
             {/* → CSV */}
           </button>
-          <button
-            onClick={exportToPDF}
-            className={`w-full text-xs ${grayButtonStyle}`}
-          >
+          <button onClick={exportToPDF} className="w-full text-xs gray-button">
             <div className="flex place-content-center">
               <span className="-mt-[5px] text-sm">→</span>
               <svg

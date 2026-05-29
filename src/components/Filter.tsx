@@ -1,4 +1,3 @@
-import { grayButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -31,7 +30,7 @@ export function Filter({
         </h2>
         <button
           onClick={onResetFilter}
-          className={`col-span-1 text-xs  ${grayButtonStyle}`}
+          className="col-span-1 text-xs gray-button"
         >
           {t("reset")}
         </button>

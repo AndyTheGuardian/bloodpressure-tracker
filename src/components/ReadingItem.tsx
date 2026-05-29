@@ -31,6 +31,7 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
   });
 
   function handleEdit() {
+    if (isEditing) return;
     setForm({
       systolic: reading.systolic,
       diastolic: reading.diastolic,
@@ -85,7 +86,7 @@ export function ReadingItem({ reading, onEdit, onDelete, options }: Props) {
             </span>
           </div>
           <button
-            className={`ml-3 -my-2 px-2 bg-emerald-400 bg-opacity-0 hover:bg-opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
+            className="ml-3 -my-2 px-2 bg-emerald-400 bg-opacity-0 hover:bg-opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             onClick={handleEdit}
           >
             <svg

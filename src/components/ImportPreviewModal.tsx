@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import type { Parsed } from "../types/ParsedData";
-import { grayButtonStyle } from "../utils/bp";
 import { useTranslation } from "react-i18next";
 import Checkbox from "./CheckBox";
 
@@ -105,20 +104,13 @@ export function ImportPreviewModal({
         />
       )}
       <div className="flex gap-2 mt-3">
-        <button
-          onClick={onConfirm}
-          className="bg-emerald-600 text-white px-3 py-1 
-          rounded hover:cursor-pointer hover:bg-emerald-500 
-          disabled:opacity-20 disabled:bg-red-500 
-          transition-all duration-200 shadow-md
-          hover:scale-[1.02] active:scale-[0.98]"
-        >
+        <button onClick={onConfirm} className="px-2 py-1 green-button">
           <span>{t("confirmImport")}</span>
           {preview.invalid > 0 || (!overwriteDuplicates && duplicates > 0)
             ? ` ${calculatedImport}/${preview.total}`
             : ""}
         </button>
-        <button onClick={onCancel} className={grayButtonStyle}>
+        <button onClick={onCancel} className="gray-button text-base">
           {t("cancel")}
         </button>
       </div>
