@@ -18,22 +18,15 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { validateBloodPressure } from "./utils/validation";
 import { ResponsiveToaster } from "./components/ResponsiveToaster";
+import { defaultOptions } from "./utils/defaultOptions";
 
 function App() {
   const [readings, setReadings] = useLocalStorage<Reading[]>("readings", []);
 
-  const [options, setOptions] = useLocalStorage<Options>("options", {
-    showComments: false,
-    showGradient: false,
-    showFileSection: false,
-    showPing: false,
-    showStats: true,
-    showFilter: true,
-    showStaticErrors: false,
-    autoAdvance: true,
-    toastPosition: window.innerWidth < 640 ? "bottom-center" : "top-right",
-    toastOverkill: false,
-  });
+  const [options, setOptions] = useLocalStorage<Options>(
+    "options",
+    defaultOptions,
+  );
 
   const [form, setForm] = useState({
     systolic: "",
@@ -59,7 +52,7 @@ function App() {
     setOverwriteDuplicates,
   } = useImportCSV({ readings, setReadings });
 
-  const { exportToCSV, exportToPDF } = useExportData(readings, t);
+  const { exportToCSV, exportToPDF } = useExportData(readings, t, options);
 
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("theme");

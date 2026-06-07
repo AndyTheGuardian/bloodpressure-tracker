@@ -5,9 +5,14 @@ import type { Reading } from "../types/BpTypes";
 import { calculateStats } from "../utils/stats";
 import { calculateTrend } from "../utils/trend";
 import toast from "react-hot-toast";
+import type { Options } from "../types/BpTypes";
 
-export function useExportData(readings: Reading[], t: (key: string) => string) {
-  function exportToCSV() {
+export function useExportData(
+  readings: Reading[],
+  t: (key: string) => string,
+  options: Options,
+) {
+  async function exportToCSV() {
     const headers = ["ID", "Date", "Systolic", "Diastolic", "Pulse", "Comment"];
 
     const rows = readings.map((r) => [
@@ -25,14 +30,48 @@ export function useExportData(readings: Reading[], t: (key: string) => string) {
 
     const blob = new Blob([csvContent], { type: "text/csv" });
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const fileName = "blood-pressure.csv";
 
-    a.href = url;
-    a.download = "blood-pressure.csv";
-    a.click();
+    if (options.exportMode === "downloads") {
+      const link = document.createElement("a");
 
-    URL.revokeObjectURL(url);
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(link.href);
+    }
+
+    if (options.exportMode === "ask" && "showSaveFilePicker" in window) {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: fileName,
+        types: [
+          {
+            description: "CSV Files",
+            accept: {
+              "text/csv": [".csv"],
+            },
+          },
+        ],
+      });
+
+      const writable = await handle.createWritable();
+
+      await writable.write(blob);
+      await writable.close();
+    }
+
+    // const url = URL.createObjectURL(blob);
+    // const a = document.createElement("a");
+
+    // a.href = url;
+    // a.download = "blood-pressure.csv";
+    // a.click();
+
+    // URL.revokeObjectURL(url);
 
     toast.success(`CSV ${t("exported")}`);
   }

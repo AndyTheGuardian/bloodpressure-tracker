@@ -36,85 +36,31 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
 
   const toastPositions: ToastOption[] = [
     {
-      //label: "🢄",
-      // icon: (
-      //   <svg
-      //     viewBox="0 0 24 24"
-      //     className="w-4 h-4 bg-red-400 -p-2 fill-gray-900 dark:fill-gray-50 stroke-none"
-      //   >
-      //     <path d="M2 2V10.5L3.5 12L6.33579 9.16421L12.5858 15.4142L15.4142 12.5858L9.16421 6.33579L12 3.5L10.5 2H2Z" />
-      //   </svg>
-      // ),
       icon: <SquareArrowUpLeft size={15} />,
       value: "top-left",
       style: "rounded-tl-md",
     },
     {
-      //label: "🢁",
-      // icon: (
-      //   <svg
-      //     viewBox="0 0 24 24"
-      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
-      //   >
-      //     <path d="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z" />
-      //   </svg>
-      // ),
       icon: <SquareArrowUp size={15} />,
       value: "top-center",
       style: "rounded-none",
     },
     {
-      //label: "🢅",
-      // icon: (
-      //   <svg
-      //     viewBox="0 0 24 24"
-      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
-      //   >
-      //     <path d="M14 2H5.50003L4.00003 3.5L6.83581 6.33579L0.585815 12.5858L3.41424 15.4142L9.66424 9.16421L12.5 12L14 10.5L14 2Z" />
-      //   </svg>
-      // ),
       icon: <SquareArrowUpRight size={15} />,
       value: "top-right",
       style: "rounded-tr-md",
     },
     {
-      //label: "🢇",
-      // icon: (
-      //   <svg
-      //     viewBox="0 0 24 24"
-      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
-      //   >
-      //     <path d="M9.16421 9.66421L15.4142 3.41421L12.5858 0.585785L6.33579 6.83578L3.5 4L2 5.5V14H10.5L12 12.5L9.16421 9.66421Z" />
-      //   </svg>
-      // ),
       icon: <SquareArrowDownLeft size={15} />,
       value: "bottom-left",
       style: "rounded-bl-md",
     },
     {
-      //label: "🢃",
-      // icon: (
-      //   <svg
-      //     viewBox="0 0 24 24"
-      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
-      //   >
-      //     <path d="M10 8L14 8V10L8 16L2 10V8H6V0L10 4.76995e-08V8Z" />
-      //   </svg>
-      // ),
       icon: <SquareArrowDown size={15} />,
       value: "bottom-center",
       style: "rounded-none",
     },
     {
-      //label: "🢆",
-      // icon: (
-      //   <svg
-      //     viewBox="0 0 24 24"
-      //     className="w-4 h-4 fill-gray-900 dark:fill-gray-50 stroke-none"
-      //   >
-      //     <path d="M9.66411 6.8359L3.414 0.585785L0.585571 3.41421L6.83568 9.66432L4.00002 12.5L5.50002 14H14V5.49999L12.5 3.99999L9.66411 6.8359Z" />
-      //   </svg>
-      // ),
       icon: <SquareArrowDownRight size={15} />,
       value: "bottom-right",
       style: "rounded-br-md",
@@ -275,6 +221,45 @@ export function SettingsMenu({ theme, setTheme, options, setOptions }: Props) {
             }}
             label={t("staticErrorMsgs")}
           />
+          <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
+            {t("downloadLocation")}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <SettingsButton
+              active={options.exportMode === "downloads"}
+              label={t("browserDownloads")}
+              onClick={() => {
+                setOptions({
+                  ...options,
+                  exportMode: "downloads",
+                });
+                toast.success(
+                  `${t("downloadLocation")} ${t("setTo")} ${
+                    options.exportMode === "downloads"
+                      ? t("askEveryTime")
+                      : t("browserDownloads")
+                  }`,
+                );
+              }}
+            />
+            <SettingsButton
+              active={options.exportMode === "ask"}
+              label={t("askEveryTime")}
+              onClick={() => {
+                setOptions({
+                  ...options,
+                  exportMode: "ask",
+                });
+                toast.success(
+                  `${t("downloadLocation")} ${t("setTo")} ${
+                    options.exportMode === "ask"
+                      ? t("browserDownloads")
+                      : t("askEveryTime")
+                  }`,
+                );
+              }}
+            />
+          </div>
           <p className="text-xs dark:text-gray-300 font-semibold select-none my-1">
             {t("functions")}
           </p>

@@ -25,6 +25,8 @@ export type ToastOption = {
   style: string;
 };
 
+export type ExportMode = "downloads" | "ask";
+
 export type Options = {
   showComments: boolean;
   showGradient: boolean;
@@ -36,4 +38,5 @@ export type Options = {
   autoAdvance: boolean;
   toastPosition: ToastPosition;
   toastOverkill: boolean;
+  exportMode: ExportMode;
 };
